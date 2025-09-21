@@ -1,0 +1,20 @@
+{
+  "KPlugin": {
+    "Name": "fluid-tiling",
+    "Description": "Plasma script for automatic tiling",
+    "Icon": "preferences-system-windows",
+    "Authors": [
+      {
+        "Email": "jesuscarclem30@gmail.com",
+        "Name": "Serroda"
+      }
+    ],
+    "Id": "fluid-tiling",
+    "Version": "1.0",
+    "License": "GPLv3",
+    "Website": "https://codeberg.org/serroda/fluid-tiling"
+  },
+  "X-Plasma-API": "javascript",
+  "X-Plasma-MainScript": "code/main.js",
+  "KPackageStructure": "KWin/Script"
+}
