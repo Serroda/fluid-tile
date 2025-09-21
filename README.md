@@ -27,4 +27,4 @@ kpackagetool6 --type=KWin/Script -i ./fluid-tile/
 
 - 3. Enable it in the KDE settings
 
-`Settings > KWin Scripts > Check Fluid-tile > Apply changes`
+`Settings > KWin Scripts > Check "Fluid tile" > Apply changes`
