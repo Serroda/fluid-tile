@@ -12,7 +12,7 @@
     "Id": "fluid-tile",
     "Version": "1.0",
     "License": "GPLv3",
-    "Website": "https://codeberg.org/serroda/fluid-tiling"
+    "Website": "https://codeberg.org/Serroda/fluid-tile"
   },
   "X-Plasma-API": "javascript",
   "KPackageStructure": "KWin/Script",
