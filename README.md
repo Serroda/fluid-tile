@@ -1,12 +1,12 @@
 # Fluid tile
 
-A script for Kwin that adjusts windows to the custom KDE Plasma 6 tiling layout by creating and removing virtual desktops.
+A script for Kwin that auto adjusts windows to the custom KDE Plasma 6 tiling layout by creating and removing virtual desktops.
 
 ## Features
 
 - 🚀 Working on KDE Plasma 6.4.5
 - 🪟 Smooth tiling
-- 🖼️ Working with custom mosaic
+- 🖼️ Working with custom layout 
 - 💻 Auto create and delete virtual desktops
 
 ## Installation
