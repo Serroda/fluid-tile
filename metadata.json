@@ -1,7 +1,7 @@
 {
   "KPlugin": {
-    "Name": "fluid-tiling",
-    "Description": "Plasma script for automatic tiling",
+    "Name": "Fluid Tile",
+    "Description": "A script for KWIN to adjust windows to the custom KDE Plasma 6 mosaic with creation and deletion of virtual desktops",
     "Icon": "preferences-system-windows",
     "Authors": [
       {
@@ -9,12 +9,12 @@
         "Name": "Serroda"
       }
     ],
-    "Id": "fluid-tiling",
+    "Id": "fluid-tile",
     "Version": "1.0",
     "License": "GPLv3",
     "Website": "https://codeberg.org/serroda/fluid-tiling"
   },
   "X-Plasma-API": "javascript",
-  "X-Plasma-MainScript": "code/main.js",
-  "KPackageStructure": "KWin/Script"
+  "KPackageStructure": "KWin/Script",
+  "X-Plasma-MainScript": "code/main.js"
 }
