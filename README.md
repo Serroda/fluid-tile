@@ -1,6 +1,6 @@
 # fluid-tile
 
-A script for KWIN to adjust windows to the custom KDE Plasma 6 mosaic with creation and deletion of virtual desktops
+A script for Kwin that adjusts windows to the custom KDE Plasma 6 tiling layout by creating and removing virtual desktops.
 
 ## Features
 
