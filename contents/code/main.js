@@ -1,4 +1,4 @@
-//GET OTHER WINDOWS FROM CURRENT VIRTUAL DESKTOP
+// Get all windows from the current virtual desktop except the given window
 function getWindowsFromActualDesktop(windowNew) {
   let windows = [];
 
@@ -14,7 +14,7 @@ function getWindowsFromActualDesktop(windowNew) {
   return windows;
 }
 
-//GET CUSTOM TILES ORDERED BY SIZE AND LEFT TO RIGHT
+//Get tiles, ordered by size (width) and from left to right
 function getTiles(tiles) {
   let tilesOrdered = [];
 
@@ -49,11 +49,13 @@ function getTiles(tiles) {
   return tilesOrdered;
 }
 
+//Get tiles from the screen variable
 function getConfig(screen) {
   const tileManager = workspace.tilingForScreen(screen);
   return getTiles(tileManager.rootTile.tiles);
 }
 
+//Delete Virtual Desktop if is empty
 function deleteDesktopWithoutWindows(windowClosed) {
   if (
     windowClosed.normalWindow === false ||
@@ -78,6 +80,7 @@ function deleteDesktopWithoutWindows(windowClosed) {
   if (confirmDelete === true) workspace.removeDesktop(workspace.currentDesktop);
 }
 
+//Set tile to the new Window
 function setTile(windowNew) {
   if (windowNew.normalWindow === false || windowNew.popupWindow === true) {
     return;
@@ -92,6 +95,7 @@ function setTile(windowNew) {
 
   const tilesOrdered = getConfig(workspace.activeScreen);
 
+  //Set tile if the custom mosaic has space
   if (windowsOther.length + 1 <= tilesOrdered.length) {
     windowNew.tile = tilesOrdered[0];
 
@@ -101,6 +105,7 @@ function setTile(windowNew) {
     return;
   }
 
+  //Move to the next desktop for check the free space else create a new virtual desktop
   if (
     workspace.currentDesktop ===
     workspace.desktops[workspace.desktops.length - 1]
@@ -110,17 +115,15 @@ function setTile(windowNew) {
   } else {
     windowNew.desktops = [
       workspace.desktops[
-      workspace.desktops.indexOf(workspace.currentDesktop) + 1
+        workspace.desktops.indexOf(workspace.currentDesktop) + 1
       ],
     ];
   }
 
   workspace.slotSwitchDesktopRight();
+  //Check again if the next desktop has free space
   setTile(windowNew);
 }
 
-workspace.windowAdded.disconnect(setTile);
 workspace.windowAdded.connect(setTile);
-
-workspace.windowRemoved.disconnect(deleteDesktopWithoutWindows);
 workspace.windowRemoved.connect(deleteDesktopWithoutWindows);
