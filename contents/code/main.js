@@ -55,29 +55,18 @@ function getConfig(screen) {
   return getTiles(tileManager.rootTile.tiles);
 }
 
-//Delete Virtual Desktop if is empty
-function deleteDesktopWithoutWindows(windowClosed) {
-  if (
-    windowClosed.normalWindow === false ||
-    windowClosed.popupWindow === true
-  ) {
+//Delete Virtual Desktop if is empty or maximize the last window
+function onCloseWindow(windowClosed) {
+  const windowsOther = getWindowsFromActualDesktop(windowClosed);
+
+  if (windowsOther.length === 1) {
+    windowsOther[0].setMaximize(true, true);
     return;
   }
 
-  let confirmDelete = false;
-
-  for (const windowItem of workspace.stackingOrder) {
-    if (
-      windowItem.desktops.includes(workspace.currentDesktop) &&
-      windowItem !== windowClosed
-    ) {
-      confirmDelete = false;
-      break;
-    }
-    confirmDelete = true;
+  if (windowsOther.length === 0) {
+    workspace.removeDesktop(workspace.currentDesktop);
   }
-
-  if (confirmDelete === true) workspace.removeDesktop(workspace.currentDesktop);
 }
 
 //Set tile to the new Window
@@ -115,7 +104,7 @@ function setTile(windowNew) {
   } else {
     windowNew.desktops = [
       workspace.desktops[
-        workspace.desktops.indexOf(workspace.currentDesktop) + 1
+      workspace.desktops.indexOf(workspace.currentDesktop) + 1
       ],
     ];
   }
@@ -125,5 +114,8 @@ function setTile(windowNew) {
   setTile(windowNew);
 }
 
+workspace.windowAdded.disconnect(setTile);
+workspace.windowRemoved.disconnect(onCloseWindow);
+
 workspace.windowAdded.connect(setTile);
-workspace.windowRemoved.connect(deleteDesktopWithoutWindows);
+workspace.windowRemoved.connect(onCloseWindow);
