@@ -1,3 +1,7 @@
+<p align="center">
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/commit/c9e0711d2197a583ad5c6d4e56a9003a70e7f724/.meta/logo.svg" width="200"/>
+</p>
+
 # Fluid tile
 
 A script for Kwin that auto adjusts windows to the custom KDE Plasma 6 tiling layout by creating and removing virtual desktops.
