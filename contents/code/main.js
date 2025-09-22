@@ -26,12 +26,12 @@ function getWindowsFromActualDesktop(windowNew) {
 }
 
 //Get tiles, ordered by size (width) and from left to right
-function getTiles(tiles) {
+function orderTiles(tiles) {
   let tilesOrdered = [];
 
   for (let tile of tiles) {
     if (tile.tiles.length !== 0) {
-      const subTiles = getTiles(tile.tiles);
+      const subTiles = orderTiles(tile.tiles);
       tilesOrdered = [...tilesOrdered, ...subTiles];
       continue;
     }
@@ -60,10 +60,10 @@ function getTiles(tiles) {
   return tilesOrdered;
 }
 
-//Get tiles from the screen variable
-function getConfig(screen) {
-  const tileManager = workspace.tilingForScreen(screen);
-  return getTiles(tileManager.rootTile.tiles);
+//Get tiles from the screen and virtual desktop
+function getTilesOrdered(screen, desktop) {
+  const rootTile = workspace.rootTile(screen, desktop);
+  return orderTiles(rootTile.tiles);
 }
 
 //Delete Virtual Desktop if is empty or maximize the last window
@@ -97,7 +97,10 @@ function setTile(windowNew) {
     return;
   }
 
-  const tilesOrdered = getConfig(workspace.activeScreen);
+  const tilesOrdered = getTilesOrdered(
+    workspace.activeScreen,
+    workspace.currentDesktop,
+  );
 
   //Set tile if the custom mosaic has space
   if (windowsOther.length + 1 <= tilesOrdered.length) {
@@ -128,9 +131,6 @@ function setTile(windowNew) {
   //Check again if the next desktop has free space
   setTile(windowNew);
 }
-
-workspace.windowAdded.disconnect(setTile);
-workspace.windowRemoved.disconnect(onCloseWindow);
 
 workspace.windowAdded.connect(setTile);
 workspace.windowRemoved.connect(onCloseWindow);
