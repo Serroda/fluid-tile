@@ -1,3 +1,14 @@
+// Filter windows
+function checkIfNormalWindow(windowItem) {
+  return (
+    windowItem.normalWindow === true &&
+    windowItem.popupWindow === false &&
+    windowItem.resourceClass.toLowerCase() !== "plasmashell" &&
+    windowItem.resourceClass.toLowerCase() !== "org.kde.plasmashell" &&
+    windowItem.resourceClass.toLowerCase() !== "ksmserver-logout-greeter"
+  );
+}
+
 // Get all windows from the current virtual desktop except the given window
 function getWindowsFromActualDesktop(windowNew) {
   let windows = [];
@@ -57,6 +68,10 @@ function getConfig(screen) {
 
 //Delete Virtual Desktop if is empty or maximize the last window
 function onCloseWindow(windowClosed) {
+  if (!checkIfNormalWindow(windowClosed)) {
+    return;
+  }
+
   const windowsOther = getWindowsFromActualDesktop(windowClosed);
 
   if (windowsOther.length === 1) {
@@ -71,7 +86,7 @@ function onCloseWindow(windowClosed) {
 
 //Set tile to the new Window
 function setTile(windowNew) {
-  if (windowNew.normalWindow === false || windowNew.popupWindow === true) {
+  if (!checkIfNormalWindow(windowNew)) {
     return;
   }
 
@@ -104,7 +119,7 @@ function setTile(windowNew) {
   } else {
     windowNew.desktops = [
       workspace.desktops[
-      workspace.desktops.indexOf(workspace.currentDesktop) + 1
+        workspace.desktops.indexOf(workspace.currentDesktop) + 1
       ],
     ];
   }
