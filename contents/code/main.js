@@ -31,33 +31,22 @@ function orderTiles(tiles) {
 
   for (let tile of tiles) {
     if (tile.tiles.length !== 0) {
-      const subTiles = orderTiles(tile.tiles);
-      tilesOrdered = [...tilesOrdered, ...subTiles];
-      continue;
-    }
-
-    if (tilesOrdered.length === 0) {
+      tilesOrdered = tilesOrdered.concat(orderTiles(tile.tiles));
+    } else {
       tilesOrdered.push(tile);
-      continue;
     }
-
-    let insertPosition = tilesOrdered.length;
-
-    for (let x = 0; x < tilesOrdered.length; x++) {
-      if (
-        tile.absoluteGeometry.width > tilesOrdered[x].absoluteGeometry.width ||
-        (tile.absoluteGeometry.width ===
-          tilesOrdered[x].absoluteGeometry.width &&
-          tile.absoluteGeometry.x < tilesOrdered[x].absoluteGeometry.x)
-      ) {
-        if (x < insertPosition) insertPosition = x;
-      }
-    }
-
-    tilesOrdered.splice(insertPosition, 0, tile);
   }
 
-  return tilesOrdered;
+  return tilesOrdered.sort((a, b) => {
+    if (b.absoluteGeometry.width !== a.absoluteGeometry.width) {
+      return b.absoluteGeometry.width - a.absoluteGeometry.width;
+    } else {
+      return (
+        a.absoluteGeometry.x - b.absoluteGeometry.x ||
+        a.absoluteGeometry.y - b.absoluteGeometry.y
+      );
+    }
+  });
 }
 
 //Get tiles from the screen and virtual desktop
