@@ -92,19 +92,8 @@ function setTile(windowNew) {
   let loopFlapDesktop = true;
   let loopFlapScreen = true;
 
-  for (
-    let d = startPositionDesktop;
-    d !== startPositionDesktop || loopFlapDesktop;
-    d++
-  ) {
-    loopFlapDesktop = false;
-
-    for (
-      let s = startPositionScreen;
-      s !== startPositionScreen || loopFlapScreen;
-      s++
-    ) {
-      loopFlapScreen = false;
+  for (let d = startPositionDesktop; loopFlapDesktop; d++) {
+    for (let s = startPositionScreen; loopFlapScreen; s++) {
       const windowsOther = getWindows(
         windowNew,
         workspace.desktops[d],
@@ -132,13 +121,18 @@ function setTile(windowNew) {
       }
 
       if (s === workspace.screens.length) s = 0;
+      if (s === startPositionScreen) loopFlapScreen = false;
     }
     workspace.currentDesktop = workspace.desktops[d];
     windowNew.desktops = [workspace.currentDesktop];
+
     if (d === workspace.desktops.length) d = 0;
+    if (d === startPositionDesktop) loopFlapDesktop = false;
   }
 
   workspace.createDesktop(workspace.desktops.length, "");
+  workspace.currentDesktop = workspace.desktops[workspace.desktops.length - 1];
+  windowNew.desktops = [workspace.currentDesktop];
   windowNew.setMaximize(true, true);
 }
 
