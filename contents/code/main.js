@@ -5,18 +5,20 @@ function checkIfNormalWindow(windowItem) {
     windowItem.popupWindow === false &&
     windowItem.resourceClass.toLowerCase() !== "plasmashell" &&
     windowItem.resourceClass.toLowerCase() !== "org.kde.plasmashell" &&
+    windowItem.resourceClass.toLowerCase() !== "kwin_wayland" &&
     windowItem.resourceClass.toLowerCase() !== "ksmserver-logout-greeter"
   );
 }
 
-// Get all windows from the current virtual desktop except the given window
-function getWindowsFromActualDesktop(windowNew) {
+// Get all windows from the virtual desktop except the given window
+function getWindows(windowInteraction, desktop, screen) {
   let windows = [];
 
   for (const windowItem of workspace.stackingOrder) {
     if (
-      windowItem.desktops.includes(workspace.currentDesktop) &&
-      windowItem !== windowNew
+      windowItem.desktops.includes(desktop) &&
+      screen === workspace.screenAt({ x: windowItem.x, y: windowItem.y }) &&
+      windowItem !== windowInteraction
     ) {
       windows.push(windowItem);
     }
@@ -50,7 +52,7 @@ function orderTiles(tiles) {
 }
 
 //Get tiles from the screen and virtual desktop
-function getTilesOrdered(screen, desktop) {
+function getTilesOrdered(desktop, screen) {
   const rootTile = workspace.rootTile(screen, desktop);
   return orderTiles(rootTile.tiles);
 }
@@ -61,7 +63,11 @@ function onCloseWindow(windowClosed) {
     return;
   }
 
-  const windowsOther = getWindowsFromActualDesktop(windowClosed);
+  const windowsOther = getWindows(
+    windowClosed,
+    workspace.currentDesktop,
+    workspace.activeScreen,
+  );
 
   if (windowsOther.length === 1) {
     windowsOther[0].setMaximize(true, true);
@@ -79,46 +85,61 @@ function setTile(windowNew) {
     return;
   }
 
-  const windowsOther = getWindowsFromActualDesktop(windowNew);
-
-  if (windowsOther.length === 0) {
-    windowNew.setMaximize(true, true);
-    return;
-  }
-
-  const tilesOrdered = getTilesOrdered(
-    workspace.activeScreen,
+  const startPositionDesktop = workspace.desktops.indexOf(
     workspace.currentDesktop,
   );
+  const startPositionScreen = workspace.screens.indexOf(workspace.activeScreen);
+  let loopFlapDesktop = true;
+  let loopFlapScreen = true;
 
-  //Set tile if the custom mosaic has space
-  if (windowsOther.length + 1 <= tilesOrdered.length) {
-    windowNew.tile = tilesOrdered[0];
-
-    for (let x = 0; x < windowsOther.length; x++) {
-      windowsOther[x].tile = tilesOrdered[x + 1];
-    }
-    return;
-  }
-
-  //Move to the next desktop for check the free space else create a new virtual desktop
-  if (
-    workspace.currentDesktop ===
-    workspace.desktops[workspace.desktops.length - 1]
+  for (
+    let d = startPositionDesktop;
+    d !== startPositionDesktop || loopFlapDesktop;
+    d++
   ) {
-    workspace.createDesktop(workspace.desktops.length, "");
-    windowNew.desktops = [workspace.desktops[workspace.desktops.length - 1]];
-  } else {
-    windowNew.desktops = [
-      workspace.desktops[
-        workspace.desktops.indexOf(workspace.currentDesktop) + 1
-      ],
-    ];
+    loopFlapDesktop = false;
+
+    for (
+      let s = startPositionScreen;
+      s !== startPositionScreen || loopFlapScreen;
+      s++
+    ) {
+      loopFlapScreen = false;
+      const windowsOther = getWindows(
+        windowNew,
+        workspace.desktops[d],
+        workspace.screens[s],
+      );
+
+      if (windowsOther.length === 0) {
+        windowNew.setMaximize(true, true);
+        return;
+      }
+
+      const tilesOrdered = getTilesOrdered(
+        workspace.desktops[d],
+        workspace.screens[s],
+      );
+
+      //Set tile if the custom mosaic has space
+      if (windowsOther.length + 1 <= tilesOrdered.length) {
+        windowNew.tile = tilesOrdered[0];
+
+        for (let x = 0; x < windowsOther.length; x++) {
+          windowsOther[x].tile = tilesOrdered[x + 1];
+        }
+        return;
+      }
+
+      if (s === workspace.screens.length) s = 0;
+    }
+    workspace.currentDesktop = workspace.desktops[d];
+    windowNew.desktops = [workspace.currentDesktop];
+    if (d === workspace.desktops.length) d = 0;
   }
 
-  workspace.slotSwitchDesktopRight();
-  //Check again if the next desktop has free space
-  setTile(windowNew);
+  workspace.createDesktop(workspace.desktops.length, "");
+  windowNew.setMaximize(true, true);
 }
 
 workspace.windowAdded.connect(setTile);
