@@ -85,49 +85,34 @@ function setTile(windowNew) {
     return;
   }
 
-  const startPositionDesktop = workspace.desktops.indexOf(
-    workspace.currentDesktop,
-  );
-  const startPositionScreen = workspace.screens.indexOf(workspace.activeScreen);
-  let loopFlapDesktop = true;
-  let loopFlapScreen = true;
-
-  for (let d = startPositionDesktop; loopFlapDesktop; d++) {
-    for (let s = startPositionScreen; loopFlapScreen; s++) {
-      const windowsOther = getWindows(
-        windowNew,
-        workspace.desktops[d],
-        workspace.screens[s],
-      );
+  for (let itemDesktop of workspace.desktops) {
+    for (let itemScreen of workspace.screens) {
+      const windowsOther = getWindows(windowNew, itemDesktop, itemScreen);
 
       if (windowsOther.length === 0) {
+        workspace.currentDesktop = itemDesktop;
+        windowNew.desktops = [itemDesktop];
         windowNew.setMaximize(true, true);
         return;
       }
 
-      const tilesOrdered = getTilesOrdered(
-        workspace.desktops[d],
-        workspace.screens[s],
-      );
+      const tilesOrdered = getTilesOrdered(itemDesktop, itemScreen);
 
       //Set tile if the custom mosaic has space
       if (windowsOther.length + 1 <= tilesOrdered.length) {
+        workspace.currentDesktop = itemDesktop;
+        windowNew.desktops = [itemDesktop];
         windowNew.tile = tilesOrdered[0];
+        windowNew.setMaximize(false, false);
 
         for (let x = 0; x < windowsOther.length; x++) {
+          windowsOther[x].desktops = [itemDesktop];
           windowsOther[x].tile = tilesOrdered[x + 1];
+          windowsOther[x].setMaximize(false, false);
         }
         return;
       }
-
-      if (s === workspace.screens.length) s = 0;
-      if (s === startPositionScreen) loopFlapScreen = false;
     }
-    workspace.currentDesktop = workspace.desktops[d];
-    windowNew.desktops = [workspace.currentDesktop];
-
-    if (d === workspace.desktops.length) d = 0;
-    if (d === startPositionDesktop) loopFlapDesktop = false;
   }
 
   workspace.createDesktop(workspace.desktops.length, "");
