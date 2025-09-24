@@ -16,5 +16,6 @@
   },
   "X-Plasma-API": "javascript",
   "KPackageStructure": "KWin/Script",
+  "X-KDE-ConfigModule": "kwin/effects/configs/kcm_kwin4_genericscripted",
   "X-Plasma-MainScript": "code/main.js"
 }

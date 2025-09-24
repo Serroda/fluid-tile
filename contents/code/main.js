@@ -1,12 +1,14 @@
 // Filter windows
 function checkIfNormalWindow(windowItem) {
+  const resourceClass = windowItem.resourceClass.toLowerCase();
   return (
     windowItem.normalWindow === true &&
     windowItem.popupWindow === false &&
-    windowItem.resourceClass.toLowerCase() !== "plasmashell" &&
-    windowItem.resourceClass.toLowerCase() !== "org.kde.plasmashell" &&
-    windowItem.resourceClass.toLowerCase() !== "kwin_wayland" &&
-    windowItem.resourceClass.toLowerCase() !== "ksmserver-logout-greeter"
+    windowItem.height > 300 &&
+    resourceClass !== "plasmashell" &&
+    resourceClass !== "org.kde.plasmashell" &&
+    resourceClass !== "kwin_wayland" &&
+    resourceClass !== "ksmserver-logout-greeter"
   );
 }
 
@@ -71,6 +73,7 @@ function onCloseWindow(windowClosed) {
 
   if (windowsOther.length === 1) {
     windowsOther[0].setMaximize(true, true);
+    workspace.setActiveWindow(windowsOther[0]);
     return;
   }
 
@@ -93,6 +96,7 @@ function setTile(windowNew) {
         workspace.currentDesktop = itemDesktop;
         windowNew.desktops = [itemDesktop];
         windowNew.setMaximize(true, true);
+        workspace.setActiveWindow(windowNew);
         return;
       }
 
@@ -104,6 +108,7 @@ function setTile(windowNew) {
         windowNew.desktops = [itemDesktop];
         windowNew.tile = tilesOrdered[0];
         windowNew.setMaximize(false, false);
+        workspace.setActiveWindow(windowNew);
 
         for (let x = 0; x < windowsOther.length; x++) {
           windowsOther[x].desktops = [itemDesktop];
