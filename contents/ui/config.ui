@@ -33,14 +33,14 @@
      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
     </property>
     <item row="0" column="0">
-     <widget class="QCheckBox" name="checkBox">
+     <widget class="QCheckBox" name="kcfg_openMaximize">
       <property name="text">
        <string>Maximize if you have only one window</string>
       </property>
      </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QCheckBox" name="checkBox_2">
+     <widget class="QCheckBox" name="kcfg_addDesktop">
       <property name="text">
        <string>Create new virtual desktop if you dont have more space</string>
       </property>
@@ -62,14 +62,14 @@
      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
     </property>
     <item row="0" column="0">
-     <widget class="QCheckBox" name="checkBox_3">
+     <widget class="QCheckBox" name="kcfg_closeMaximize">
       <property name="text">
        <string>Maximize the last window</string>
       </property>
      </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QCheckBox" name="checkBox_4">
+     <widget class="QCheckBox" name="kcfg_removeDesktop">
       <property name="text">
        <string>Delete virtual desktop if is empty</string>
       </property>

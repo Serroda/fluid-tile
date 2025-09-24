@@ -4,7 +4,6 @@ function checkIfNormalWindow(windowItem) {
   return (
     windowItem.normalWindow === true &&
     windowItem.popupWindow === false &&
-    windowItem.height > 300 &&
     resourceClass !== "plasmashell" &&
     resourceClass !== "org.kde.plasmashell" &&
     resourceClass !== "kwin_wayland" &&
@@ -73,7 +72,6 @@ function onCloseWindow(windowClosed) {
 
   if (windowsOther.length === 1) {
     windowsOther[0].setMaximize(true, true);
-    workspace.setActiveWindow(windowsOther[0]);
     return;
   }
 
@@ -96,7 +94,6 @@ function setTile(windowNew) {
         workspace.currentDesktop = itemDesktop;
         windowNew.desktops = [itemDesktop];
         windowNew.setMaximize(true, true);
-        workspace.setActiveWindow(windowNew);
         return;
       }
 
@@ -108,7 +105,6 @@ function setTile(windowNew) {
         windowNew.desktops = [itemDesktop];
         windowNew.tile = tilesOrdered[0];
         windowNew.setMaximize(false, false);
-        workspace.setActiveWindow(windowNew);
 
         for (let x = 0; x < windowsOther.length; x++) {
           windowsOther[x].desktops = [itemDesktop];
