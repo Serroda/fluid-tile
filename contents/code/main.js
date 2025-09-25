@@ -2,7 +2,7 @@
 function checkIfNormalWindow(windowItem) {
   const appsBlacklist = readConfig(
     "AppsBlacklist",
-    "kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,org.kde.dolphin,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter",
+    "kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter",
   );
   const resourceClass = windowItem.resourceClass.toLowerCase();
 
