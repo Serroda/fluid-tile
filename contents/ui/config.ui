@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>379</width>
-    <height>218</height>
+    <height>505</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>379</width>
-    <height>218</height>
+    <height>505</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -34,6 +34,9 @@
     </property>
     <item row="0" column="0">
      <widget class="QCheckBox" name="kcfg_openMaximize">
+      <property name="locale">
+       <locale language="English" country="Eswatini"/>
+      </property>
       <property name="text">
        <string>Maximize if you have only one window</string>
       </property>
@@ -41,6 +44,9 @@
     </item>
     <item row="1" column="0">
      <widget class="QCheckBox" name="kcfg_addDesktop">
+      <property name="locale">
+       <locale language="English" country="Eswatini"/>
+      </property>
       <property name="text">
        <string>Create new virtual desktop if you dont have more space</string>
       </property>
@@ -63,6 +69,9 @@
     </property>
     <item row="0" column="0">
      <widget class="QCheckBox" name="kcfg_closeMaximize">
+      <property name="locale">
+       <locale language="English" country="Eswatini"/>
+      </property>
       <property name="text">
        <string>Maximize the last window</string>
       </property>
@@ -70,6 +79,9 @@
     </item>
     <item row="1" column="0">
      <widget class="QCheckBox" name="kcfg_removeDesktop">
+      <property name="locale">
+       <locale language="English" country="Eswatini"/>
+      </property>
       <property name="text">
        <string>Delete virtual desktop if is empty</string>
       </property>
@@ -91,6 +103,9 @@
      <bold>true</bold>
     </font>
    </property>
+   <property name="locale">
+    <locale language="English" country="Eswatini"/>
+   </property>
    <property name="text">
     <string>On close window</string>
    </property>
@@ -109,11 +124,58 @@
      <bold>true</bold>
     </font>
    </property>
+   <property name="locale">
+    <locale language="English" country="Eswatini"/>
+   </property>
    <property name="text">
     <string>On open window</string>
    </property>
   </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>230</y>
+     <width>161</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="locale">
+    <locale language="English" country="Eswatini"/>
+   </property>
+   <property name="text">
+    <string>Blacklist apps</string>
+   </property>
+  </widget>
+  <widget class="KEditListWidget" name="kcfg_appsBlacklist">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>260</y>
+     <width>371</width>
+     <height>228</height>
+    </rect>
+   </property>
+   <property name="statusTip">
+    <string/>
+   </property>
+   <property name="locale">
+    <locale language="English" country="Eswatini"/>
+   </property>
+  </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KEditListWidget</class>
+   <extends>QWidget</extends>
+   <header>keditlistwidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

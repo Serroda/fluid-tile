@@ -1,13 +1,12 @@
 // Filter windows
 function checkIfNormalWindow(windowItem) {
+  const appsBlacklist = readConfig("appsBlacklist", "");
   const resourceClass = windowItem.resourceClass.toLowerCase();
+
   return (
     windowItem.normalWindow === true &&
     windowItem.popupWindow === false &&
-    resourceClass !== "plasmashell" &&
-    resourceClass !== "org.kde.plasmashell" &&
-    resourceClass !== "kwin_wayland" &&
-    resourceClass !== "ksmserver-logout-greeter"
+    appsBlacklist.split(",").includes(resourceClass) === false
   );
 }
 
@@ -70,12 +69,16 @@ function onCloseWindow(windowClosed) {
     workspace.activeScreen,
   );
 
-  if (windowsOther.length === 1) {
+  const closeMaximize = readConfig("closeMaximize", true);
+
+  if (windowsOther.length === 1 && closeMaximize === true) {
     windowsOther[0].setMaximize(true, true);
     return;
   }
 
-  if (windowsOther.length === 0) {
+  const removeDesktop = readConfig("removeDesktop", true);
+
+  if (windowsOther.length === 0 && removeDesktop === true) {
     workspace.removeDesktop(workspace.currentDesktop);
   }
 }
@@ -86,6 +89,9 @@ function setTile(windowNew) {
     return;
   }
 
+  const openMaximize = readConfig("openMaximize", true);
+  const addDesktop = readConfig("addDesktop", true);
+
   for (let itemDesktop of workspace.desktops) {
     for (let itemScreen of workspace.screens) {
       const windowsOther = getWindows(windowNew, itemDesktop, itemScreen);
@@ -93,7 +99,7 @@ function setTile(windowNew) {
       if (windowsOther.length === 0) {
         workspace.currentDesktop = itemDesktop;
         windowNew.desktops = [itemDesktop];
-        windowNew.setMaximize(true, true);
+        if (openMaximize === true) windowNew.setMaximize(true, true);
         return;
       }
 
@@ -116,10 +122,13 @@ function setTile(windowNew) {
     }
   }
 
-  workspace.createDesktop(workspace.desktops.length, "");
-  workspace.currentDesktop = workspace.desktops[workspace.desktops.length - 1];
-  windowNew.desktops = [workspace.currentDesktop];
-  windowNew.setMaximize(true, true);
+  if (addDesktop === true) {
+    workspace.createDesktop(workspace.desktops.length, "");
+    workspace.currentDesktop =
+      workspace.desktops[workspace.desktops.length - 1];
+    windowNew.desktops = [workspace.currentDesktop];
+    if (openMaximize === true) windowNew.setMaximize(true, true);
+  }
 }
 
 workspace.windowAdded.connect(setTile);
