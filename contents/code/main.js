@@ -1,6 +1,6 @@
 // Filter windows
 function checkIfNormalWindow(windowItem) {
-  const appsBlacklist = readConfig("appsBlacklist", "");
+  const appsBlacklist = readConfig("AppsBlacklist", "");
   const resourceClass = windowItem.resourceClass.toLowerCase();
 
   return (
@@ -69,14 +69,14 @@ function onCloseWindow(windowClosed) {
     workspace.activeScreen,
   );
 
-  const closeMaximize = readConfig("closeMaximize", true);
+  const closeMaximize = readConfig("CloseMaximize", true);
 
   if (windowsOther.length === 1 && closeMaximize === true) {
     windowsOther[0].setMaximize(true, true);
     return;
   }
 
-  const removeDesktop = readConfig("removeDesktop", true);
+  const removeDesktop = readConfig("RemoveDesktop", true);
 
   if (windowsOther.length === 0 && removeDesktop === true) {
     workspace.removeDesktop(workspace.currentDesktop);
@@ -89,8 +89,8 @@ function setTile(windowNew) {
     return;
   }
 
-  const openMaximize = readConfig("openMaximize", true);
-  const addDesktop = readConfig("addDesktop", true);
+  const openMaximize = readConfig("OpenMaximize", true);
+  const addDesktop = readConfig("AddDesktop", true);
 
   for (let itemDesktop of workspace.desktops) {
     for (let itemScreen of workspace.screens) {

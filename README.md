@@ -10,8 +10,17 @@ A script for Kwin that auto adjusts windows to the custom KDE Plasma 6 tiling la
 
 - 🚀 Working on KDE Plasma 6.4.5
 - 🪟 Smooth tiling
-- 🖼️ Working with custom layout 
+- 🖼️ Working with custom layout (Super + T)
 - 💻 Auto create and delete virtual desktops
+- ⛔ Blacklist for apps to which you dont want the script to apply
+- ⚙️ User options
+
+## User options
+
+> **WARNING**: If you change the script settings while it is still active,
+> you must deactivate and reactivate it for the changes to take effect.
+
+`Settings > KWin Scripts > Click on the cogwheel icon for the ‘Fluid-tile’ option`
 
 ## Installation
 
@@ -32,3 +41,10 @@ kpackagetool6 --type=KWin/Script -i ./fluid-tile/
 - 3. Enable it in the KDE settings
 
 `Settings > KWin Scripts > Check "Fluid tile" > Apply changes`
+
+## Support
+
+If you like the project, you can support me by buying me a coffee or with other options available here
+
+<a href='https://ko-fi.com/M4M81LR295' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi3.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+<a href="https://liberapay.com/Serroda/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a>

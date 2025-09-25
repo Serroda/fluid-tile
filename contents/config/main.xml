@@ -2,19 +2,19 @@
 <kcfg xmlns="http://www.kde.org/standards/kcfg/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
     <kcfgfile name=""/>
     <group name="">
-        <entry name="openMaximize" type="Bool">
+        <entry name="OpenMaximize" type="Bool">
             <default>true</default>
         </entry>
-        <entry name="addDesktop" type="Bool">
+        <entry name="AddDesktop" type="Bool">
             <default>true</default>
         </entry>
-        <entry name="closeMaximize" type="Bool">
+        <entry name="CloseMaximize" type="Bool">
             <default>true</default>
         </entry>
-        <entry name="removeDesktop" type="Bool">
+        <entry name="RemoveDesktop" type="Bool">
             <default>true</default>
         </entry>
-        <entry name="appsBlacklist" type="StringList">
+        <entry name="AppsBlacklist" type="StringList">
             <default>krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter</default>
         </entry>
     </group>
