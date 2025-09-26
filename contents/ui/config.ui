@@ -192,7 +192,7 @@
     <locale language="English" country="Eswatini"/>
    </property>
    <property name="text">
-    <string>Applications to which you do not want the script to apply (enter the name of the application)</string>
+    <string>Applications to which you do not want the script to apply (enter the XDG name of the application)</string>
    </property>
    <property name="scaledContents">
     <bool>false</bool>
