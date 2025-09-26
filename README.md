@@ -16,8 +16,8 @@ A script for Kwin that auto adjusts windows to the custom KDE Plasma 6 tiling la
 - ⚙️ User options
 
 ## Preview
-[![Watch the video](
-https://i.ytimg.com/vi/U04QsvblbSA/hqdefault.jpg?sqp=-oaymwFBCNACELwBSFryq4qpAzMIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB8AEB-AH-CIAC0AWKAgwIABABGH8gHSgZMA8=&rs=AOn4CLDTqR09B7FJOcqmOJQ5cqNI4rwRPA)](https://youtu.be/U04QsvblbSA)
+
+[![Watch the video](https://i.ytimg.com/vi/U04QsvblbSA/hqdefault.jpg?sqp=-oaymwFBCNACELwBSFryq4qpAzMIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB8AEB-AH-CIAC0AWKAgwIABABGH8gHSgZMA8=&rs=AOn4CLDTqR09B7FJOcqmOJQ5cqNI4rwRPA)](https://youtu.be/U04QsvblbSA)
 
 ## Screenshots
 
@@ -26,7 +26,6 @@ https://i.ytimg.com/vi/U04QsvblbSA/hqdefault.jpg?sqp=-oaymwFBCNACELwBSFryq4qpAzM
   <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/screenshot3.png" width="200"/>
   <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/screenshot4.png" width="200"/>
   <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/screenshot5.png" width="200"/>
-
 
 ## User options
 
@@ -54,6 +53,10 @@ kpackagetool6 --type=KWin/Script -i ./fluid-tile/
 - 3. Enable it in the KDE settings
 
 `Settings > KWin Scripts > Check "Fluid tile" > Apply changes`
+
+### KDE Store
+
+`Settings > KWin Scripts > Click on "Get New" button > Search 'Fluid tile' > Install`
 
 ## Support
 
