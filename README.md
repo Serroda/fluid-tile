@@ -1,5 +1,5 @@
 <p align="center">
-  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/commit/c9e0711d2197a583ad5c6d4e56a9003a70e7f724/.meta/logo.svg" width="200"/>
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/logo.svg" width="200"/>
 </p>
 
 # Fluid tile
@@ -14,6 +14,15 @@ A script for Kwin that auto adjusts windows to the custom KDE Plasma 6 tiling la
 - 💻 Auto create and delete virtual desktops
 - ⛔ Blacklist for apps to which you dont want the script to apply
 - ⚙️ User options
+
+## Screenshots
+
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/screenshot1.png" width="200"/>
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/screenshot2.png" width="200"/>
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/screenshot3.png" width="200"/>
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/screenshot4.png" width="200"/>
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/screenshot5.png" width="200"/>
+
 
 ## User options
 
