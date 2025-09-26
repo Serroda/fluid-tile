@@ -1,9 +1,14 @@
+// DEFAULTS
+const APPS_BLACKLIST =
+  "org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter";
+const CLOSE_MAXIMIZE = true;
+const OPEN_MAXIMIZE = true;
+const ADD_DESKTOP = true;
+const REMOVE_DESKTOP = true;
+
 // Filter windows
 function checkIfNormalWindow(windowItem) {
-  const appsBlacklist = readConfig(
-    "AppsBlacklist",
-    "kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter",
-  );
+  const appsBlacklist = readConfig("AppsBlacklist", APPS_BLACKLIST);
   const resourceClass = windowItem.resourceClass.toLowerCase();
 
   return (
@@ -72,14 +77,14 @@ function onCloseWindow(windowClosed) {
     workspace.activeScreen,
   );
 
-  const closeMaximize = readConfig("CloseMaximize", true);
+  const closeMaximize = readConfig("CloseMaximize", CLOSE_MAXIMIZE);
 
   if (windowsOther.length === 1 && closeMaximize === true) {
     windowsOther[0].setMaximize(true, true);
     return;
   }
 
-  const removeDesktop = readConfig("RemoveDesktop", true);
+  const removeDesktop = readConfig("RemoveDesktop", REMOVE_DESKTOP);
 
   if (windowsOther.length === 0 && removeDesktop === true) {
     workspace.removeDesktop(workspace.currentDesktop);
@@ -92,8 +97,8 @@ function setTile(windowNew) {
     return;
   }
 
-  const openMaximize = readConfig("OpenMaximize", true);
-  const addDesktop = readConfig("AddDesktop", true);
+  const openMaximize = readConfig("OpenMaximize", OPEN_MAXIMIZE);
+  const addDesktop = readConfig("AddDesktop", ADD_DESKTOP);
 
   for (let itemDesktop of workspace.desktops) {
     for (let itemScreen of workspace.screens) {
