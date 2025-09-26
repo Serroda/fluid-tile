@@ -15,6 +15,10 @@ A script for Kwin that auto adjusts windows to the custom KDE Plasma 6 tiling la
 - ⛔ Blacklist for apps to which you dont want the script to apply
 - ⚙️ User options
 
+## Preview
+[![Watch the video](
+https://i.ytimg.com/vi/U04QsvblbSA/hqdefault.jpg?sqp=-oaymwFBCNACELwBSFryq4qpAzMIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB8AEB-AH-CIAC0AWKAgwIABABGH8gHSgZMA8=&rs=AOn4CLDTqR09B7FJOcqmOJQ5cqNI4rwRPA)](https://youtu.be/U04QsvblbSA)
+
 ## Screenshots
 
   <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/screenshot1.png" width="200"/>
