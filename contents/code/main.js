@@ -6,15 +6,15 @@ const OPEN_MAXIMIZE = true;
 const ADD_DESKTOP = true;
 const REMOVE_DESKTOP = true;
 
-// Filter windows
-function checkIfNormalWindow(windowItem) {
+// Check if the window is present in the blacklist
+function checkBlacklist(windowItem) {
   const appsBlacklist = readConfig("AppsBlacklist", APPS_BLACKLIST);
   const resourceClass = windowItem.resourceClass.toLowerCase();
 
   return (
-    windowItem.normalWindow === true &&
-    windowItem.popupWindow === false &&
-    appsBlacklist.split(",").includes(resourceClass) === false
+    windowItem.normalWindow === false ||
+    windowItem.popupWindow === true ||
+    appsBlacklist.includes(resourceClass) === true
   );
 }
 
@@ -26,6 +26,7 @@ function getWindows(windowInteraction, desktop, screen) {
     if (
       windowItem.desktops.includes(desktop) &&
       screen === workspace.screenAt({ x: windowItem.x, y: windowItem.y }) &&
+      checkBlacklist(windowItem) === false &&
       windowItem !== windowInteraction
     ) {
       windows.push(windowItem);
@@ -67,7 +68,7 @@ function getTilesOrdered(desktop, screen) {
 
 //Delete Virtual Desktop if is empty or maximize the last window
 function onCloseWindow(windowClosed) {
-  if (!checkIfNormalWindow(windowClosed)) {
+  if (checkBlacklist(windowClosed) === true) {
     return;
   }
 
@@ -80,7 +81,9 @@ function onCloseWindow(windowClosed) {
   const closeMaximize = readConfig("CloseMaximize", CLOSE_MAXIMIZE);
 
   if (windowsOther.length === 1 && closeMaximize === true) {
-    windowsOther[0].setMaximize(true, true);
+    if (checkBlacklist(windowsOther[0]) === false) {
+      windowsOther[0].setMaximize(true, true);
+    }
     return;
   }
 
@@ -93,7 +96,7 @@ function onCloseWindow(windowClosed) {
 
 //Set tile to the new Window
 function setTile(windowNew) {
-  if (!checkIfNormalWindow(windowNew)) {
+  if (checkBlacklist(windowNew) === true) {
     return;
   }
 
@@ -121,6 +124,9 @@ function setTile(windowNew) {
         windowNew.setMaximize(false, false);
 
         for (let x = 0; x < windowsOther.length; x++) {
+          if (checkBlacklist(windowsOther[x]) === true) {
+            continue;
+          }
           windowsOther[x].desktops = [itemDesktop];
           windowsOther[x].tile = tilesOrdered[x + 1];
           windowsOther[x].setMaximize(false, false);
