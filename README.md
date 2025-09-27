@@ -56,6 +56,8 @@ kpackagetool6 --type=KWin/Script -i ./fluid-tile/
 
 ### KDE Store
 
+[Link](https://store.kde.org/p/2322321)
+
 `Settings > KWin Scripts > Click on "Get New" button > Search 'Fluid tile' > Install`
 
 ## Support
