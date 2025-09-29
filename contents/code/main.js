@@ -5,15 +5,19 @@ const CLOSE_MAXIMIZE = true;
 const OPEN_MAXIMIZE = true;
 const ADD_DESKTOP = true;
 const REMOVE_DESKTOP = true;
+const IGNORE_MODALS = true;
 
 // Check if the window is present in the blacklist
 function checkBlacklist(windowItem) {
   const appsBlacklist = readConfig("AppsBlacklist", APPS_BLACKLIST);
+  const ignoreModals = readConfig("IgnoreModals", IGNORE_MODALS);
   const resourceClass = windowItem.resourceClass.toLowerCase();
 
   return (
     windowItem.normalWindow === false ||
-    windowItem.popupWindow === true ||
+    windowItem.resizeable === false ||
+    windowItem.maximizable === false ||
+    (ignoreModals === true ? windowItem.transient === true : false) ||
     appsBlacklist.includes(resourceClass) === true
   );
 }
@@ -22,7 +26,7 @@ function checkBlacklist(windowItem) {
 function getWindows(windowInteraction, desktop, screen) {
   let windows = [];
 
-  for (const windowItem of workspace.stackingOrder) {
+  for (const windowItem of workspace.windowList().reverse()) {
     if (
       windowItem.desktops.includes(desktop) &&
       screen === workspace.screenAt({ x: windowItem.x, y: windowItem.y }) &&
@@ -103,8 +107,8 @@ function setTile(windowNew) {
   const openMaximize = readConfig("OpenMaximize", OPEN_MAXIMIZE);
   const addDesktop = readConfig("AddDesktop", ADD_DESKTOP);
 
-  for (let itemDesktop of workspace.desktops) {
-    for (let itemScreen of workspace.screens) {
+  for (const itemDesktop of workspace.desktops) {
+    for (const itemScreen of workspace.screens) {
       const windowsOther = getWindows(windowNew, itemDesktop, itemScreen);
 
       if (windowsOther.length === 0) {

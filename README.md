@@ -41,7 +41,7 @@ A script for Kwin that auto adjusts windows to the custom KDE Plasma 6 tiling la
 - 1. Clone the repository
 
 ```sh
-git clone https://codeberg.org/Serroda/fluid-tile.git
+git clone https://codeberg.org/Serroda/fluid-tile.git -b release
 ```
 
 - 2. Install the script

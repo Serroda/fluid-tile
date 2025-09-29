@@ -14,6 +14,9 @@
         <entry name="RemoveDesktop" type="Bool">
             <default>true</default>
         </entry>
+        <entry name="IgnoreModals" type="Bool">
+            <default>true</default>
+        </entry>
         <entry name="AppsBlacklist" type="StringList">
             <default>org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter</default>
         </entry>
