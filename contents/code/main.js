@@ -57,10 +57,12 @@ function orderTiles(tiles) {
   return tilesOrdered.sort((a, b) => {
     if (b.absoluteGeometry.width !== a.absoluteGeometry.width) {
       return b.absoluteGeometry.width - a.absoluteGeometry.width;
+    } else if (b.absoluteGeometry.height !== a.absoluteGeometry.height) {
+      return b.absoluteGeometry.height - a.absoluteGeometry.height;
     } else {
       return (
-        a.absoluteGeometry.x - b.absoluteGeometry.x ||
-        a.absoluteGeometry.y - b.absoluteGeometry.y
+        b.absoluteGeometry.x - a.absoluteGeometry.x &&
+        b.absoluteGeometry.y - a.absoluteGeometry.y
       );
     }
   });
