@@ -9,16 +9,18 @@ const IGNORE_MODALS = true;
 
 // Check if the window is present in the blacklist
 function checkBlacklist(windowItem) {
-  const appsBlacklist = readConfig("AppsBlacklist", APPS_BLACKLIST);
+  const appsBlacklist = readConfig(
+    "AppsBlacklist",
+    APPS_BLACKLIST,
+  ).toLowerCase();
   const ignoreModals = readConfig("IgnoreModals", IGNORE_MODALS);
-  const resourceClass = windowItem.resourceClass.toLowerCase();
 
   return (
     windowItem.normalWindow === false ||
     windowItem.resizeable === false ||
     windowItem.maximizable === false ||
     (ignoreModals === true ? windowItem.transient === true : false) ||
-    appsBlacklist.includes(resourceClass) === true
+    appsBlacklist.includes(windowItem.resourceClass.toLowerCase()) === true
   );
 }
 
