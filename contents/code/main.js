@@ -5,6 +5,7 @@ const CLOSE_MAXIMIZE = true;
 const OPEN_MAXIMIZE = true;
 const ADD_DESKTOP = true;
 const REMOVE_DESKTOP = true;
+const DELAY_REMOVE_DESKTOP = 300;
 const IGNORE_MODALS = true;
 
 // Check if the window is present in the blacklist
@@ -96,11 +97,34 @@ function onCloseWindow(windowClosed) {
     return;
   }
 
+  const delayRemoveDesktop = readConfig(
+    "DelayRemoveDesktop",
+    DELAY_REMOVE_DESKTOP,
+  );
   const removeDesktop = readConfig("RemoveDesktop", REMOVE_DESKTOP);
 
-  if (windowsOther.length === 0 && removeDesktop === true) {
-    workspace.removeDesktop(workspace.currentDesktop);
-  }
+  //Case: Applications that open a window and, when an action is performed,
+  //close the window and open another window (Chrome profile selector).
+  //This timer avoid crash wayland
+
+  const timer = new QTimer();
+  timer.interval = delayRemoveDesktop;
+  timer.singleShot = true;
+  timer.timeout.connect(function () {
+    const windowsOtherSpecialCases = getWindows(
+      windowClosed,
+      workspace.currentDesktop,
+      workspace.activeScreen,
+      appsBlacklist,
+      ignoreModals,
+    );
+
+    if (windowsOtherSpecialCases.length === 0 && removeDesktop === true) {
+      workspace.removeDesktop(workspace.currentDesktop);
+    }
+  });
+
+  timer.start();
 }
 
 //Set tile to the new Window
