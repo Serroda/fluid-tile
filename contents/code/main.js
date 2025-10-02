@@ -1,6 +1,6 @@
 // DEFAULTS
 const APPS_BLACKLIST =
-  "org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter";
+  "qt-sudo,org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter";
 const CLOSE_MAXIMIZE = true;
 const OPEN_MAXIMIZE = true;
 const ADD_DESKTOP = true;
@@ -8,13 +8,7 @@ const REMOVE_DESKTOP = true;
 const IGNORE_MODALS = true;
 
 // Check if the window is present in the blacklist
-function checkBlacklist(windowItem) {
-  const appsBlacklist = readConfig(
-    "AppsBlacklist",
-    APPS_BLACKLIST,
-  ).toLowerCase();
-  const ignoreModals = readConfig("IgnoreModals", IGNORE_MODALS);
-
+function checkBlacklist(windowItem, appsBlacklist, ignoreModals) {
   return (
     windowItem.normalWindow === false ||
     windowItem.resizeable === false ||
@@ -25,15 +19,15 @@ function checkBlacklist(windowItem) {
 }
 
 // Get all windows from the virtual desktop except the given window
-function getWindows(windowInteraction, desktop, screen) {
-  let windows = [];
+function getWindows(windowMain, desktop, screen, appsBlacklist, ignoreModals) {
+  const windows = [];
 
   for (const windowItem of workspace.windowList().reverse()) {
     if (
-      windowItem !== windowInteraction &&
+      windowItem !== windowMain &&
       windowItem.output === screen &&
-      windowItem.desktops.includes(desktop) &&
-      checkBlacklist(windowItem) === false
+      windowItem.desktops.includes(desktop) === true &&
+      checkBlacklist(windowMain, appsBlacklist, ignoreModals) === false
     ) {
       windows.push(windowItem);
     }
@@ -76,7 +70,14 @@ function getTilesOrdered(desktop, screen) {
 
 //Delete Virtual Desktop if is empty or maximize the last window
 function onCloseWindow(windowClosed) {
-  if (checkBlacklist(windowClosed) === true) {
+  const appsBlacklist = readConfig(
+    "AppsBlacklist",
+    APPS_BLACKLIST,
+  ).toLowerCase();
+
+  const ignoreModals = readConfig("IgnoreModals", IGNORE_MODALS);
+
+  if (checkBlacklist(windowClosed, appsBlacklist, ignoreModals) === true) {
     return;
   }
 
@@ -84,14 +85,14 @@ function onCloseWindow(windowClosed) {
     windowClosed,
     workspace.currentDesktop,
     workspace.activeScreen,
+    appsBlacklist,
+    ignoreModals,
   );
 
   const closeMaximize = readConfig("CloseMaximize", CLOSE_MAXIMIZE);
 
   if (windowsOther.length === 1 && closeMaximize === true) {
-    if (checkBlacklist(windowsOther[0]) === false) {
-      windowsOther[0].setMaximize(true, true);
-    }
+    windowsOther[0].setMaximize(true, true);
     return;
   }
 
@@ -104,7 +105,13 @@ function onCloseWindow(windowClosed) {
 
 //Set tile to the new Window
 function setTile(windowNew) {
-  if (checkBlacklist(windowNew) === true) {
+  const appsBlacklist = readConfig(
+    "AppsBlacklist",
+    APPS_BLACKLIST,
+  ).toLowerCase();
+  const ignoreModals = readConfig("IgnoreModals", IGNORE_MODALS);
+
+  if (checkBlacklist(windowNew, appsBlacklist, ignoreModals) === true) {
     return;
   }
 
@@ -113,7 +120,13 @@ function setTile(windowNew) {
 
   for (const itemDesktop of workspace.desktops) {
     for (const itemScreen of workspace.screens) {
-      const windowsOther = getWindows(windowNew, itemDesktop, itemScreen);
+      const windowsOther = getWindows(
+        windowNew,
+        itemDesktop,
+        itemScreen,
+        appsBlacklist,
+        ignoreModals,
+      );
 
       if (windowsOther.length === 0) {
         workspace.currentDesktop = itemDesktop;
@@ -132,9 +145,6 @@ function setTile(windowNew) {
         windowNew.setMaximize(false, false);
 
         for (let x = 0; x < windowsOther.length; x++) {
-          if (checkBlacklist(windowsOther[x]) === true) {
-            continue;
-          }
           windowsOther[x].desktops = [itemDesktop];
           windowsOther[x].tile = tilesOrdered[x + 1];
           windowsOther[x].setMaximize(false, false);
