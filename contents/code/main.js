@@ -30,10 +30,10 @@ function getWindows(windowInteraction, desktop, screen) {
 
   for (const windowItem of workspace.windowList().reverse()) {
     if (
+      windowItem !== windowInteraction &&
+      windowItem.output === screen &&
       windowItem.desktops.includes(desktop) &&
-      screen === windowItem.output &&
-      checkBlacklist(windowItem) === false &&
-      windowItem !== windowInteraction
+      checkBlacklist(windowItem) === false
     ) {
       windows.push(windowItem);
     }
