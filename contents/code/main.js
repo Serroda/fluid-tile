@@ -1,6 +1,6 @@
 // DEFAULTS
 const APPS_BLACKLIST =
-  "qt-sudo,org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter";
+  "org.kde.kded6,qt-sudo,org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter";
 const CLOSE_MAXIMIZE = true;
 const OPEN_MAXIMIZE = true;
 const ADD_DESKTOP = true;
