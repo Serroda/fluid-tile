@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>391</width>
-    <height>582</height>
+    <height>593</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>391</width>
-    <height>582</height>
+    <height>593</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>40</y>
+     <y>30</y>
      <width>381</width>
      <height>91</height>
     </rect>
@@ -33,7 +33,7 @@
      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
     </property>
     <item row="0" column="0">
-     <widget class="QCheckBox" name="kcfg_OpenMaximize">
+     <widget class="QCheckBox" name="kcfg_MaximizeOpen">
       <property name="locale">
        <locale language="English" country="Eswatini"/>
       </property>
@@ -43,7 +43,7 @@
      </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QCheckBox" name="kcfg_AddDesktop">
+     <widget class="QCheckBox" name="kcfg_DesktopAdd">
       <property name="locale">
        <locale language="English" country="Eswatini"/>
       </property>
@@ -53,7 +53,7 @@
      </widget>
     </item>
     <item row="2" column="0">
-     <widget class="QCheckBox" name="kcfg_IgnoreModals">
+     <widget class="QCheckBox" name="kcfg_ModalsIgnore">
       <property name="toolTip">
        <string>Only works if the window is transient</string>
       </property>
@@ -80,9 +80,9 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>170</y>
+     <y>150</y>
      <width>311</width>
-     <height>112</height>
+     <height>141</height>
     </rect>
    </property>
    <layout class="QFormLayout" name="formLayout_2">
@@ -90,7 +90,7 @@
      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
     </property>
     <item row="0" column="0">
-     <widget class="QCheckBox" name="kcfg_CloseMaximize">
+     <widget class="QCheckBox" name="kcfg_MaximizeClose">
       <property name="locale">
        <locale language="English" country="Eswatini"/>
       </property>
@@ -100,7 +100,7 @@
      </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QCheckBox" name="kcfg_RemoveDesktop">
+     <widget class="QCheckBox" name="kcfg_DesktopRemove">
       <property name="locale">
        <locale language="English" country="Eswatini"/>
       </property>
@@ -109,8 +109,8 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="0">
-     <widget class="QSpinBox" name="kcfg_DelayRemoveDesktop">
+    <item row="4" column="0">
+     <widget class="QSpinBox" name="kcfg_DesktopRemoveDelay">
       <property name="toolTip">
        <string>Case: Applications that open a window and, when an action is performed,
 close the window and open another window (Chrome profile selector).
@@ -118,14 +118,14 @@ This timer avoid crash wayland, beacuse the process try open the window
  in the deleted virtual desktop</string>
       </property>
       <property name="maximum">
-       <number>10000</number>
+       <number>5000</number>
       </property>
       <property name="singleStep">
        <number>100</number>
       </property>
      </widget>
     </item>
-    <item row="2" column="0">
+    <item row="3" column="0">
      <widget class="QLabel" name="label_5">
       <property name="toolTip">
        <string>Case: Applications that open a window and, when an action is performed,
@@ -138,13 +138,23 @@ This timer avoid crash wayland, beacuse the process try open the window
       </property>
      </widget>
     </item>
+    <item row="2" column="0">
+     <widget class="QCheckBox" name="kcfg_WindowsOrderClose">
+      <property name="locale">
+       <locale language="English" country="Eswatini"/>
+      </property>
+      <property name="text">
+       <string>Reorder windows</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>140</y>
+     <y>130</y>
      <width>231</width>
      <height>16</height>
     </rect>
@@ -186,7 +196,7 @@ This timer avoid crash wayland, beacuse the process try open the window
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>290</y>
+     <y>300</y>
      <width>161</width>
      <height>16</height>
     </rect>
@@ -200,14 +210,14 @@ This timer avoid crash wayland, beacuse the process try open the window
     <locale language="English" country="Eswatini"/>
    </property>
    <property name="text">
-    <string>Blacklist apps</string>
+    <string>Blocklist apps</string>
    </property>
   </widget>
-  <widget class="KEditListWidget" name="kcfg_AppsBlacklist">
+  <widget class="KEditListWidget" name="kcfg_AppsBlocklist">
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>350</y>
+     <y>360</y>
      <width>371</width>
      <height>228</height>
     </rect>
@@ -226,7 +236,7 @@ This timer avoid crash wayland, beacuse the process try open the window
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>310</y>
+     <y>320</y>
      <width>371</width>
      <height>31</height>
     </rect>
