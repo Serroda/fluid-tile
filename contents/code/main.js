@@ -188,11 +188,11 @@ function onCloseWindow(windowClosed) {
   //Case: Applications that open a window and, when an action is performed,
   //close the window and open another window (Chrome profile selector).
   //This timer avoid crash wayland
-
   const timer = new QTimer();
-  timer.singleShot = true;
   timer.interval = desktopRemoveDelay;
+  timer.singleShot = true;
   timer.timeout.connect(function () {
+    //ERROR: windowClosed.desktops === undefined
     for (const desktopItem of windowClosed.desktops) {
       const windowsOtherSpecialCases = getWindows(
         windowClosed,
