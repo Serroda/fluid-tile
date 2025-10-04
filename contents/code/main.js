@@ -1,6 +1,7 @@
 // DEFAULTS VARIABLES
 const APPS_BLOCKLIST =
   "org.kde.kded6,qt-sudo,org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter";
+const TILES_PRIORITY = "Width,Height,Top,Left,Right,Bottom";
 const MAXIMIZE_CLOSE = true;
 const MAXIMIZE_OPEN = true;
 const DESKTOP_ADD = true;
@@ -19,37 +20,65 @@ function checkBlocklist(windowItem, appsBlocklist, ignoreModals) {
   );
 }
 
-//TODO: REFACTOR
 //Get tiles, ordered by size (width) and from left to right
-function orderTiles(tiles) {
+function orderTiles(tiles, tilesPriority) {
   let tilesOrdered = [];
 
   for (let tile of tiles) {
     if (tile.tiles.length !== 0) {
-      tilesOrdered = tilesOrdered.concat(orderTiles(tile.tiles));
+      tilesOrdered = tilesOrdered.concat(orderTiles(tile.tiles, tilesPriority));
     } else {
       tilesOrdered.push(tile);
     }
   }
 
+  //TODO: REFACTOR
   return tilesOrdered.sort((a, b) => {
-    if (b.absoluteGeometry.width !== a.absoluteGeometry.width) {
-      return b.absoluteGeometry.width - a.absoluteGeometry.width;
-    } else if (b.absoluteGeometry.height !== a.absoluteGeometry.height) {
-      return b.absoluteGeometry.height - a.absoluteGeometry.height;
-    } else {
+    for (const priority of tilesPriority) {
+      switch (priority) {
+        case "Width":
+          if (b.absoluteGeometry.width !== a.absoluteGeometry.width) {
+            return b.absoluteGeometry.width - a.absoluteGeometry.width;
+          }
+          break;
+        case "Height":
+          if (b.absoluteGeometry.height !== a.absoluteGeometry.height) {
+            return b.absoluteGeometry.height - a.absoluteGeometry.height;
+          }
+          break;
+        case "Top":
+          if (a.absoluteGeometry.y !== b.absoluteGeometry.y) {
+            return a.absoluteGeometry.y - b.absoluteGeometry.y;
+          }
+          break;
+        case "Right":
+          if (b.absoluteGeometry.x !== a.absoluteGeometry.x) {
+            return b.absoluteGeometry.x - a.absoluteGeometry.x;
+          }
+          break;
+        case "Left":
+          if (a.absoluteGeometry.x !== b.absoluteGeometry.x) {
+            return a.absoluteGeometry.x - b.absoluteGeometry.x;
+          }
+          break;
+        case "Bottom":
+          if (b.absoluteGeometry.y !== a.absoluteGeometry.y) {
+            return b.absoluteGeometry.y - a.absoluteGeometry.y;
+          }
+          break;
+      }
       return (
-        b.absoluteGeometry.x - a.absoluteGeometry.x &&
-        b.absoluteGeometry.y - a.absoluteGeometry.y
+        b.absoluteGeometry.y - a.absoluteGeometry.y &&
+        b.absoluteGeometry.x - a.absoluteGeometry.x
       );
     }
   });
 }
 
 //Get tiles from the screen and virtual desktop
-function getOrderedTiles(desktop, screen) {
+function getOrderedTiles(desktop, screen, tilesPriority) {
   const rootTile = workspace.rootTile(screen, desktop);
-  return orderTiles(rootTile.tiles);
+  return orderTiles(rootTile.tiles, tilesPriority.split(","));
 }
 
 // Get all windows from the virtual desktop except the given window
@@ -83,6 +112,8 @@ function setWindowsTiles(
   mode,
   windowsOrderClose,
 ) {
+  const tilesPriority = readConfig("TilesPriority", TILES_PRIORITY);
+
   for (const itemDesktop of desktops) {
     for (const itemScreen of screens) {
       const windowsOther = getWindows(
@@ -112,7 +143,11 @@ function setWindowsTiles(
         return true;
       }
 
-      const tilesOrdered = getOrderedTiles(itemDesktop, itemScreen);
+      const tilesOrdered = getOrderedTiles(
+        itemDesktop,
+        itemScreen,
+        tilesPriority,
+      );
 
       if (mode === 0) {
         //Set tile if the custom mosaic has space
