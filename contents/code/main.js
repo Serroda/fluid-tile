@@ -9,13 +9,13 @@ const DESKTOP_REMOVE_DELAY = 300;
 const MODALS_IGNORE = true;
 const WINDOWS_ORDER_CLOSE = true;
 
-function checkBlocklist(windowItem, appsBlacklist, ignoreModals) {
+function checkBlocklist(windowItem, appsBlocklist, ignoreModals) {
   return (
     windowItem.normalWindow === false ||
     windowItem.resizeable === false ||
     windowItem.maximizable === false ||
     (ignoreModals === true ? windowItem.transient === true : false) ||
-    appsBlacklist.includes(windowItem.resourceClass.toLowerCase()) === true
+    appsBlocklist.includes(windowItem.resourceClass.toLowerCase()) === true
   );
 }
 
@@ -61,7 +61,7 @@ function getWindows(windowMain, desktop, screen, appsBlocklist, modalsIgnore) {
       windowItem !== windowMain &&
       windowItem.output === screen &&
       windowItem.desktops.includes(desktop) === true &&
-      checkBlocklist(windowMain, appsBlocklist, modalsIgnore) === false
+      checkBlocklist(windowItem, appsBlocklist, modalsIgnore) === false
     ) {
       windows.push(windowItem);
     }
@@ -109,7 +109,7 @@ function setWindowsTiles(
       }
 
       if (mode === 1 && windowsOrderClose === false) {
-        return false;
+        return true;
       }
 
       const tilesOrdered = getOrderedTiles(itemDesktop, itemScreen);
@@ -155,7 +155,7 @@ function onCloseWindow(windowClosed) {
 
   const maximizeClose = readConfig("CloseMaximize", MAXIMIZE_CLOSE);
   const windowsOrderClose = readConfig(
-    "windowsOrderClose",
+    "WindowsOrderClose",
     WINDOWS_ORDER_CLOSE,
   );
 
@@ -185,6 +185,9 @@ function onCloseWindow(windowClosed) {
     DESKTOP_REMOVE_DELAY,
   );
 
+  const desktopsId = windowClosed.desktops.map((d) => d.id);
+  const screenId = windowClosed.output.serialNumber;
+
   //Case: Applications that open a window and, when an action is performed,
   //close the window and open another window (Chrome profile selector).
   //This timer avoid crash wayland
@@ -192,12 +195,17 @@ function onCloseWindow(windowClosed) {
   timer.interval = desktopRemoveDelay;
   timer.singleShot = true;
   timer.timeout.connect(function () {
-    //ERROR: windowClosed.desktops === undefined
-    for (const desktopItem of windowClosed.desktops) {
+    const screen = workspace.screens.find((s) => s.serialNumber === screenId);
+    if (screen === undefined) {
+      return;
+    }
+    for (const desktopItem of workspace.desktops.filter((d) =>
+      desktopsId.includes(d.id),
+    )) {
       const windowsOtherSpecialCases = getWindows(
         windowClosed,
         desktopItem,
-        windowClosed.output,
+        screen,
         appsBlocklist,
         modalsIgnore,
       );
@@ -213,7 +221,7 @@ function onCloseWindow(windowClosed) {
 //Set tile to the new Window
 function onOpenWindow(windowNew) {
   const appsBlocklist = readConfig(
-    "AppsBlpcklist",
+    "AppsBlocklist",
     APPS_BLOCKLIST,
   ).toLowerCase();
   const modalsIgnore = readConfig("ModalsIgnore", MODALS_IGNORE);
