@@ -35,43 +35,32 @@ function orderTiles(tiles, tilesPriority) {
   //TODO: REFACTOR
   return tilesOrdered.sort((a, b) => {
     for (const priority of tilesPriority) {
+      let comparison = 0;
       switch (priority) {
         case "Width":
-          if (b.absoluteGeometry.width !== a.absoluteGeometry.width) {
-            return b.absoluteGeometry.width - a.absoluteGeometry.width;
-          }
+          comparison = b.absoluteGeometry.width - a.absoluteGeometry.width;
           break;
         case "Height":
-          if (b.absoluteGeometry.height !== a.absoluteGeometry.height) {
-            return b.absoluteGeometry.height - a.absoluteGeometry.height;
-          }
+          comparison = b.absoluteGeometry.height - a.absoluteGeometry.height;
           break;
         case "Top":
-          if (a.absoluteGeometry.y !== b.absoluteGeometry.y) {
-            return a.absoluteGeometry.y - b.absoluteGeometry.y;
-          }
+          comparison = a.absoluteGeometry.y - b.absoluteGeometry.y;
           break;
         case "Right":
-          if (b.absoluteGeometry.x !== a.absoluteGeometry.x) {
-            return b.absoluteGeometry.x - a.absoluteGeometry.x;
-          }
+          comparison = b.absoluteGeometry.x - a.absoluteGeometry.x;
           break;
         case "Left":
-          if (a.absoluteGeometry.x !== b.absoluteGeometry.x) {
-            return a.absoluteGeometry.x - b.absoluteGeometry.x;
-          }
+          comparison = a.absoluteGeometry.x - b.absoluteGeometry.x;
           break;
         case "Bottom":
-          if (b.absoluteGeometry.y !== a.absoluteGeometry.y) {
-            return b.absoluteGeometry.y - a.absoluteGeometry.y;
-          }
+          comparison = b.absoluteGeometry.y - a.absoluteGeometry.y;
           break;
       }
-      return (
-        b.absoluteGeometry.y - a.absoluteGeometry.y &&
-        b.absoluteGeometry.x - a.absoluteGeometry.x
-      );
+      if (comparison !== 0) {
+        return comparison;
+      }
     }
+    return 0;
   });
 }
 

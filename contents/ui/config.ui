@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>504</width>
-    <height>636</height>
+    <width>403</width>
+    <height>630</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>391</width>
-    <height>593</height>
+    <width>403</width>
+    <height>630</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -202,7 +202,7 @@ This timer avoid crash wayland, beacuse the process try open the window
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -263,9 +263,12 @@ This timer avoid crash wayland, beacuse the process try open the window
    </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">
-     <string>Priority tile order</string>
+     <string>Tile order priority</string>
     </attribute>
     <widget class="KEditListWidget" name="kcfg_TilesPriority">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>10</x>
