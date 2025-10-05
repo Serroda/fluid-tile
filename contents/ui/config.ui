@@ -28,7 +28,7 @@
      <height>91</height>
     </rect>
    </property>
-   <layout class="QFormLayout" name="formLayout">
+   <layout class="QFormLayout" name="onOpen">
     <property name="labelAlignment">
      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
     </property>
@@ -85,7 +85,7 @@
      <height>141</height>
     </rect>
    </property>
-   <layout class="QFormLayout" name="formLayout_2">
+   <layout class="QFormLayout" name="onClose">
     <property name="labelAlignment">
      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
     </property>
@@ -126,7 +126,7 @@ This timer avoid crash wayland, beacuse the process try open the window
      </widget>
     </item>
     <item row="3" column="0">
-     <widget class="QLabel" name="label_5">
+     <widget class="QLabel" name="label_delay">
       <property name="toolTip">
        <string>Case: Applications that open a window and, when an action is performed,
 close the window and open another window (Chrome profile selector).
@@ -150,7 +150,7 @@ This timer avoid crash wayland, beacuse the process try open the window
     </item>
    </layout>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="titleClose">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -171,7 +171,7 @@ This timer avoid crash wayland, beacuse the process try open the window
     <string>When a window has been closed</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_2">
+  <widget class="QLabel" name="titleOpen">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -202,11 +202,11 @@ This timer avoid crash wayland, beacuse the process try open the window
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>2</number>
    </property>
-   <widget class="QWidget" name="tab">
+   <widget class="QWidget" name="blocklist">
     <attribute name="title">
-     <string>Blocklist apps</string>
+     <string>⛔ Blocklist apps</string>
     </attribute>
     <widget class="KEditListWidget" name="kcfg_AppsBlocklist">
      <property name="geometry">
@@ -214,7 +214,7 @@ This timer avoid crash wayland, beacuse the process try open the window
        <x>10</x>
        <y>50</y>
        <width>371</width>
-       <height>228</height>
+       <height>240</height>
       </rect>
      </property>
      <property name="statusTip">
@@ -227,7 +227,7 @@ This timer avoid crash wayland, beacuse the process try open the window
       <set>KEditListWidget::Button::Add|KEditListWidget::Button::Remove</set>
      </property>
     </widget>
-    <widget class="QLabel" name="label_4">
+    <widget class="QLabel" name="labelBlocklist">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -261,9 +261,9 @@ This timer avoid crash wayland, beacuse the process try open the window
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="tab_2">
+   <widget class="QWidget" name="tileOrderPriority">
     <attribute name="title">
-     <string>Tile order priority</string>
+     <string>🔢 Tile order priority</string>
     </attribute>
     <widget class="KEditListWidget" name="kcfg_TilesPriority">
      <property name="enabled">
@@ -272,9 +272,9 @@ This timer avoid crash wayland, beacuse the process try open the window
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>50</y>
+       <y>100</y>
        <width>371</width>
-       <height>228</height>
+       <height>190</height>
       </rect>
      </property>
      <property name="buttons">
@@ -284,12 +284,12 @@ This timer avoid crash wayland, beacuse the process try open the window
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QLabel" name="label_6">
+    <widget class="QLabel" name="labelTilePriority">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>371</width>
+       <width>370</width>
        <height>31</height>
       </rect>
      </property>
@@ -309,6 +309,77 @@ This timer avoid crash wayland, beacuse the process try open the window
      </property>
      <property name="text">
       <string>Defines the order of priority in which windows will be distributed in the layout</string>
+     </property>
+     <property name="scaledContents">
+      <bool>false</bool>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelTilePriority2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>370</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="font">
+      <font>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="locale">
+      <locale language="English" country="Eswatini"/>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; color:#aa0000;&quot;&gt;⚠️ WARNING:&lt;/span&gt; Do not change the default values, just order the items&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="scaledContents">
+      <bool>false</bool>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="defaultLayout">
+    <attribute name="title">
+     <string>🪟 Default layout</string>
+    </attribute>
+    <widget class="QLabel" name="labelDefaultLayout">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>380</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="font">
+      <font>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="locale">
+      <locale language="English" country="Eswatini"/>
+     </property>
+     <property name="text">
+      <string>Set the KWin default layout when a new virtual desktop is created</string>
      </property>
      <property name="scaledContents">
       <bool>false</bool>

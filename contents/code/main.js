@@ -9,7 +9,28 @@ const DESKTOP_REMOVE = true;
 const DESKTOP_REMOVE_DELAY = 300;
 const MODALS_IGNORE = true;
 const WINDOWS_ORDER_CLOSE = true;
+const LAYOUT_1 = [{ x: 0, y: 0 }];
+const LAYOUT_2 = [
+  { x: 0, y: 0 },
+  { x: 0.5, y: 0 },
+];
+const LAYOUT_3 = [
+  { x: 0, y: 0 },
+  { x: 0, y: 0.5 },
+];
+const LAYOUT_4 = [
+  { x: 0, y: 0 },
+  {
+    x: 0.5,
+    y: 0,
+    tiles: [
+      { x: 0, y: 0 },
+      { x: 0, y: 0.5 },
+    ],
+  },
+];
 
+//Block apps
 function checkBlocklist(windowItem, appsBlocklist, ignoreModals) {
   return (
     windowItem.normalWindow === false ||
@@ -18,6 +39,52 @@ function checkBlocklist(windowItem, appsBlocklist, ignoreModals) {
     (ignoreModals === true ? windowItem.transient === true : false) ||
     appsBlocklist.includes(windowItem.resourceClass.toLowerCase()) === true
   );
+}
+
+function setTiles(tileRoot, layout) {
+  if (layout.length === 1) {
+    return true;
+  }
+
+  for (let index = 0; index <= layout.length; index++) {
+    const item = layout[index];
+    let splitMode = null;
+    let newTile = tileRoot;
+
+    if (item.x !== 0 || item.y !== 0) {
+      if (item.x !== 0 && item.y !== 0) {
+        splitMode = 0;
+      } else if (item.x !== 0) {
+        splitMode = 1;
+      } else if (item.y !== 0) {
+        splitMode = 2;
+      }
+    }
+
+    if (splitMode !== null) {
+      newTile = tileRoot.split(splitMode)[1];
+    }
+
+    newTile.relativeGeometry.x = item.x;
+    newTile.relativeGeometry.y = item.y;
+
+    if (splitMode === 0) {
+      newTile.relativeGeometry.width = item.width;
+      newTile.relativeGeometry.height = item.height;
+    }
+
+    //TODO
+    if (item.tiles !== undefined && item.tiles.length !== 0) {
+      setTiles(newTile, item.tiles);
+    }
+  }
+  return true;
+}
+
+function setLayout(desktop, screen, layout) {
+  const tileRoot = workspace.rootTile(screen, desktop);
+  tileRoot.tiles.forEach((tile) => tile.remove());
+  return setTiles(tileRoot.tiles[0], layout);
 }
 
 //Get tiles, ordered by size (width) and from left to right
@@ -32,7 +99,6 @@ function orderTiles(tiles, tilesPriority) {
     }
   }
 
-  //TODO: REFACTOR
   return tilesOrdered.sort((a, b) => {
     for (const priority of tilesPriority) {
       let comparison = 0;
@@ -66,8 +132,8 @@ function orderTiles(tiles, tilesPriority) {
 
 //Get tiles from the screen and virtual desktop
 function getOrderedTiles(desktop, screen, tilesPriority) {
-  const rootTile = workspace.rootTile(screen, desktop);
-  return orderTiles(rootTile.tiles, tilesPriority.split(","));
+  const tileRoot = workspace.rootTile(screen, desktop);
+  return orderTiles(tileRoot.tiles, tilesPriority.split(","));
 }
 
 // Get all windows from the virtual desktop except the given window
@@ -274,6 +340,7 @@ function onOpenWindow(windowNew) {
       workspace.desktops[workspace.desktops.length - 1];
     windowNew.desktops = [workspace.currentDesktop];
     if (maximizeOpen === true) windowNew.setMaximize(true, true);
+    setLayout(workspace.currentDesktop, workspace.activeScreen, LAYOUT_3);
   }
 }
 
