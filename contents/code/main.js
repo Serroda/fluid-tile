@@ -73,7 +73,7 @@ function setTiles(tileRoot, layout) {
       newTile.relativeGeometry.height = item.height;
     }
 
-    //TODO
+    //TODO: ERROR, I HAVE TO SET FIRST THE MAIN TILES
     if (item.tiles !== undefined && item.tiles.length !== 0) {
       setTiles(newTile, item.tiles);
     }
