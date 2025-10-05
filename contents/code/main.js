@@ -29,6 +29,31 @@ const LAYOUT_4 = [
     ],
   },
 ];
+const LAYOUT_5 = [
+  {
+    x: 0,
+    y: 0,
+    tiles: [
+      { x: 0, y: 0 },
+      { x: 0, y: 0.8 },
+    ],
+  },
+  {
+    x: 0.3,
+    y: 0,
+    tiles: [
+      { x: 0, y: 0 },
+      {
+        x: 0,
+        y: 0.2,
+        tiles: [
+          { x: 0, y: 0 },
+          { x: 0.2, y: 0 },
+        ],
+      },
+    ],
+  },
+];
 
 //Block apps
 function checkBlocklist(windowItem, appsBlocklist, ignoreModals) {
@@ -41,50 +66,54 @@ function checkBlocklist(windowItem, appsBlocklist, ignoreModals) {
   );
 }
 
-function setTiles(tileRoot, layout) {
+function setTiles(tiles, layout) {
   if (layout.length === 1) {
     return true;
   }
 
-  for (let index = 0; index <= layout.length; index++) {
+  for (let index = 0; index < layout.length; index++) {
     const item = layout[index];
-    let splitMode = null;
-    let newTile = tileRoot;
 
-    if (item.x !== 0 || item.y !== 0) {
-      if (item.x !== 0 && item.y !== 0) {
-        splitMode = 0;
-      } else if (item.x !== 0) {
-        splitMode = 1;
-      } else if (item.y !== 0) {
-        splitMode = 2;
-      }
+    if (item.x === 0 && item.y === 0) {
+      continue;
+    }
+
+    let splitMode = null;
+
+    if (item.x !== 0 && item.y !== 0) {
+      splitMode = 0;
+    } else if (item.x !== 0) {
+      splitMode = 1;
+    } else if (item.y !== 0) {
+      splitMode = 2;
     }
 
     if (splitMode !== null) {
-      newTile = tileRoot.split(splitMode)[1];
-    }
+      const newTile = tiles[index - 1].split(splitMode)[1];
+      newTile.relativeGeometry.x = item.x;
+      newTile.relativeGeometry.y = item.y;
 
-    newTile.relativeGeometry.x = item.x;
-    newTile.relativeGeometry.y = item.y;
-
-    if (splitMode === 0) {
-      newTile.relativeGeometry.width = item.width;
-      newTile.relativeGeometry.height = item.height;
-    }
-
-    //TODO: ERROR, I HAVE TO SET FIRST THE MAIN TILES
-    if (item.tiles !== undefined && item.tiles.length !== 0) {
-      setTiles(newTile, item.tiles);
+      if (splitMode === 0) {
+        newTile.relativeGeometry.width = item.width;
+        newTile.relativeGeometry.height = item.height;
+      }
     }
   }
+
+  for (let x = 0; x < layout.length; x++) {
+    if (layout[x].tiles !== undefined) {
+      //TODO: THE FINAL ERROR
+      setTiles([tiles[x]], layout[x].tiles);
+    }
+  }
+
   return true;
 }
 
 function setLayout(desktop, screen, layout) {
   const tileRoot = workspace.rootTile(screen, desktop);
   tileRoot.tiles.forEach((tile) => tile.remove());
-  return setTiles(tileRoot.tiles[0], layout);
+  return setTiles(tileRoot.tiles, layout);
 }
 
 //Get tiles, ordered by size (width) and from left to right
