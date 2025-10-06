@@ -12,8 +12,10 @@ A script for Kwin that auto adjusts windows to the custom KDE Plasma 6 tiling la
 - 🪟 Smooth tiling
 - 🖼️ Working with custom layout (Super + T)
 - 💻 Auto create and delete virtual desktops
-- ⛔ Blacklist for apps to which you dont want the script to apply
+- ⛔ Blocklist for apps to which you dont want the script to apply
 - ⚙️ User options
+- 🔢 Configures the priority order of windows according to the width, height and position of the tiles
+- 🔳 Select the default tile layout when creating a new virtual desktop
 
 ## Preview
 
