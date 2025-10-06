@@ -6,6 +6,13 @@
 
 A script for Kwin that auto adjusts windows to the custom KDE Plasma 6 tiling layout by creating and removing virtual desktops.
 
+## Support
+
+If you like the project, you can support me by buying me a coffee or with other options available here
+
+<a href='https://ko-fi.com/M4M81LR295' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi3.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+<a href="https://liberapay.com/Serroda/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a>
+
 ## Features
 
 - 🚀 Working on KDE Plasma 6.4.5
@@ -61,10 +68,3 @@ kpackagetool6 --type=KWin/Script -i ./fluid-tile/
 [Link](https://store.kde.org/p/2322321)
 
 `Settings > KWin Scripts > Click on "Get New" button > Search 'Fluid tile' > Install`
-
-## Support
-
-If you like the project, you can support me by buying me a coffee or with other options available here
-
-<a href='https://ko-fi.com/M4M81LR295' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi3.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
-<a href="https://liberapay.com/Serroda/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a>
