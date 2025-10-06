@@ -26,6 +26,18 @@
         <entry name="TilesPriority" type="StringList">
             <default>Width,Height,Top,Left,Right,Bottom</default>
         </entry>
+        <entry name="LayoutDefault" type="Enum">
+        <label>Select a default layout</label>
+            <choices>
+                <choice name="1"><label>1</label></choice>
+                <choice name="2"><label>2</label></choice>
+                <choice name="3"><label>3</label></choice>
+                <choice name="4"><label>4</label></choice>
+                <choice name="5"><label>5</label></choice>
+                <choice name="6"><label>6</label></choice>
+            </choices>
+            <default>1</default>
+        </entry>
         <entry name="AppsBlocklist" type="StringList">
             <default>org.kde.kded6,qt-sudo,org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter</default>
         </entry>

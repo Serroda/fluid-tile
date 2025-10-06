@@ -9,50 +9,60 @@ const DESKTOP_REMOVE = true;
 const DESKTOP_REMOVE_DELAY = 300;
 const MODALS_IGNORE = true;
 const WINDOWS_ORDER_CLOSE = true;
-const LAYOUT_1 = [{ x: 0, y: 0 }];
-const LAYOUT_2 = [
-  { x: 0, y: 0 },
-  { x: 0.5, y: 0 },
-];
-const LAYOUT_3 = [
-  { x: 0, y: 0 },
-  { x: 0, y: 0.5 },
-];
-const LAYOUT_4 = [
-  { x: 0, y: 0 },
-  {
-    x: 0.5,
-    y: 0,
-    tiles: [
-      { x: 0, y: 0 },
-      { x: 0, y: 0.5 },
-    ],
-  },
-];
-const LAYOUT_5 = [
-  {
-    x: 0,
-    y: 0,
-    tiles: [
-      { x: 0, y: 0 },
-      { x: 0, y: 0.8 },
-    ],
-  },
-  {
-    x: 0.3,
-    y: 0,
-    tiles: [
-      { x: 0, y: 0 },
-      {
-        x: 0,
-        y: 0.2,
-        tiles: [
-          { x: 0, y: 0 },
-          { x: 0.2, y: 0 },
-        ],
-      },
-    ],
-  },
+const LAYOUT_DEFAULT = 2;
+const LAYOUTS = [
+  [{ x: 0, y: 0 }],
+  [
+    { x: 0, y: 0 },
+    { x: 0.5, y: 0 },
+  ],
+  [
+    { x: 0, y: 0 },
+    { x: 0, y: 0.5 },
+  ],
+  [
+    {
+      x: 0,
+      y: 0,
+      tiles: [
+        { x: 0, y: 0 },
+        { x: 0, y: 0.5 },
+      ],
+    },
+    {
+      x: 0.5,
+      y: 0,
+    },
+  ],
+  [
+    { x: 0, y: 0 },
+    {
+      x: 0.5,
+      y: 0,
+      tiles: [
+        { x: 0, y: 0 },
+        { x: 0, y: 0.5 },
+      ],
+    },
+  ],
+  [
+    {
+      x: 0,
+      y: 0,
+      tiles: [
+        { x: 0, y: 0 },
+        { x: 0, y: 0.5 },
+      ],
+    },
+    {
+      x: 0.5,
+      y: 0,
+      tiles: [
+        { x: 0, y: 0 },
+        { x: 0, y: 0.5 },
+      ],
+    },
+  ],
 ];
 
 //Block apps
@@ -66,17 +76,18 @@ function checkBlocklist(windowItem, appsBlocklist, ignoreModals) {
   );
 }
 
-function setTiles(tiles, layout) {
+//Set tile layout
+function setTiles(tileParent, layout) {
   if (layout.length === 1) {
     return true;
   }
 
-  for (let index = 0; index < layout.length; index++) {
-    const item = layout[index];
+  if (layout[0].x === 0 && layout[0].y === 0) {
+    layout[0].ref = tileParent;
+  }
 
-    if (item.x === 0 && item.y === 0) {
-      continue;
-    }
+  for (let index = 1; index < layout.length; index++) {
+    const item = layout[index];
 
     let splitMode = null;
 
@@ -89,31 +100,39 @@ function setTiles(tiles, layout) {
     }
 
     if (splitMode !== null) {
-      const newTile = tiles[index - 1].split(splitMode)[1];
+      let newTiles = null;
+
+      if (splitMode !== 0) {
+        newTiles = layout[index - 1].ref.split(splitMode);
+      } else {
+        newTiles = layout[index - 1].ref.split(1);
+        newTiles[1].split(splitMode);
+      }
+
+      layout[index].ref = newTiles[1];
+
+      const newTile = layout[index].ref;
+
       newTile.relativeGeometry.x = item.x;
       newTile.relativeGeometry.y = item.y;
-
-      if (splitMode === 0) {
-        newTile.relativeGeometry.width = item.width;
-        newTile.relativeGeometry.height = item.height;
-      }
     }
   }
 
   for (let x = 0; x < layout.length; x++) {
     if (layout[x].tiles !== undefined) {
-      //TODO: THE FINAL ERROR
-      setTiles([tiles[x]], layout[x].tiles);
+      setTiles(layout[x].ref, layout[x].tiles);
     }
   }
 
   return true;
 }
 
+//Prepare for set tile layout
 function setLayout(desktop, screen, layout) {
   const tileRoot = workspace.rootTile(screen, desktop);
   tileRoot.tiles.forEach((tile) => tile.remove());
-  return setTiles(tileRoot.tiles, layout);
+
+  return setTiles(tileRoot.tiles[0], layout);
 }
 
 //Get tiles, ordered by size (width) and from left to right
@@ -369,7 +388,13 @@ function onOpenWindow(windowNew) {
       workspace.desktops[workspace.desktops.length - 1];
     windowNew.desktops = [workspace.currentDesktop];
     if (maximizeOpen === true) windowNew.setMaximize(true, true);
-    setLayout(workspace.currentDesktop, workspace.activeScreen, LAYOUT_3);
+
+    const layoutDefault = readConfig("LayoutDefault", LAYOUT_DEFAULT);
+    setLayout(
+      workspace.currentDesktop,
+      workspace.activeScreen,
+      LAYOUTS[layoutDefault - 1],
+    );
   }
 }
 
