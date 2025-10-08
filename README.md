@@ -20,7 +20,7 @@ If you like the project, you can support me by buying me a coffee or with other 
 - 🪟 Smooth tiling
 - 🖼️ Working with custom layout (Meta + T)
 - 💻 Auto create and delete virtual desktops
-- ⛔ Blocklist for apps to which you dont want the script to apply
+- ⛔ Blocklist for apps to which you don't want the script to apply
 - ⚙️ User options
 - 🔢 Configures the priority order of windows according to the width, height and position of the tiles
 - 🔳 Select the default tile layout when creating a new virtual desktop
