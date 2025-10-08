@@ -68,3 +68,9 @@ kpackagetool6 --type=KWin/Script -i ./fluid-tile/
 [Link](https://store.kde.org/p/2322321)
 
 `Settings > KWin Scripts > Click on "Get New" button > Search 'Fluid tile' > Install`
+
+### Differences between other tile managers
+
+The main difference is that `Fluid tile` uses the native KWin API to manage windows and layout, ensuring a smoother integration with native KDE, this means that the customization options are more limited for the user compared to other options. 
+
+Install `Fluid tile` if you want a native KDE tiling, while if you want something more customized use other options like Krohnkite or Polonium
