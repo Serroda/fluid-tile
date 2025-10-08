@@ -15,9 +15,10 @@ If you like the project, you can support me by buying me a coffee or with other 
 
 ## Features
 
-- 🚀 Working on KDE Plasma 6.4.5
+- 🚀 Working on KDE Plasma 6 (or superior)
+- 🛠️ KWin native tiling 
 - 🪟 Smooth tiling
-- 🖼️ Working with custom layout (Super + T)
+- 🖼️ Working with custom layout (Meta + T)
 - 💻 Auto create and delete virtual desktops
 - ⛔ Blocklist for apps to which you dont want the script to apply
 - ⚙️ User options
@@ -69,8 +70,13 @@ kpackagetool6 --type=KWin/Script -i ./fluid-tile/
 
 `Settings > KWin Scripts > Click on "Get New" button > Search 'Fluid tile' > Install`
 
-## Differences between other tile managers
+## F.A.Q
+### Differences between other tile managers
 
 The main difference is that `Fluid tile` uses the native KWin API to manage windows and layout, ensuring a smoother integration with native KDE, this means that the customization options are more limited for the user compared to other options. 
 
 Install `Fluid tile` if you want a native KDE tiling, while if you want something more customized use other options like Krohnkite or Polonium
+
+### Shortcuts
+
+You can use the native KDE shortcuts, my recommendation is to change the shortcuts for `Window Management`, specifically change `Custom Quick Tile Window to the Bottom/Left/Right/Top` to `Meta + Down/Left/Right/Up` for smoother use 
