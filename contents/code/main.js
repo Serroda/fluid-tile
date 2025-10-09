@@ -291,7 +291,7 @@ function onCloseWindow(windowClosed) {
     return;
   }
 
-  const maximizeClose = readConfig("CloseMaximize", MAXIMIZE_CLOSE);
+  const maximizeClose = readConfig("MaximizeClose", MAXIMIZE_CLOSE);
   const windowsOrderClose = readConfig(
     "WindowsOrderClose",
     WINDOWS_ORDER_CLOSE,
