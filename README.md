@@ -46,6 +46,10 @@ If you like the project, you can support me by buying me a coffee or with other 
 
 ## Installation
 
+### Requirements
+
+You need to have `KWidgetsAddons` installed, find out how to install it for your distribution on internet
+
 ### Manual
 
 - 1. Clone the repository
