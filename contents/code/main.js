@@ -212,11 +212,10 @@ function setWindowsTiles(
   appsBlocklist,
   modalsIgnore,
   maximize,
-  mode,
+  tilesPriority,
   windowsOrderClose,
+  mode,
 ) {
-  const tilesPriority = readConfig("TilesPriority", TILES_PRIORITY);
-
   for (const itemDesktop of desktops) {
     for (const itemScreen of screens) {
       const windowsOther = getWindows(
@@ -227,12 +226,24 @@ function setWindowsTiles(
         modalsIgnore,
       );
 
+      const tilesOrdered = getOrderedTiles(
+        itemDesktop,
+        itemScreen,
+        tilesPriority,
+      );
+
       if (mode === 0) {
         if (windowsOther.length === 0) {
           workspace.currentDesktop = itemDesktop;
           windowMain.desktops = [itemDesktop];
 
-          if (maximize === true) windowMain.setMaximize(true, true);
+          if (maximize === true) {
+            windowMain.setMaximize(true, true);
+          } else {
+            windowMain.setMaximize(false, false);
+            windowMain.tile = tilesOrdered[0];
+          }
+
           return false;
         }
       } else if (mode === 1) {
@@ -245,12 +256,6 @@ function setWindowsTiles(
       if (mode === 1 && windowsOrderClose === false) {
         return true;
       }
-
-      const tilesOrdered = getOrderedTiles(
-        itemDesktop,
-        itemScreen,
-        tilesPriority,
-      );
 
       if (mode === 0) {
         //Set tile if the custom mosaic has space
@@ -292,6 +297,7 @@ function onCloseWindow(windowClosed) {
   }
 
   const maximizeClose = readConfig("MaximizeClose", MAXIMIZE_CLOSE);
+  const tilesPriority = readConfig("TilesPriority", TILES_PRIORITY);
   const windowsOrderClose = readConfig(
     "WindowsOrderClose",
     WINDOWS_ORDER_CLOSE,
@@ -304,8 +310,9 @@ function onCloseWindow(windowClosed) {
     appsBlocklist,
     modalsIgnore,
     maximizeClose,
-    1,
+    tilesPriority,
     windowsOrderClose,
+    1,
   );
 
   if (continueProcess === false) {
@@ -370,6 +377,7 @@ function onOpenWindow(windowNew) {
 
   const maximizeOpen = readConfig("MaximizeOpen", MAXIMIZE_OPEN);
   const desktopAdd = readConfig("DesktopAdd", DESKTOP_ADD);
+  const tilesPriority = readConfig("TilesPriority", TILES_PRIORITY);
 
   const continueProcess = setWindowsTiles(
     windowNew,
@@ -378,8 +386,9 @@ function onOpenWindow(windowNew) {
     appsBlocklist,
     modalsIgnore,
     maximizeOpen,
-    0,
+    tilesPriority,
     false,
+    0,
   );
 
   if (desktopAdd === true && continueProcess === true) {
@@ -387,14 +396,29 @@ function onOpenWindow(windowNew) {
     workspace.currentDesktop =
       workspace.desktops[workspace.desktops.length - 1];
     windowNew.desktops = [workspace.currentDesktop];
-    if (maximizeOpen === true) windowNew.setMaximize(true, true);
+
+    if (maximizeOpen === true) {
+      windowNew.setMaximize(true, true);
+    }
 
     const layoutDefault = readConfig("LayoutDefault", LAYOUT_DEFAULT);
+
     setLayout(
       workspace.currentDesktop,
       workspace.activeScreen,
       LAYOUTS[layoutDefault - 1],
     );
+
+    if (maximizeOpen === false) {
+      const tilesOrdered = getOrderedTiles(
+        workspace.currentDesktop,
+        workspace.activeScreen,
+        tilesPriority,
+      );
+
+      windowNew.setMaximize(false, false);
+      windowNew.tile = tilesOrdered[0];
+    }
   }
 }
 
