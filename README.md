@@ -44,6 +44,22 @@ If you like the project, you can support me by buying me a coffee or with other 
 
 `Settings > KWin Scripts > Click on the cogwheel icon for the ‘Fluid-tile’ option`
 
+### Alternative option to set user variables 
+
+Use this method when you have problems with the configuration form
+
+- Edit `~/.config/kwinrc`
+- Create a new tag or search for the tag with the name `[Script-fluid-tile]`
+- Write variables:
+  - `AppsBlocklist`: Block list apps, You can add more applications by concatenating the string with `,` and the XDG name of the app
+
+ 
+    > **WARNING**: Use the default value 
+    > and add the new apps at the end of
+    > the string 
+
+     - Default: `org.kde.kded6,qt-sudo,org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter`
+
 ## Installation
 
 ### Requirements
