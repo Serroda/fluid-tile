@@ -54,10 +54,10 @@ Use this method when you have problems with the configuration form
 - Edit `~/.config/kwinrc`
 - Create a new tag or search for the tag with the name `[Script-fluid-tile]`
 - Write variables:
-  - `AppsBlocklist`: Block list apps, You can add more applications by concatenating the string with `,` and the XDG name of the app
+  - `AppsBlocklist`: Block list apps, you can add more applications by concatenating the string with `,` and the XDG name of the app
 
     > **WARNING**: Use the default value
-    > and add the new apps at the end of
+    > and add the new apps at the end or beginning of
     > the string
     - Default: `org.kde.kded6,qt-sudo,org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter`
 
@@ -79,10 +79,10 @@ Use this method when you have problems with the configuration form
   - `DesktopAdd`: Create a new virtual desktop if there is no space on the other virtual desktops when a window is opening
     - Default: `true`
     - Possible values: `true` or `false`
-  - `DesktopRemove`: Create a new virtual desktop if there is no space on the other virtual desktops when a window is opening
+  - `DesktopRemove`: Remove the virtual desktop if there are no more windows
     - Default: `true`
     - Possible values: `true` or `false`
-  - `DesktopRemoveDelay`: Delay set when deleting a virtual desktop to prevent errors in specific applications and prevent the desktop from being deleted until the window process has finished. Example: the Chrome profile selector that closes and opens a window in milliseconds, causing errors in the script because, in theory, the window has not been closed
+  - `DesktopRemoveDelay`: Delay (milliseconds) set when deleting a virtual desktop to prevent errors in specific applications and prevent the desktop from being deleted until the window process has finished. Example: the Chrome profile selector that closes and opens a window in milliseconds, causing errors in the script because, in theory, the window has not been closed
     - Default: `300`
     - Possible values: `0` to `5000`
   - `ModalsIgnore`: Ignore transient windows
@@ -101,6 +101,9 @@ DesktopRemove=false
 AppsBlocklist=org.kde.plasma.emojier,org.kde.keysmith,org.kde.kded6,qt-sudo,org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter
 TilesPriority=Height,Width,Top,Left,Bottom,Right
 ```
+
+> **REMEMBER**: you must deactivate and reactivate the script
+> for the changes to take effect.
 
 ## Installation
 
