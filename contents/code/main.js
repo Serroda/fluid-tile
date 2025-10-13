@@ -1,15 +1,20 @@
 // DEFAULTS VARIABLES
-const APPS_BLOCKLIST =
-  "org.kde.kded6,qt-sudo,org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter";
-const TILES_PRIORITY = "Width,Height,Top,Left,Right,Bottom";
-const MAXIMIZE_CLOSE = true;
-const MAXIMIZE_OPEN = true;
-const DESKTOP_ADD = true;
-const DESKTOP_REMOVE = true;
-const DESKTOP_REMOVE_DELAY = 300;
-const MODALS_IGNORE = true;
-const WINDOWS_ORDER_CLOSE = true;
-const LAYOUT_DEFAULT = 2;
+const APPS_BLOCKLIST = readConfig(
+  "AppsBlocklist",
+  "org.kde.kded6,qt-sudo,org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter",
+).toLowerCase();
+const TILES_PRIORITY = readConfig(
+  "TilesPriority",
+  "Width,Height,Top,Left,Right,Bottom",
+).split(",");
+const MAXIMIZE_CLOSE = readConfig("MaximizeClose", true);
+const MAXIMIZE_OPEN = readConfig("MaximizeOpen", true);
+const WINDOWS_ORDER_CLOSE = readConfig("WindowsOrderClose", true);
+const DESKTOP_ADD = readConfig("DesktopAdd", true);
+const DESKTOP_REMOVE = readConfig("DesktopRemove", true);
+const DESKTOP_REMOVE_DELAY = readConfig("DesktopRemoveDelay", 300);
+const MODALS_IGNORE = readConfig("ModalsIgnore", true);
+const LAYOUT_DEFAULT = readConfig("LayoutDefault", 2);
 const LAYOUTS = [
   [{ x: 0, y: 0 }],
   [
@@ -66,13 +71,13 @@ const LAYOUTS = [
 ];
 
 //Block apps
-function checkBlocklist(windowItem, appsBlocklist, ignoreModals) {
+function checkBlocklist(windowItem) {
   return (
     windowItem.normalWindow === false ||
     windowItem.resizeable === false ||
     windowItem.maximizable === false ||
-    (ignoreModals === true ? windowItem.transient === true : false) ||
-    appsBlocklist.includes(windowItem.resourceClass.toLowerCase()) === true
+    (MODALS_IGNORE === true ? windowItem.transient === true : false) ||
+    APPS_BLOCKLIST.includes(windowItem.resourceClass.toLowerCase()) === true
   );
 }
 
@@ -131,24 +136,23 @@ function setTiles(tileParent, layout) {
 function setLayout(desktop, screen, layout) {
   const tileRoot = workspace.rootTile(screen, desktop);
   tileRoot.tiles.forEach((tile) => tile.remove());
-
   return setTiles(tileRoot.tiles[0], layout);
 }
 
 //Get tiles, ordered by size (width) and from left to right
-function orderTiles(tiles, tilesPriority) {
+function orderTiles(tiles) {
   let tilesOrdered = [];
 
   for (let tile of tiles) {
     if (tile.tiles.length !== 0) {
-      tilesOrdered = tilesOrdered.concat(orderTiles(tile.tiles, tilesPriority));
+      tilesOrdered = tilesOrdered.concat(orderTiles(tile.tiles));
     } else {
       tilesOrdered.push(tile);
     }
   }
 
   return tilesOrdered.sort((a, b) => {
-    for (const priority of tilesPriority) {
+    for (const priority of TILES_PRIORITY) {
       let comparison = 0;
       switch (priority) {
         case "Width":
@@ -179,13 +183,13 @@ function orderTiles(tiles, tilesPriority) {
 }
 
 //Get tiles from the screen and virtual desktop
-function getOrderedTiles(desktop, screen, tilesPriority) {
+function getOrderedTiles(desktop, screen) {
   const tileRoot = workspace.rootTile(screen, desktop);
-  return orderTiles(tileRoot.tiles, tilesPriority.split(","));
+  return orderTiles(tileRoot.tiles);
 }
 
 // Get all windows from the virtual desktop except the given window
-function getWindows(windowMain, desktop, screen, appsBlocklist, modalsIgnore) {
+function getWindows(windowMain, desktop, screen) {
   const windows = [];
 
   for (const windowItem of workspace.windowList().reverse()) {
@@ -193,7 +197,7 @@ function getWindows(windowMain, desktop, screen, appsBlocklist, modalsIgnore) {
       windowItem !== windowMain &&
       windowItem.output === screen &&
       windowItem.desktops.includes(desktop) === true &&
-      checkBlocklist(windowItem, appsBlocklist, modalsIgnore) === false
+      checkBlocklist(windowItem) === false
     ) {
       windows.push(windowItem);
     }
@@ -205,32 +209,11 @@ function getWindows(windowMain, desktop, screen, appsBlocklist, modalsIgnore) {
 // Set window tiles
 // mode: 0 => addWindow
 // mode: 1 => removeWindow
-function setWindowsTiles(
-  windowMain,
-  desktops,
-  screens,
-  appsBlocklist,
-  modalsIgnore,
-  maximize,
-  tilesPriority,
-  windowsOrderClose,
-  mode,
-) {
+function setWindowsTiles(windowMain, desktops, screens, maximize, mode) {
   for (const itemDesktop of desktops) {
     for (const itemScreen of screens) {
-      const windowsOther = getWindows(
-        windowMain,
-        itemDesktop,
-        itemScreen,
-        appsBlocklist,
-        modalsIgnore,
-      );
-
-      const tilesOrdered = getOrderedTiles(
-        itemDesktop,
-        itemScreen,
-        tilesPriority,
-      );
+      const windowsOther = getWindows(windowMain, itemDesktop, itemScreen);
+      const tilesOrdered = getOrderedTiles(itemDesktop, itemScreen);
 
       if (mode === 0) {
         if (windowsOther.length === 0) {
@@ -253,7 +236,7 @@ function setWindowsTiles(
         }
       }
 
-      if (mode === 1 && windowsOrderClose === false) {
+      if (mode === 1 && WINDOWS_ORDER_CLOSE === false) {
         return true;
       }
 
@@ -285,50 +268,21 @@ function setWindowsTiles(
 
 //Delete Virtual Desktop if is empty or maximize the last window
 function onCloseWindow(windowClosed) {
-  const appsBlocklist = readConfig(
-    "AppsBlocklist",
-    APPS_BLOCKLIST,
-  ).toLowerCase();
-
-  const modalsIgnore = readConfig("ModalsIgnore", MODALS_IGNORE);
-
-  if (checkBlocklist(windowClosed, appsBlocklist, modalsIgnore) === true) {
+  if (checkBlocklist(windowClosed) === true) {
     return;
   }
-
-  const maximizeClose = readConfig("MaximizeClose", MAXIMIZE_CLOSE);
-  const tilesPriority = readConfig("TilesPriority", TILES_PRIORITY);
-  const windowsOrderClose = readConfig(
-    "WindowsOrderClose",
-    WINDOWS_ORDER_CLOSE,
-  );
 
   const continueProcess = setWindowsTiles(
     windowClosed,
     windowClosed.desktops,
     [windowClosed.output],
-    appsBlocklist,
-    modalsIgnore,
-    maximizeClose,
-    tilesPriority,
-    windowsOrderClose,
+    MAXIMIZE_CLOSE,
     1,
   );
 
-  if (continueProcess === false) {
+  if (continueProcess === false || DESKTOP_REMOVE === false) {
     return;
   }
-
-  const desktopRemove = readConfig("DesktopRemove", DESKTOP_REMOVE);
-
-  if (desktopRemove === false) {
-    return;
-  }
-
-  const desktopRemoveDelay = readConfig(
-    "DesktopRemoveDelay",
-    DESKTOP_REMOVE_DELAY,
-  );
 
   const desktopsId = windowClosed.desktops.map((d) => d.id);
   const screenId = windowClosed.output.serialNumber;
@@ -337,7 +291,7 @@ function onCloseWindow(windowClosed) {
   //close the window and open another window (Chrome profile selector).
   //This timer avoid crash wayland
   const timer = new QTimer();
-  timer.interval = desktopRemoveDelay;
+  timer.interval = DESKTOP_REMOVE_DELAY;
   timer.singleShot = true;
   timer.timeout.connect(function () {
     const screen = workspace.screens.find((s) => s.serialNumber === screenId);
@@ -351,8 +305,6 @@ function onCloseWindow(windowClosed) {
         windowClosed,
         desktopItem,
         screen,
-        appsBlocklist,
-        modalsIgnore,
       );
       if (windowsOtherSpecialCases.length === 0) {
         workspace.removeDesktop(desktopItem);
@@ -365,55 +317,38 @@ function onCloseWindow(windowClosed) {
 
 //Set tile to the new Window
 function onOpenWindow(windowNew) {
-  const appsBlocklist = readConfig(
-    "AppsBlocklist",
-    APPS_BLOCKLIST,
-  ).toLowerCase();
-  const modalsIgnore = readConfig("ModalsIgnore", MODALS_IGNORE);
-
-  if (checkBlocklist(windowNew, appsBlocklist, modalsIgnore) === true) {
+  if (checkBlocklist(windowNew) === true) {
     return;
   }
-
-  const maximizeOpen = readConfig("MaximizeOpen", MAXIMIZE_OPEN);
-  const desktopAdd = readConfig("DesktopAdd", DESKTOP_ADD);
-  const tilesPriority = readConfig("TilesPriority", TILES_PRIORITY);
 
   const continueProcess = setWindowsTiles(
     windowNew,
     workspace.desktops,
     workspace.screens,
-    appsBlocklist,
-    modalsIgnore,
-    maximizeOpen,
-    tilesPriority,
-    false,
+    MAXIMIZE_OPEN,
     0,
   );
 
-  if (desktopAdd === true && continueProcess === true) {
+  if (DESKTOP_ADD === true && continueProcess === true) {
     workspace.createDesktop(workspace.desktops.length, "");
     workspace.currentDesktop =
       workspace.desktops[workspace.desktops.length - 1];
     windowNew.desktops = [workspace.currentDesktop];
 
-    if (maximizeOpen === true) {
+    if (MAXIMIZE_OPEN === true) {
       windowNew.setMaximize(true, true);
     }
-
-    const layoutDefault = readConfig("LayoutDefault", LAYOUT_DEFAULT);
 
     setLayout(
       workspace.currentDesktop,
       workspace.activeScreen,
-      LAYOUTS[layoutDefault - 1],
+      LAYOUTS[LAYOUT_DEFAULT - 1],
     );
 
-    if (maximizeOpen === false) {
+    if (MAXIMIZE_OPEN === false) {
       const tilesOrdered = getOrderedTiles(
         workspace.currentDesktop,
         workspace.activeScreen,
-        tilesPriority,
       );
 
       windowNew.setMaximize(false, false);
