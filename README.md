@@ -16,7 +16,7 @@ If you like the project, you can support me by buying me a coffee or with other 
 ## Features
 
 - 🚀 Working on KDE Plasma 6 (or superior)
-- 🛠️ KWin native tiling 
+- 🛠️ KWin native tiling
 - 🪟 Smooth tiling
 - 🖼️ Working with custom layout (Meta + T)
 - 💻 Auto create and delete virtual desktops
@@ -44,21 +44,63 @@ If you like the project, you can support me by buying me a coffee or with other 
 
 `Settings > KWin Scripts > Click on the cogwheel icon for the ‘Fluid-tile’ option`
 
-### Alternative option to set user variables 
+### Alternative option to set user variables
 
 Use this method when you have problems with the configuration form
+
+> **DISCLAMER**: If you do not set any of the variables,
+> they will take the default value
 
 - Edit `~/.config/kwinrc`
 - Create a new tag or search for the tag with the name `[Script-fluid-tile]`
 - Write variables:
   - `AppsBlocklist`: Block list apps, You can add more applications by concatenating the string with `,` and the XDG name of the app
 
- 
-    > **WARNING**: Use the default value 
+    > **WARNING**: Use the default value
     > and add the new apps at the end of
-    > the string 
+    > the string
+    - Default: `org.kde.kded6,qt-sudo,org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter`
 
-     - Default: `org.kde.kded6,qt-sudo,org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter`
+  - `TilesPriority`: Priority of tile parameters for sorting windows
+
+    > **WARNING**: Use the default value and
+    > just change the order of the items
+    - Default: `Width,Height,Top,Left,Right,Bottom`
+
+  - `MaximizeClose`: Maximize the last window when closing a window
+    - Default: `true`
+    - Possible values: `true` or `false`
+  - `MaximizeOpen`: Maximize the new window
+    - Default: `true`
+    - Possible values: `true` or `false`
+  - `WindowsOrderClose`: Reorder virtual desktop windows when a window is closed
+    - Default: `true`
+    - Possible values: `true` or `false`
+  - `DesktopAdd`: Create a new virtual desktop if there is no space on the other virtual desktops when a window is opening
+    - Default: `true`
+    - Possible values: `true` or `false`
+  - `DesktopRemove`: Create a new virtual desktop if there is no space on the other virtual desktops when a window is opening
+    - Default: `true`
+    - Possible values: `true` or `false`
+  - `DesktopRemoveDelay`: Delay set when deleting a virtual desktop to prevent errors in specific applications and prevent the desktop from being deleted until the window process has finished. Example: the Chrome profile selector that closes and opens a window in milliseconds, causing errors in the script because, in theory, the window has not been closed
+    - Default: `300`
+    - Possible values: `0` to `5000`
+  - `ModalsIgnore`: Ignore transient windows
+    - Default: `true`
+    - Possible values: `true` or `false`
+  - `LayoutDefault`: Layout type set when creating a new virtual desktop
+    - Default: `2`
+    - Possible values: `1` to `6`
+
+#### Example
+
+```
+[Script-fluid-tile]
+MaximizeClose=false
+DesktopRemove=false
+AppsBlocklist=org.kde.plasma.emojier,org.kde.keysmith,org.kde.kded6,qt-sudo,org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter
+TilesPriority=Height,Width,Top,Left,Bottom,Right
+```
 
 ## Installation
 
@@ -91,12 +133,13 @@ kpackagetool6 --type=KWin/Script -i ./fluid-tile/
 `Settings > KWin Scripts > Click on "Get New" button > Search 'Fluid tile' > Install`
 
 ## F.A.Q
+
 ### Differences between other tile managers
 
-The main difference is that `Fluid tile` uses the native KWin API to manage windows and layout, ensuring a smoother integration with native KDE, this means that the customization options are more limited for the user compared to other options. 
+The main difference is that `Fluid tile` uses the native KWin API to manage windows and layout, ensuring a smoother integration with native KDE, this means that the customization options are more limited for the user compared to other options.
 
 Install `Fluid tile` if you want a native KDE tiling, while if you want something more customized use other options like Krohnkite or Polonium
 
 ### Shortcuts
 
-You can use the native KDE shortcuts, my recommendation is to change the shortcuts for `Window Management`, specifically change `Custom Quick Tile Window to the Bottom/Left/Right/Top` to `Meta + Down/Left/Right/Up` for smoother use 
+You can use the native KDE shortcuts, my recommendation is to change the shortcuts for `Window Management`, specifically change `Custom Quick Tile Window to the Bottom/Left/Right/Top` to `Meta + Down/Left/Right/Up` for smoother use
