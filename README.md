@@ -111,12 +111,27 @@ TilesPriority=Height,Width,Top,Left,Bottom,Right
 
 You need to have `KWidgetsAddons` installed, find out how to install it for your distribution on internet
 
+### KDE Store **(Recommended)**
+
+`Settings > KWin Scripts > Click on "Get New" button > Search 'Fluid tile' > Install`
+
+[Link](https://store.kde.org/p/2322321)
+
 ### Manual
+
+- 1. Download the lastest (`.zip` file) [release link](https://codeberg.org/Serroda/fluid-tile/releases/latest)
+
+- 2. Rename the file extension from `.zip` to `.kwinscript`
+
+- 3. Install the file with KDE settings
+     `Settings > KWin Scripts > Install from file > Select the file > Enable "Fluid tile" > Apply changes`
+
+### Git
 
 - 1. Clone the repository
 
 ```sh
-git clone https://codeberg.org/Serroda/fluid-tile.git -b release
+git clone https://codeberg.org/Serroda/fluid-tile.git -b release --depth 1
 ```
 
 - 2. Install the script
@@ -127,13 +142,7 @@ kpackagetool6 --type=KWin/Script -i ./fluid-tile/
 
 - 3. Enable it in the KDE settings
 
-`Settings > KWin Scripts > Check "Fluid tile" > Apply changes`
-
-### KDE Store
-
-[Link](https://store.kde.org/p/2322321)
-
-`Settings > KWin Scripts > Click on "Get New" button > Search 'Fluid tile' > Install`
+`Settings > KWin Scripts > Enable "Fluid tile" > Apply changes`
 
 ## F.A.Q
 
