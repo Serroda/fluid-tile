@@ -15,7 +15,7 @@ If you like the project, you can support me by buying me a coffee or with other 
 
 ## Features
 
-- 🚀 Working on KDE Plasma 6 (or superior)
+- 🚀 Working on KDE Plasma 6.4 (or superior)
 - 🛠️ KWin native tiling
 - 🪟 Smooth tiling
 - 🖼️ Working with custom layout (Meta + T)
