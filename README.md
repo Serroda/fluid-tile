@@ -155,3 +155,7 @@ Install `Fluid tile` if you want a native KDE tiling, while if you want somethin
 ### Shortcuts
 
 You can use the native KDE shortcuts, my recommendation is to change the shortcuts for `Window Management`, specifically change `Custom Quick Tile Window to the Bottom/Left/Right/Top` to `Meta + Down/Left/Right/Up` for smoother use
+
+### My settings have not been applied
+
+You have to disable and enable **Fluid tile** from `KWin scripts` to apply user settings 
