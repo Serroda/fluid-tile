@@ -10,12 +10,13 @@
       }
     ],
     "Id": "fluid-tile",
-    "Version": "2.4",
+    "Version": "3.0",
     "License": "GPLv3",
     "Website": "https://codeberg.org/Serroda/fluid-tile"
   },
-  "X-Plasma-API": "javascript",
+  "X-Plasma-API": "declarativescript",
   "KPackageStructure": "KWin/Script",
   "X-KDE-ConfigModule": "kwin/effects/configs/kcm_kwin4_genericscripted",
-  "X-Plasma-MainScript": "code/main.js"
+  "X-Plasma-API-Minimum-Version": "6.0",
+  "X-Plasma-MainScript": "ui/main.qml"
 }
