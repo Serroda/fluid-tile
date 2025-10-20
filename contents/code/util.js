@@ -52,6 +52,24 @@ function getDefaultLayouts(index) {
         ],
       },
     ],
+    [
+      {
+        x: 0,
+        y: 0,
+        tiles: [
+          { x: 0, y: 0 },
+          { x: 0, y: 0.5 },
+        ],
+      },
+      {
+        x: 0.5,
+        y: 0,
+        tiles: [
+          { x: 0, y: 0 },
+          { x: 0.3, y: 0.5, width: 0.2, height: 1 },
+        ],
+      },
+    ],
   ][index];
 }
 
@@ -107,6 +125,11 @@ function setTiles(tileParent, layout) {
 
       newTile.relativeGeometry.x = item.x;
       newTile.relativeGeometry.y = item.y;
+
+      if (item.width !== undefined && item.height !== undefined) {
+        newTile.relativeGeometry.width = item.width;
+        newTile.relativeGeometry.height = item.height;
+      }
     }
   }
 

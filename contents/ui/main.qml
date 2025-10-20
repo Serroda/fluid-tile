@@ -19,7 +19,8 @@ Item {
             desktopRemove: KWin.readConfig("DesktopRemove", true),
             desktopRemoveDelay: KWin.readConfig("DesktopRemoveDelay", 300),
             modalsIgnore: KWin.readConfig("ModalsIgnore", true),
-            layoutDefault: KWin.readConfig("LayoutDefault", 2)
+            layoutDefault: KWin.readConfig("LayoutDefault", 2),
+            layoutCustom: KWin.readConfig("LayoutCustom", "")
         };
     }
 
@@ -125,7 +126,8 @@ Item {
                 windowNew.setMaximize(true, true);
             }
 
-            setLayout(Workspace.currentDesktop, Workspace.activeScreen, Util.getDefaultLayouts(config.layoutDefault - 1));
+            // setLayout(Workspace.currentDesktop, Workspace.activeScreen, Util.getDefaultLayouts(config.layoutDefault - 1));
+            setLayout(Workspace.currentDesktop, Workspace.activeScreen, Util.getDefaultLayouts(6));
 
             if (config.maximizeOpen === false) {
                 const tilesOrdered = getOrderedTiles(Workspace.currentDesktop, Workspace.activeScreen);
