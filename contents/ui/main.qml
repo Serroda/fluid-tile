@@ -34,8 +34,8 @@ Item {
     //Prepare for set tile layout
     function setLayout(desktop, screen, layout) {
         const tileRoot = Workspace.rootTile(screen, desktop);
-        tileRoot.tiles.forEach(tile => tile.remove());
-        return Util.setTiles(tileRoot.tiles[0], layout);
+        Util.deleteTiles(tileRoot.tiles);
+        return Util.setTiles(tileRoot.tiles[0] ?? tileRoot, layout);
     }
 
     //Get tiles from the screen and virtual desktop
@@ -190,9 +190,18 @@ Item {
         }
     }
 
+    Connections {
+        target: Workspace
+
+        function onWindowAdded(client) {
+            root.onWindowAdded(client);
+        }
+        function onWindowRemoved(client) {
+            root.onWindowRemoved(client);
+        }
+    }
+
     Component.onCompleted: {
         loadConfig();
-        Workspace.windowAdded.connect(onWindowAdded);
-        Workspace.windowRemoved.connect(onWindowRemoved);
     }
 }

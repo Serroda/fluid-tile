@@ -74,53 +74,34 @@ function setTiles(tileParent, layout) {
     return true;
   }
 
-  if (layout[0].x === 0 && layout[0].y === 0) {
-    layout[0].ref = tileParent;
+  let splitMode = null;
+
+  if (layout.every((item) => item.x === 0)) {
+    splitMode = 2;
+  } else if (layout.every((item) => item.y === 0)) {
+    splitMode = 1;
+  } else if (layout.every((item) => item.x !== 0 && item.y !== 0)) {
+    splitMode = 0;
   }
 
-  for (let index = 1; index < layout.length; index++) {
-    const item = layout[index];
+  if (splitMode === null) {
+    return false;
+  }
 
-    let splitMode = null;
+  //Create childs
+  if (tileParent.tiles.length === 0) {
+    tileParent.layoutDirection = splitMode;
+    tileParent.split(tileParent.layoutDirection);
+  }
 
-    if (item.x !== 0 && item.y !== 0) {
-      splitMode = 0;
-    } else if (item.x !== 0) {
-      splitMode = 1;
-    } else if (item.y !== 0) {
-      splitMode = 2;
+  for (let index = 0; index < layout.length; index++) {
+    if (splitMode === 0 && index > 0) {
+      layout[index].ref = tileParent.split(splitMode)[0];
+    } else {
+      layout[index].ref = tileParent.tiles[index];
     }
 
-    if (splitMode !== null) {
-      let newTiles = null;
-
-      if (splitMode !== 0) {
-        newTiles = layout[index - 1].ref.split(splitMode);
-      } else {
-        newTiles = layout[index - 1].ref.split(1);
-        newTiles[1] = newTiles[1].split(splitMode)[0];
-      }
-
-      layout[index].ref = newTiles[1];
-
-      const newTile = layout[index].ref;
-
-      newTile.moveByPixels({ x: item.x, y: item.y });
-
-      if (item.width !== undefined) {
-        const delta =
-          item.width * newTile.parent.absoluteGeometry.width -
-          newTile.absoluteGeometry.width;
-        newTile.resizeByPixels(delta, Qt.RightEdge);
-      }
-
-      if (item.height !== undefined) {
-        const delta =
-          item.height * newTile.parent.absoluteGeometry.height -
-          newTile.absoluteGeometry.height;
-        newTile.resizeByPixels(delta, Qt.BottomEdge);
-      }
-    }
+    setGeometry(layout[index]);
   }
 
   for (let x = 0; x < layout.length; x++) {
@@ -130,6 +111,26 @@ function setTiles(tileParent, layout) {
   }
 
   return true;
+}
+
+// Set tile size and position
+function setGeometry(item) {
+  if (item.width !== undefined) {
+    const delta =
+      item.width * item.ref.parent.absoluteGeometry.width -
+      item.ref.absoluteGeometry.width;
+    item.ref.resizeByPixels(delta, Qt.RightEdge);
+  }
+
+  if (item.height !== undefined) {
+    const delta =
+      item.height * item.ref.parent.absoluteGeometry.height -
+      item.ref.absoluteGeometry.height;
+    item.ref.resizeByPixels(delta, Qt.BottomEdge);
+  }
+
+  item.ref.relativeGeometry.x = item.x;
+  item.ref.relativeGeometry.y = item.y;
 }
 
 //Get tiles, ordered by tilesPriority
@@ -173,4 +174,10 @@ function orderTiles(tiles, tilesPriority) {
     }
     return 0;
   });
+}
+
+function deleteTiles(tiles) {
+  for (let index = tiles.length; index > 0; index--) {
+    tiles[index - 1].remove();
+  }
 }
