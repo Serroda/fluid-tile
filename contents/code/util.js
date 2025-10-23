@@ -176,8 +176,30 @@ function orderTiles(tiles, tilesPriority) {
   });
 }
 
+//Delete reverse tile layout
 function deleteTiles(tiles) {
   for (let index = tiles.length; index > 0; index--) {
     tiles[index - 1].remove();
+  }
+}
+
+//Extendes window on empty space
+function extendsWindow(tile, window) {
+  if (
+    tile?.parent?.tiles.every((t) => t.windows.length === 0) &&
+    tile?.parent?.windows.length === 0
+  ) {
+    extendsWindow(tile.parent, window);
+  } else {
+    tile.manage(window);
+  }
+}
+
+//Conditional wrapper
+function extendsOrDefault(conditional, tile, window) {
+  if (conditional === true) {
+    extendsWindow(tile, window);
+  } else {
+    tile.manage(window);
   }
 }
