@@ -2,8 +2,14 @@ import QtQuick
 import org.kde.kwin
 import "../code/util.js" as Util
 
-Item {
+Window {
     id: root
+    width: Screen.width
+    height: Screen.height
+    visible: false
+    color: "transparent"
+    flags: Qt.FramelessWindowHint | Qt.WindowTransparentForInput | Qt.WindowStaysOnTopHint | Qt.BypassWindowManagerHint
+
     property var config: ({})
     property var removeDesktopInfo: ({})
 
@@ -23,7 +29,8 @@ Item {
         };
 
         try {
-            config.layoutCustom = JSON.parse(KWin.readConfig("LayoutCustom", ""));
+            const layoutCustom = KWin.readConfig("LayoutCustom", "");
+            config.layoutCustom = layoutCustom ? JSON.parse(layoutCustom) : undefined;
         } catch (error) {
             console.log("LayoutCustom variable error: " + error);
         }
@@ -181,6 +188,9 @@ Item {
         target: Workspace
 
         function onWindowAdded(client) {
+            // client.frameGeometryChanged.connect(function () {
+            //     root.visible = !root.visible;
+            // });
             root.onWindowAdded(client);
         }
         function onWindowRemoved(client) {
@@ -190,5 +200,28 @@ Item {
 
     Component.onCompleted: {
         loadConfig();
+    }
+
+    Rectangle {
+        id: tile
+        x: 100
+        y: 100
+        width: 200
+        height: 200
+        color: "red"
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: {
+                tile.color = "yellow";
+            }
+            onEntered: {
+                tile.color = "blue";
+            }
+            onExited: {
+                tile.color = "red";
+            }
+        }
     }
 }
