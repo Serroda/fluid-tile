@@ -10,7 +10,7 @@ Item {
     // Load user config
     function loadConfig() {
         config = {
-            appsBlocklist: KWin.readConfig("AppsBlocklist", "org.kde.kded6,qt-sudo,org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter"),
+            appsBlocklist: KWin.readConfig("AppsBlocklist", "wl-paste,wl-copy,org.kde.kded6,qt-sudo,org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter"),
             tilesPriority: KWin.readConfig("TilesPriority", "Width,Height,Top,Left,Right,Bottom").split(","),
             maximizeClose: KWin.readConfig("MaximizeClose", true),
             maximizeOpen: KWin.readConfig("MaximizeOpen", true),
@@ -27,8 +27,6 @@ Item {
         } catch (error) {
             console.log("LayoutCustom variable error: " + error);
         }
-
-        console.log(JSON.stringify(config));
     }
 
     //Prepare for set tile layout
@@ -60,55 +58,44 @@ Item {
     // Set window tiles
     // mode: 0 => addWindow
     // mode: 1 => removeWindow
-    //TODO: New mode EXTENDS WINDOWS testing WIP
     function setWindowsTiles(windowMain, desktops, screens, maximize, mode) {
-        windowMain.setMaximize(false, false);
-
-        if (mode === 1 && config.windowsOrderClose === false) {
-            return true;
-        }
-
         for (const itemDesktop of desktops) {
             for (const itemScreen of screens) {
                 const windowsOther = getWindows(windowMain, itemDesktop, itemScreen);
                 const tilesOrdered = getOrderedTiles(itemDesktop, itemScreen);
 
-                // if (mode === 0) {
-                //     if (windowsOther.length === 0) {
-                //         Workspace.currentDesktop = itemDesktop;
-                //         windowMain.desktops = [itemDesktop];
-                //         Util.extendsOrDefault(maximize, tilesOrdered[0], windowMain);
-                //         return false;
-                //     }
-                // } else if (mode === 1) {
-                //     if (windowsOther.length === 1 && maximize === true) {
-                //         Util.extendsWindow(tilesOrdered[0], windowsOther[0]);
-                //         return false;
-                //     }
-                // }
-
-                // if (mode === 1 && config.windowsOrderClose === false) {
-                //     return true;
-                // }
+                if (mode === 1 && config.windowsOrderClose === false && windowsOther.length > 1) {
+                    return true;
+                }
 
                 if (mode === 0) {
                     //Set tile if the custom mosaic has space
                     if (windowsOther.length + 1 <= tilesOrdered.length) {
-                        Workspace.currentDesktop = itemDesktop;
-                        windowMain.desktops = [itemDesktop];
-                        Util.extendsOrDefault(maximize, tilesOrdered[0], windowMain);
-
                         for (let x = 0; x < windowsOther.length; x++) {
                             windowsOther[x].desktops = [itemDesktop];
                             windowsOther[x].setMaximize(false, false);
-                            Util.extendsOrDefault(maximize, tilesOrdered[x + 1], windowsOther[x]);
+                            tilesOrdered[x + 1].manage(windowsOther[x]);
+                        }
+
+                        Workspace.currentDesktop = itemDesktop;
+                        windowMain.desktops = [itemDesktop];
+
+                        if (maximize === true && windowsOther.length === 0) {
+                            windowMain.setMaximize(true, true);
+                        } else {
+                            windowMain.setMaximize(false, false);
+                            tilesOrdered[0].manage(windowMain);
                         }
                         return false;
                     }
                 } else if (mode === 1 && windowsOther.length !== 0) {
                     for (let x = 0; x < windowsOther.length; x++) {
-                        windowsOther[x].setMaximize(false, false);
-                        Util.extendsOrDefault(maximize, tilesOrdered[x], windowsOther[x]);
+                        if (maximize === true && windowsOther.length === 1) {
+                            windowsOther[x].setMaximize(true, true);
+                        } else {
+                            windowsOther[x].setMaximize(false, false);
+                            tilesOrdered[x].manage(windowsOther[x]);
+                        }
                     }
                     return false;
                 }
