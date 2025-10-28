@@ -1,17 +1,20 @@
 import QtQuick
 import org.kde.kwin
+import "./components"
 import "../code/util.js" as Util
 
 Window {
     id: root
-    width: Screen.width
-    height: Screen.height
+    width: Workspace.virtualScreenSize.width
+    height: Workspace.virtualScreenSize.height
     visible: false
     color: "#AA000000"
-    flags: Qt.FramelessWindowHint | Qt.WindowTransparentForInput | Qt.WindowStaysOnTopHint | Qt.BypassWindowManagerHint
+    flags: Qt.FramelessWindowHint | Qt.WindowTransparentForInput | Qt.WindowStaysOnTopHint | Qt.BypassWindowManagerHint | Qt.Dialog
 
     property var config: ({})
     property var removeDesktopInfo: ({})
+    property var layoutOrdered: []
+    property int tileActived: 0
 
     // Load user config
     function loadConfig() {
@@ -136,7 +139,7 @@ Window {
             setLayout(Workspace.currentDesktop, Workspace.activeScreen, layout);
 
             if (config.maximizeOpen === false) {
-                const tilesOrdered = getOrderedTiles(Workspace.currentDesktop, Workspace.activeScreen);
+                const tilesOrdered = getTilesFromActualDesktop();
 
                 windowNew.setMaximize(false, false);
                 tilesOrdered[0].manage(windowNew);
@@ -193,12 +196,22 @@ Window {
         }
     }
 
+    function resetLayout() {
+        layoutOrdered = [];
+        layoutOrdered = getTilesFromActualDesktop();
+    }
+
     function onUserMovedResizedStart() {
-        root.visible = true;
+        resetLayout();
+        visible = true;
     }
 
     function onUserMovedResizedEnd() {
-        root.visible = false;
+        visible = false;
+    }
+
+    function getTilesFromActualDesktop() {
+        return getOrderedTiles(Workspace.currentDesktop, Workspace.activeScreen);
     }
 
     Connections {
@@ -217,17 +230,19 @@ Window {
     Component.onCompleted: {
         loadConfig();
         setWindowsSignals();
+        layoutOrdered = getTilesFromActualDesktop();
     }
 
-    Rectangle {
-        id: tile
-        x: 100
-        y: 100
-        width: 200
-        height: 200
-        color: "#25FFFFFF"
-        radius: 8
-        border.width: 2
-        border.color: "#90FFFFFF"
+    Repeater {
+        model: root.layoutOrdered
+        delegate: Tile {
+            x: modelData.absoluteGeometry.x
+            y: modelData.absoluteGeometry.y
+            width: modelData.absoluteGeometry.width
+            height: modelData.absoluteGeometry.height
+            padding: modelData.padding
+            indexLayout: index
+            active: index === root.tileActived
+        }
     }
 }
