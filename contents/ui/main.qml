@@ -230,7 +230,6 @@ Window {
     Component.onCompleted: {
         loadConfig();
         setWindowsSignals();
-        layoutOrdered = getTilesFromActualDesktop();
     }
 
     Repeater {
