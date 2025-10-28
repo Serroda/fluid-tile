@@ -7,7 +7,7 @@ Window {
     width: Screen.width
     height: Screen.height
     visible: false
-    color: "transparent"
+    color: "#AA000000"
     flags: Qt.FramelessWindowHint | Qt.WindowTransparentForInput | Qt.WindowStaysOnTopHint | Qt.BypassWindowManagerHint
 
     property var config: ({})
@@ -226,6 +226,7 @@ Window {
         width: 200
         height: 200
         color: "#25FFFFFF"
+        radius: 8
         border.width: 2
         border.color: "#90FFFFFF"
     }
