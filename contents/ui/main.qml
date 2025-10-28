@@ -184,14 +184,30 @@ Window {
         }
     }
 
+    function setWindowsSignals() {
+        for (const windowItem of Workspace.stackingOrder) {
+            if (Util.checkBlocklist(windowItem, config.appsBlocklist, config.modalsIgnore) === false) {
+                windowItem.interactiveMoveResizeStarted.connect(onUserMovedResizedStart);
+                windowItem.interactiveMoveResizeFinished.connect(onUserMovedResizedEnd);
+            }
+        }
+    }
+
+    function onUserMovedResizedStart() {
+        root.visible = true;
+    }
+
+    function onUserMovedResizedEnd() {
+        root.visible = false;
+    }
+
     Connections {
         target: Workspace
 
         function onWindowAdded(client) {
-            // client.frameGeometryChanged.connect(function () {
-            //     root.visible = !root.visible;
-            // });
             root.onWindowAdded(client);
+            client.interactiveMoveResizeStarted.connect(root.onUserMovedResizedStart);
+            client.interactiveMoveResizeFinished.connect(root.onUserMovedResizedEnd);
         }
         function onWindowRemoved(client) {
             root.onWindowRemoved(client);
@@ -200,6 +216,7 @@ Window {
 
     Component.onCompleted: {
         loadConfig();
+        setWindowsSignals();
     }
 
     Rectangle {
@@ -208,20 +225,8 @@ Window {
         y: 100
         width: 200
         height: 200
-        color: "red"
-
-        MouseArea {
-            anchors.fill: parent
-            hoverEnabled: true
-            onClicked: {
-                tile.color = "yellow";
-            }
-            onEntered: {
-                tile.color = "blue";
-            }
-            onExited: {
-                tile.color = "red";
-            }
-        }
+        color: "#25FFFFFF"
+        border.width: 2
+        border.color: "#90FFFFFF"
     }
 }
