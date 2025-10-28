@@ -22,158 +22,6 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QWidget" name="formLayoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>30</y>
-     <width>381</width>
-     <height>91</height>
-    </rect>
-   </property>
-   <layout class="QFormLayout" name="onOpen">
-    <property name="labelAlignment">
-     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
-    </property>
-    <item row="0" column="0">
-     <widget class="QCheckBox" name="kcfg_MaximizeOpen">
-      <property name="locale">
-       <locale language="English" country="Eswatini"/>
-      </property>
-      <property name="text">
-       <string>Maximize if you have only one window</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QCheckBox" name="kcfg_DesktopAdd">
-      <property name="locale">
-       <locale language="English" country="Eswatini"/>
-      </property>
-      <property name="text">
-       <string>Create new virtual desktop if you dont have more space</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QCheckBox" name="kcfg_ModalsIgnore">
-      <property name="toolTip">
-       <string>Only works if the window is transient</string>
-      </property>
-      <property name="statusTip">
-       <string/>
-      </property>
-      <property name="locale">
-       <locale language="English" country="Eswatini"/>
-      </property>
-      <property name="text">
-       <string>Ignore modals opened by an application</string>
-      </property>
-      <property name="autoRepeat">
-       <bool>false</bool>
-      </property>
-      <property name="autoExclusive">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="formLayoutWidget_2">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>150</y>
-     <width>311</width>
-     <height>141</height>
-    </rect>
-   </property>
-   <layout class="QFormLayout" name="onClose">
-    <property name="labelAlignment">
-     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
-    </property>
-    <item row="0" column="0">
-     <widget class="QCheckBox" name="kcfg_MaximizeClose">
-      <property name="locale">
-       <locale language="English" country="Eswatini"/>
-      </property>
-      <property name="text">
-       <string>Maximize the last window</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QCheckBox" name="kcfg_DesktopRemove">
-      <property name="locale">
-       <locale language="English" country="Eswatini"/>
-      </property>
-      <property name="text">
-       <string>Delete virtual desktop if it is empty</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0">
-     <widget class="QSpinBox" name="kcfg_DesktopRemoveDelay">
-      <property name="toolTip">
-       <string>Case: Applications that open a window and, when an action is performed,
-close the window and open another window (Chrome profile selector).
-This timer avoid crash wayland, beacuse the process try open the window
- in the deleted virtual desktop</string>
-      </property>
-      <property name="maximum">
-       <number>5000</number>
-      </property>
-      <property name="singleStep">
-       <number>100</number>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="label_delay">
-      <property name="toolTip">
-       <string>Case: Applications that open a window and, when an action is performed,
-close the window and open another window (Chrome profile selector).
-This timer avoid crash wayland, beacuse the process try open the window
- in the deleted virtual desktop</string>
-      </property>
-      <property name="text">
-       <string>Delay to remove virtual desktop (milliseconds)</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QCheckBox" name="kcfg_WindowsOrderClose">
-      <property name="locale">
-       <locale language="English" country="Eswatini"/>
-      </property>
-      <property name="text">
-       <string>Reorder windows</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QLabel" name="titleClose">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>130</y>
-     <width>231</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="locale">
-    <locale language="English" country="Eswatini"/>
-   </property>
-   <property name="text">
-    <string>When a window has been closed</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="titleOpen">
    <property name="geometry">
     <rect>
@@ -192,16 +40,16 @@ This timer avoid crash wayland, beacuse the process try open the window
     <locale language="English" country="Eswatini"/>
    </property>
    <property name="text">
-    <string>When a window has been opened</string>
+    <string>When a window has been ...</string>
    </property>
   </widget>
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>300</y>
+     <y>270</y>
      <width>421</width>
-     <height>360</height>
+     <height>390</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -217,7 +65,7 @@ This timer avoid crash wayland, beacuse the process try open the window
        <x>10</x>
        <y>50</y>
        <width>390</width>
-       <height>270</height>
+       <height>300</height>
       </rect>
      </property>
      <property name="toolTip">
@@ -289,7 +137,7 @@ Preferences for the application “XDG Name” </string>
        <x>10</x>
        <y>100</y>
        <width>390</width>
-       <height>220</height>
+       <height>250</height>
       </rect>
      </property>
      <property name="toolTip">
@@ -2813,9 +2661,9 @@ cAAyMDI1LTEwLTA5VDEzOjM0OjAyKzAwOjAw/hJnIwAAAABJRU5ErkJggg==
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>200</y>
+       <y>210</y>
        <width>90</width>
-       <height>16</height>
+       <height>20</height>
       </rect>
      </property>
      <property name="toolTip">
@@ -2823,16 +2671,16 @@ cAAyMDI1LTEwLTA5VDEzOjM0OjAyKzAwOjAw/hJnIwAAAABJRU5ErkJggg==
 Remove this value to return to the default layouts</string>
      </property>
      <property name="text">
-      <string>Custom layout</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom layout&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QPlainTextEdit" name="kcfg_LayoutCustom">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>230</y>
+       <y>239</y>
        <width>391</width>
-       <height>81</height>
+       <height>111</height>
       </rect>
      </property>
      <property name="toolTip">
@@ -2840,7 +2688,247 @@ Remove this value to return to the default layouts</string>
 Remove this value to return to the default layouts</string>
      </property>
     </widget>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>210</y>
+       <width>210</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If you add a value to this field, it will take priority over the default layouts above it
+Remove this value to return to the default layouts</string>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;a href=&quot;https://codeberg.org/Serroda/fluid-tile/wiki/Custom-layout&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#ffbaba;&quot;&gt;How can I create a custom layout?&lt;/span&gt;&lt;/a&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
    </widget>
+  </widget>
+  <widget class="QTabWidget" name="tabWidget_2">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>40</y>
+     <width>421</width>
+     <height>190</height>
+    </rect>
+   </property>
+   <property name="locale">
+    <locale language="English" country="Spain"/>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <widget class="QWidget" name="tab">
+    <property name="locale">
+     <locale language="English" country="Spain"/>
+    </property>
+    <attribute name="title">
+     <string>Opened</string>
+    </attribute>
+    <widget class="QWidget" name="formLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>380</width>
+       <height>90</height>
+      </rect>
+     </property>
+     <layout class="QFormLayout" name="onOpen">
+      <property name="labelAlignment">
+       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="kcfg_MaximizeOpen">
+        <property name="locale">
+         <locale language="English" country="Eswatini"/>
+        </property>
+        <property name="text">
+         <string>Maximize if you have only one window</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="kcfg_DesktopAdd">
+        <property name="locale">
+         <locale language="English" country="Eswatini"/>
+        </property>
+        <property name="text">
+         <string>Create new virtual desktop if you dont have more space</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="kcfg_ModalsIgnore">
+        <property name="toolTip">
+         <string>Only works if the window is transient</string>
+        </property>
+        <property name="statusTip">
+         <string/>
+        </property>
+        <property name="locale">
+         <locale language="English" country="Eswatini"/>
+        </property>
+        <property name="text">
+         <string>Ignore modals opened by an application</string>
+        </property>
+        <property name="autoRepeat">
+         <bool>false</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_2">
+    <attribute name="title">
+     <string>Closed</string>
+    </attribute>
+    <widget class="QWidget" name="formLayoutWidget_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>300</width>
+       <height>141</height>
+      </rect>
+     </property>
+     <layout class="QFormLayout" name="onClose">
+      <property name="labelAlignment">
+       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="kcfg_MaximizeClose">
+        <property name="locale">
+         <locale language="English" country="Eswatini"/>
+        </property>
+        <property name="text">
+         <string>Maximize the last window</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="kcfg_DesktopRemove">
+        <property name="locale">
+         <locale language="English" country="Eswatini"/>
+        </property>
+        <property name="text">
+         <string>Delete virtual desktop if it is empty</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QSpinBox" name="kcfg_DesktopRemoveDelay">
+        <property name="toolTip">
+         <string>Case: Applications that open a window and, when an action is performed,
+close the window and open another window (Chrome profile selector).
+This timer avoid crash wayland, beacuse the process try open the window
+ in the deleted virtual desktop</string>
+        </property>
+        <property name="maximum">
+         <number>5000</number>
+        </property>
+        <property name="singleStep">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_delay">
+        <property name="toolTip">
+         <string>Case: Applications that open a window and, when an action is performed,
+close the window and open another window (Chrome profile selector).
+This timer avoid crash wayland, beacuse the process try open the window
+ in the deleted virtual desktop</string>
+        </property>
+        <property name="text">
+         <string>Delay to remove virtual desktop (milliseconds)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="kcfg_WindowsOrderClose">
+        <property name="locale">
+         <locale language="English" country="Eswatini"/>
+        </property>
+        <property name="text">
+         <string>Reorder windows</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_3">
+    <attribute name="title">
+     <string>Moved</string>
+    </attribute>
+    <widget class="QWidget" name="formLayoutWidget_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>381</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <layout class="QFormLayout" name="onOpen_2">
+      <property name="labelAlignment">
+       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="kcfg_UIEnable">
+        <property name="toolTip">
+         <string>Only works if the window is transient</string>
+        </property>
+        <property name="statusTip">
+         <string/>
+        </property>
+        <property name="locale">
+         <locale language="English" country="Eswatini"/>
+        </property>
+        <property name="text">
+         <string>Enable UI to set windows on tiles</string>
+        </property>
+        <property name="autoRepeat">
+         <bool>false</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="titleOpen_2">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>240</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="locale">
+    <locale language="English" country="Eswatini"/>
+   </property>
+   <property name="text">
+    <string>Other options</string>
+   </property>
   </widget>
  </widget>
  <customwidgets>

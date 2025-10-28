@@ -17,13 +17,13 @@ Rectangle {
 
         Behavior on color {
             ColorAnimation {
-                duration: 300
+                duration: 200
             }
         }
 
         Behavior on border.color {
             ColorAnimation {
-                duration: 300
+                duration: 200
             }
         }
 

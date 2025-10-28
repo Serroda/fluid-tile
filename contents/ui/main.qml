@@ -14,7 +14,8 @@ Window {
     property var config: ({})
     property var removeDesktopInfo: ({})
     property var layoutOrdered: []
-    property int tileActived: 0
+    property int tileActived: -1
+    property var windowGeometryOnMove: ({})
 
     // Load user config
     function loadConfig() {
@@ -28,7 +29,8 @@ Window {
             desktopRemove: KWin.readConfig("DesktopRemove", true),
             desktopRemoveDelay: KWin.readConfig("DesktopRemoveDelay", 300),
             modalsIgnore: KWin.readConfig("ModalsIgnore", true),
-            layoutDefault: KWin.readConfig("LayoutDefault", 2)
+            layoutDefault: KWin.readConfig("LayoutDefault", 2),
+            UIEnable: KWin.readConfig("UIEnable", true)
         };
 
         try {
@@ -190,8 +192,11 @@ Window {
     function setWindowsSignals() {
         for (const windowItem of Workspace.stackingOrder) {
             if (Util.checkBlocklist(windowItem, config.appsBlocklist, config.modalsIgnore) === false) {
-                windowItem.interactiveMoveResizeStarted.connect(onUserMovedResizedStart);
-                windowItem.interactiveMoveResizeFinished.connect(onUserMovedResizedEnd);
+                windowItem.interactiveMoveResizeStarted.connect(onUserMoveStart);
+                windowItem.interactiveMoveResizeStepped.connect(onUserMoveStepped);
+                windowItem.interactiveMoveResizeFinished.connect(() => {
+                    onUserMoveFinished(windowItem);
+                });
             }
         }
     }
@@ -201,13 +206,37 @@ Window {
         layoutOrdered = getTilesFromActualDesktop();
     }
 
-    function onUserMovedResizedStart() {
+    function onUserMoveStart() {
         resetLayout();
-        visible = true;
     }
 
-    function onUserMovedResizedEnd() {
-        visible = false;
+    function onUserMoveStepped(windowGeometry) {
+        if (windowGeometryOnMove.width === undefined && windowGeometryOnMove.height === undefined) {
+            windowGeometryOnMove = {
+                width: windowGeometry.width,
+                height: windowGeometry.height
+            };
+        }
+
+        if (windowGeometryOnMove.width !== windowGeometry.width && windowGeometryOnMove.height !== windowGeometry.height) {
+            return;
+        }
+
+        visible = true;
+        const cursor = Workspace.cursorPos;
+        tileActived = layoutOrdered.findIndex(tile => {
+            const limitX = tile.absoluteGeometry.x + tile.absoluteGeometry.width;
+            const limitY = tile.absoluteGeometry.y + tile.absoluteGeometry.height;
+            return tile.absoluteGeometry.x <= cursor.x && limitX >= cursor.x && tile.absoluteGeometry.y <= cursor.y && limitY >= cursor.y;
+        });
+    }
+
+    function onUserMoveFinished(windowItem) {
+        if (visible === true) {
+            layoutOrdered[tileActived].manage(windowItem);
+            visible = false;
+            windowGeometryOnMove = {};
+        }
     }
 
     function getTilesFromActualDesktop() {
@@ -219,8 +248,13 @@ Window {
 
         function onWindowAdded(client) {
             root.onWindowAdded(client);
-            client.interactiveMoveResizeStarted.connect(root.onUserMovedResizedStart);
-            client.interactiveMoveResizeFinished.connect(root.onUserMovedResizedEnd);
+            if (root.config.UIEnable === true) {
+                client.interactiveMoveResizeStarted.connect(root.onUserMoveStart);
+                client.interactiveMoveResizeStepped.connect(root.onUserMoveStepped);
+                client.interactiveMoveResizeFinished.connect(() => {
+                    root.onUserMoveFinished(client);
+                });
+            }
         }
         function onWindowRemoved(client) {
             root.onWindowRemoved(client);
@@ -229,7 +263,9 @@ Window {
 
     Component.onCompleted: {
         loadConfig();
-        setWindowsSignals();
+        if (config.UIEnable === true) {
+            setWindowsSignals();
+        }
     }
 
     Repeater {

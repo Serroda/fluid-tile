@@ -23,6 +23,9 @@
         <entry name="ModalsIgnore" type="Bool">
             <default>true</default>
         </entry>
+        <entry name="UIEnable" type="Bool">
+            <default>true</default>
+        </entry>
         <entry name="TilesPriority" type="StringList">
             <default>Width,Height,Top,Left,Right,Bottom</default>
         </entry>
