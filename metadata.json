@@ -1,7 +1,7 @@
 {
   "KPlugin": {
     "Name": "Fluid Tile",
-    "Description": "Simple auto tiling for KDE Plasma 6",
+    "Description": "Simple auto tiling for KDE Plasma",
     "Icon": "preferences-system-windows",
     "Authors": [
       {
@@ -17,6 +17,6 @@
   "X-Plasma-API": "declarativescript",
   "KPackageStructure": "KWin/Script",
   "X-KDE-ConfigModule": "kwin/effects/configs/kcm_kwin4_genericscripted",
-  "X-Plasma-API-Minimum-Version": "6.0",
+  "X-Plasma-API-Minimum-Version": "6.4",
   "X-Plasma-MainScript": "ui/main.qml"
 }

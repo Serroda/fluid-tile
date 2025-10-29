@@ -51,7 +51,7 @@ Window {
     //Get tiles from the screen and virtual desktop
     function getOrderedTiles(desktop, screen) {
         const tileRoot = Workspace.rootTile(screen, desktop);
-        return Util.orderTiles(tileRoot.tiles, config.tilesPriority);
+        return Util.orderTiles(tileRoot.tiles.length !== 0 ? tileRoot.tiles : [tileRoot], config.tilesPriority);
     }
 
     // Get all windows from the virtual desktop except the given window
