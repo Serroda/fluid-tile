@@ -233,8 +233,8 @@ Window {
 
     function onUserMoveFinished(windowItem) {
         if (visible === true) {
-            layoutOrdered[tileActived].manage(windowItem);
             visible = false;
+            layoutOrdered[tileActived]?.manage(windowItem);
             windowGeometryOnMove = {};
         }
     }
