@@ -23,6 +23,9 @@
         <entry name="ModalsIgnore" type="Bool">
             <default>true</default>
         </entry>
+        <entry name="UIEnable" type="Bool">
+            <default>true</default>
+        </entry>
         <entry name="TilesPriority" type="StringList">
             <default>Width,Height,Top,Left,Right,Bottom</default>
         </entry>
@@ -38,8 +41,10 @@
             </choices>
             <default>1</default>
         </entry>
+        <entry name="LayoutCustom" type="String">
+        </entry>
         <entry name="AppsBlocklist" type="StringList">
-            <default>org.kde.kded6,qt-sudo,org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter</default>
+            <default>wl-paste,wl-copy,org.kde.kded6,qt-sudo,org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter</default>
         </entry>
     </group>
 </kcfg>
