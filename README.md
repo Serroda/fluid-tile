@@ -24,10 +24,12 @@ If you like the project, you can support me by buying me a coffee or with other 
 - ⚙️ User options
 - 🔢 Configures the priority order of windows according to the width, height and position of the tiles
 - 🔳 Select the default tile layout when creating a new virtual desktop
+- 🖌️ Custom layout when creating a new virtual desktop
+- 🤏🏻 Move your windows between tiles with the UI
 
 ## Preview
 
-[![Watch the video](https://i.ytimg.com/vi/U04QsvblbSA/hqdefault.jpg?sqp=-oaymwFBCNACELwBSFryq4qpAzMIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB8AEB-AH-CIAC0AWKAgwIABABGH8gHSgZMA8=&rs=AOn4CLDTqR09B7FJOcqmOJQ5cqNI4rwRPA)](https://youtu.be/U04QsvblbSA)
+[![Watch the video](https://i9.ytimg.com/vi/Dk0h8WTxI20/mqdefault.jpg?sqp=CJCvh8gG-oaymwEmCMACELQB8quKqQMa8AEB-AH-CIAC0AWKAgwIABABGGUgZShlMA8=&rs=AOn4CLAXBvFn__jkSJ1qtUC2GouHjDEn3A)](https://youtu.be/Dk0h8WTxI20)
 
 ## Screenshots
 
