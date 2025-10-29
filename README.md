@@ -29,7 +29,7 @@ If you like the project, you can support me by buying me a coffee or with other 
 
 ## Preview
 
-[![Watch the video](https://i9.ytimg.com/vi/Dk0h8WTxI20/mqdefault.jpg?sqp=CJCvh8gG-oaymwEmCMACELQB8quKqQMa8AEB-AH-CIAC0AWKAgwIABABGGUgZShlMA8=&rs=AOn4CLAXBvFn__jkSJ1qtUC2GouHjDEn3A)](https://youtu.be/Dk0h8WTxI20)
+<a href="https://youtu.be/Dk0h8WTxI20"><img src="https://i.ytimg.com/vi/Dk0h8WTxI20/maxresdefault.jpg" width="450"></a>
 
 ## Screenshots
 
