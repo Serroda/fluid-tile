@@ -248,7 +248,7 @@ Window {
 
         function onWindowAdded(client) {
             root.onWindowAdded(client);
-            if (root.config.UIEnable === true) {
+            if (root.config.UIEnable === true && Util.checkBlocklist(client, root.config.appsBlocklist, root.config.modalsIgnore) === false) {
                 client.interactiveMoveResizeStarted.connect(root.onUserMoveStart);
                 client.interactiveMoveResizeStepped.connect(root.onUserMoveStepped);
                 client.interactiveMoveResizeFinished.connect(() => {
