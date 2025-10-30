@@ -26,7 +26,7 @@ Window {
             maximizeOpen: KWin.readConfig("MaximizeOpen", true),
             windowsOrderClose: KWin.readConfig("WindowsOrderClose", true),
             desktopAdd: KWin.readConfig("DesktopAdd", true),
-            desktopRemove: KWin.readConfig("DesktopRemove", true),
+            desktopRemove: KWin.readConfig("DesktopRemove", false),
             desktopRemoveDelay: KWin.readConfig("DesktopRemoveDelay", 300),
             modalsIgnore: KWin.readConfig("ModalsIgnore", true),
             layoutDefault: KWin.readConfig("LayoutDefault", 2),
@@ -42,10 +42,16 @@ Window {
     }
 
     //Prepare for set tile layout
-    function setLayout(desktop, screen, layout) {
-        const tileRoot = Workspace.rootTile(screen, desktop);
-        Util.deleteTiles(tileRoot.tiles);
-        return Util.setTiles(tileRoot.tiles[0] ?? tileRoot, layout);
+    function setLayout(desktop, layout) {
+        for (const screen of Workspace.screens) {
+            const tileRoot = Workspace.rootTile(screen, desktop);
+            Util.deleteTiles(tileRoot.tiles);
+            const result = Util.setTiles(tileRoot.tiles[0] ?? tileRoot, layout);
+
+            if (result === false) {
+                console.log("Error on setLayout");
+            }
+        }
     }
 
     //Get tiles from the screen and virtual desktop
@@ -91,13 +97,14 @@ Window {
 
                         Workspace.currentDesktop = itemDesktop;
                         windowMain.desktops = [itemDesktop];
+                        tilesOrdered[0].manage(windowMain);
 
                         if (maximize === true && windowsOther.length === 0) {
                             windowMain.setMaximize(true, true);
                         } else {
                             windowMain.setMaximize(false, false);
-                            tilesOrdered[0].manage(windowMain);
                         }
+
                         return false;
                     }
                 } else if (mode === 1 && windowsOther.length !== 0) {
@@ -116,6 +123,7 @@ Window {
         return true;
     }
 
+    //Trigger when a window is added to the desktop
     function onWindowAdded(windowNew) {
         if (Util.checkBlocklist(windowNew, config.appsBlocklist, config.modalsIgnore) === true) {
             return;
@@ -138,7 +146,7 @@ Window {
                 layout = config.layoutCustom;
             }
 
-            setLayout(Workspace.currentDesktop, Workspace.activeScreen, layout);
+            setLayout(Workspace.currentDesktop, layout);
 
             if (config.maximizeOpen === false) {
                 const tilesOrdered = getTilesFromActualDesktop();
@@ -149,6 +157,7 @@ Window {
         }
     }
 
+    //Trigger when a window is remove to the desktop
     function onWindowRemoved(windowClosed) {
         if (Util.checkBlocklist(windowClosed, config.appsBlocklist, config.modalsIgnore) === true) {
             return;
@@ -161,7 +170,6 @@ Window {
         }
 
         removeDesktopInfo.desktopsId = windowClosed.desktops.map(d => d.id);
-        removeDesktopInfo.screenId = windowClosed.output.serialNumber;
         removeDesktopInfo.windowClosed = windowClosed;
         timerRemoveDesktop.start();
     }
@@ -175,20 +183,39 @@ Window {
             //Case: Applications that open a window and, when an action is performed,
             //close the window and open another window (Chrome profile selector).
             //This timer avoid crash wayland
-            const screen = Workspace.screens.find(s => s.serialNumber === root.removeDesktopInfo.screenId);
-            if (screen === undefined) {
-                return;
-            }
-            for (const desktopItem of Workspace.desktops.filter(d => root.removeDesktopInfo.desktopsId.includes(d.id))) {
-                const windowsOtherSpecialCases = root.getWindows(root.removeDesktopInfo.windowClosed, desktopItem, screen);
-                if (windowsOtherSpecialCases.length === 0) {
-                    Workspace.removeDesktop(desktopItem);
+
+            const desktopsRemove = [];
+
+            desktopLoop: for (const desktopItem of Workspace.desktops.filter(d => root.removeDesktopInfo.desktopsId.includes(d.id))) {
+                for (const screenItem of Workspace.screens) {
+                    const windowsOtherSpecialCases = root.getWindows(root.removeDesktopInfo.windowClosed, desktopItem, screenItem);
+
+                    if (windowsOtherSpecialCases.length !== 0) {
+                        continue desktopLoop;
+                    }
                 }
+
+                desktopsRemove.push(desktopItem);
             }
+
+            for (const desktop of desktopsRemove) {
+                Workspace.removeDesktop(desktop);
+            }
+
             root.removeDesktopInfo = {};
         }
     }
 
+    //Get all tiles from the actual desktop with all screens
+    function getTilesFromActualDesktop() {
+        let tiles = [];
+        for (const screen of Workspace.screens) {
+            tiles = tiles.concat(getOrderedTiles(Workspace.currentDesktop, screen));
+        }
+        return tiles;
+    }
+
+    //Windows triggers
     function setWindowsSignals() {
         for (const windowItem of Workspace.stackingOrder) {
             if (Util.checkBlocklist(windowItem, config.appsBlocklist, config.modalsIgnore) === false) {
@@ -201,15 +228,18 @@ Window {
         }
     }
 
+    //Reset UI
     function resetLayout() {
         layoutOrdered = [];
         layoutOrdered = getTilesFromActualDesktop();
     }
 
+    // When a window start move with the cursor
     function onUserMoveStart() {
         resetLayout();
     }
 
+    // When a window is moving with the cursor
     function onUserMoveStepped(windowGeometry) {
         if (windowGeometryOnMove.width === undefined && windowGeometryOnMove.height === undefined) {
             windowGeometryOnMove = {
@@ -231,16 +261,14 @@ Window {
         });
     }
 
-    function onUserMoveFinished(windowItem) {
+    //When the user release the window
+    function onUserMoveFinished(windowMoved) {
         if (visible === true) {
             visible = false;
-            layoutOrdered[tileActived]?.manage(windowItem);
+            layoutOrdered[tileActived]?.manage(windowMoved);
             windowGeometryOnMove = {};
+            tileActived = -1;
         }
-    }
-
-    function getTilesFromActualDesktop() {
-        return getOrderedTiles(Workspace.currentDesktop, Workspace.activeScreen);
     }
 
     Connections {
@@ -268,6 +296,7 @@ Window {
         }
     }
 
+    //Tile layout
     Repeater {
         model: root.layoutOrdered
         delegate: Tile {
