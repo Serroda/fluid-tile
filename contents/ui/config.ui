@@ -2875,7 +2875,7 @@ This timer avoid crash wayland, beacuse the process try open the window
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>381</width>
+       <width>401</width>
        <height>30</height>
       </rect>
      </property>
@@ -2886,7 +2886,7 @@ This timer avoid crash wayland, beacuse the process try open the window
       <item row="0" column="0">
        <widget class="QCheckBox" name="kcfg_UIEnable">
         <property name="toolTip">
-         <string>Only works if the window is transient</string>
+         <string/>
         </property>
         <property name="statusTip">
          <string/>
