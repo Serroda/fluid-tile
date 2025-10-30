@@ -43,7 +43,6 @@ If you like the project, you can support me by buying me a coffee or with other 
 - [Installation](https://codeberg.org/Serroda/fluid-tile/wiki/Installation)
 - [User settings](https://codeberg.org/Serroda/fluid-tile/wiki/User-settings)
 - [Custom layout](https://codeberg.org/Serroda/fluid-tile/wiki/Custom-layout)
-- [How can I configure **Fluid tile** for multiple monitors? ](https://codeberg.org/Serroda/fluid-tile/wiki/Multiple-monitors)
 - [How do I prevent certain applications from moving around the layout with **Blocklist**? ](https://codeberg.org/Serroda/fluid-tile/wiki/Blocklist)
 
 ## F.A.Q
