@@ -27,6 +27,7 @@ Window {
             windowsOrderClose: KWin.readConfig("WindowsOrderClose", true),
             desktopAdd: KWin.readConfig("DesktopAdd", true),
             desktopRemove: KWin.readConfig("DesktopRemove", false),
+            desktopRemoveMin: KWin.readConfig("DesktopRemoveMin", 1),
             desktopRemoveDelay: KWin.readConfig("DesktopRemoveDelay", 300),
             modalsIgnore: KWin.readConfig("ModalsIgnore", true),
             layoutDefault: KWin.readConfig("LayoutDefault", 2),
@@ -165,7 +166,7 @@ Window {
 
         const continueProcess = setWindowsTiles(windowClosed, windowClosed.desktops, [windowClosed.output], config.maximizeClose, 1);
 
-        if (continueProcess === false || config.desktopRemove === false) {
+        if (continueProcess === false || config.desktopRemove === false || Workspace.desktops.length === 1 || config.desktopRemoveMin === Workspace.desktops.length) {
             return;
         }
 
