@@ -1,6 +1,6 @@
 {
   "KPlugin": {
-    "Name": "Fluid Tile",
+    "Name": "Fluid tile",
     "Description": "Simple auto tiling for KDE Plasma",
     "Icon": "preferences-system-windows",
     "Authors": [
