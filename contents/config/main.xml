@@ -11,6 +11,9 @@
         <entry name="WindowsOrderClose" type="Bool">
             <default>true</default>
         </entry>
+        <entry name="WindowsOrderMove" type="Bool">
+            <default>true</default>
+        </entry>
         <entry name="DesktopAdd" type="Bool">
             <default>true</default>
         </entry>

@@ -16,6 +16,7 @@ Window {
     property var layoutOrdered: []
     property int tileActived: -1
     property var windowGeometryOnMove: ({})
+    property var windowFocused: ({})
 
     // Load user config
     function loadConfig() {
@@ -25,6 +26,7 @@ Window {
             maximizeClose: KWin.readConfig("MaximizeClose", true),
             maximizeOpen: KWin.readConfig("MaximizeOpen", true),
             windowsOrderClose: KWin.readConfig("WindowsOrderClose", true),
+            windowsOrderMove: KWin.readConfig("WindowsOrderMove", true),
             desktopAdd: KWin.readConfig("DesktopAdd", true),
             desktopRemove: KWin.readConfig("DesktopRemove", false),
             desktopRemoveMin: KWin.readConfig("DesktopRemoveMin", 1),
@@ -216,14 +218,30 @@ Window {
         return tiles;
     }
 
-    //Windows triggers
+    //Set signals to all Windows
     function setWindowsSignals() {
         for (const windowItem of Workspace.stackingOrder) {
-            if (Util.checkBlocklist(windowItem, config.appsBlocklist, config.modalsIgnore) === false) {
-                windowItem.interactiveMoveResizeStarted.connect(onUserMoveStart);
-                windowItem.interactiveMoveResizeStepped.connect(onUserMoveStepped);
-                windowItem.interactiveMoveResizeFinished.connect(() => {
-                    onUserMoveFinished(windowItem);
+            setSignalsToWindow(windowItem);
+        }
+    }
+
+    //Set signals to window
+    function setSignalsToWindow(windowMain) {
+        if (Util.checkBlocklist(windowMain, config.appsBlocklist, config.modalsIgnore) === false) {
+            if (config.UIEnable === true) {
+                windowMain.interactiveMoveResizeStarted.connect(onUserMoveStart);
+                windowMain.interactiveMoveResizeStepped.connect(onUserMoveStepped);
+                windowMain.interactiveMoveResizeFinished.connect(() => {
+                    onUserMoveFinished(windowMain);
+                });
+            }
+
+            if (config.windowsOrderMove === true) {
+                windowMain.activeChanged.connect(() => {
+                    onUserFocusWindow(windowMain);
+                });
+                windowMain.tileChanged.connect(tile => {
+                    exchangeTiles(windowMain, tile);
                 });
             }
         }
@@ -233,6 +251,32 @@ Window {
     function resetLayout() {
         layoutOrdered = [];
         layoutOrdered = getTilesFromActualDesktop();
+    }
+
+    //Save tile when user focus a window
+    function onUserFocusWindow(windowMain) {
+        if (windowMain.active === true) {
+            windowFocused.tile = windowMain.tile;
+            windowFocused.window = windowMain;
+        }
+    }
+
+    //Save tile when user focus a window
+    function exchangeTiles(windowMain, tileNew) {
+        if (windowFocused.window === undefined || windowFocused.tile === undefined || windowFocused.tile === null || tileNew === undefined) {
+            return;
+        }
+
+        for (const windowItem of tileNew.windows) {
+            windowItem.setMaximize(false, false);
+            if (windowItem !== windowMain) {
+                windowFocused.tile.manage(windowItem);
+            }
+        }
+
+        if (windowMain === windowFocused.window) {
+            windowFocused.tile = windowMain.tile;
+        }
     }
 
     // When a window start move with the cursor
@@ -277,13 +321,8 @@ Window {
 
         function onWindowAdded(client) {
             root.onWindowAdded(client);
-            if (root.config.UIEnable === true && Util.checkBlocklist(client, root.config.appsBlocklist, root.config.modalsIgnore) === false) {
-                client.interactiveMoveResizeStarted.connect(root.onUserMoveStart);
-                client.interactiveMoveResizeStepped.connect(root.onUserMoveStepped);
-                client.interactiveMoveResizeFinished.connect(() => {
-                    root.onUserMoveFinished(client);
-                });
-            }
+            root.setSignalsToWindow(client);
+            root.onUserFocusWindow(client);
         }
         function onWindowRemoved(client) {
             root.onWindowRemoved(client);
@@ -292,9 +331,7 @@ Window {
 
     Component.onCompleted: {
         loadConfig();
-        if (config.UIEnable === true) {
-            setWindowsSignals();
-        }
+        setWindowsSignals();
     }
 
     //Tile layout
