@@ -168,7 +168,7 @@ Window {
 
         const continueProcess = setWindowsTiles(windowClosed, windowClosed.desktops, [windowClosed.output], config.maximizeClose, 1);
 
-        if (continueProcess === false || config.desktopRemove === false || Workspace.desktops.length === 1 || config.desktopRemoveMin === Workspace.desktops.length) {
+        if (continueProcess === false || config.desktopRemove === false || Workspace.desktops.length === 1 || Workspace.desktops.length <= config.desktopRemoveMin) {
             return;
         }
 
