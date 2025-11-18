@@ -27,6 +27,7 @@ Window {
             maximizeOpen: KWin.readConfig("MaximizeOpen", true),
             windowsOrderClose: KWin.readConfig("WindowsOrderClose", true),
             windowsOrderMove: KWin.readConfig("WindowsOrderMove", true),
+            windowsExtend: KWin.readConfig("WindowsExtend", true),
             desktopAdd: KWin.readConfig("DesktopAdd", true),
             desktopRemove: KWin.readConfig("DesktopRemove", false),
             desktopRemoveMin: KWin.readConfig("DesktopRemoveMin", 1),
@@ -106,6 +107,12 @@ Window {
                             windowMain.setMaximize(true, true);
                         } else {
                             windowMain.setMaximize(false, false);
+                            if (config.windowsExtend === true) {
+                                for (let x = 0; x < windowsOther.length; x++) {
+                                    Util.extendWindow(windowsOther[x], windowsOther[x].tile);
+                                }
+                                Util.extendWindow(windowMain, windowMain.tile);
+                            }
                         }
 
                         return false;
@@ -117,6 +124,11 @@ Window {
                         } else {
                             windowsOther[x].setMaximize(false, false);
                             tilesOrdered[x].manage(windowsOther[x]);
+                        }
+                    }
+                    if (config.windowsExtend === true) {
+                        for (let x = 0; x < windowsOther.length; x++) {
+                            Util.extendWindow(windowsOther[x], windowsOther[x].tile);
                         }
                     }
                     return false;
@@ -263,7 +275,7 @@ Window {
 
     //Save tile when user focus a window
     function exchangeTiles(windowMain, tileNew) {
-        if (windowFocused.window === undefined || windowFocused.tile === undefined || windowFocused.tile === null || tileNew === undefined) {
+        if (windowFocused.window === undefined || windowFocused.tile === undefined || windowFocused.tile === null || tileNew === null) {
             return;
         }
 

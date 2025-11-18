@@ -182,3 +182,38 @@ function deleteTiles(tiles) {
     tiles[index - 1].remove();
   }
 }
+
+// Check if the is empty without windows
+function checkEmptyTiles(tileWindow, tileItem) {
+  if (tileItem === null) {
+    return false;
+  }
+
+  if (tileItem.windows.length !== 0) {
+    return false;
+  }
+
+  for (const tileChild of tileItem.tiles) {
+    if (tileChild === tileWindow) {
+      continue;
+    }
+
+    if (
+      tileChild.windows.length !== 0 ||
+      checkEmptyTiles(tileWindow, tileChild) === false
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// Extend windows in empty space searching tiles without windows
+function extendWindow(windowItem, tileItem) {
+  if (checkEmptyTiles(windowItem.tile, tileItem.parent) === false) {
+    tileItem.manage(windowItem);
+  } else {
+    extendWindow(windowItem, tileItem.parent);
+  }
+}
