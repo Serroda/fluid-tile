@@ -184,34 +184,44 @@ function deleteTiles(tiles) {
 }
 
 // Check if the is empty without windows
-function checkEmptyTiles(tileWindow, tileItem) {
+function checkEmptyTiles(tileWindow, tileItem, tileIgnore) {
   if (tileItem === null) {
+    console.log("tile undefined");
     return false;
   }
 
   if (tileItem.windows.length !== 0) {
+    console.log("tile has windows");
     return false;
   }
 
   for (const tileChild of tileItem.tiles) {
-    if (tileChild === tileWindow) {
+    if (tileChild === tileWindow || tileChild === tileIgnore) {
+      console.log("jump");
       continue;
     }
 
-    if (
-      tileChild.windows.length !== 0 ||
-      checkEmptyTiles(tileWindow, tileChild) === false
-    ) {
+    // ERROR: al cerrar la ultima ventana del layout, no rellena el hueco, dice que el tile sigue teniendo una ventana
+    // `tile has windows` esto significa que aun no ha desaparecido la ventana cuando se ejecuta el codigo,
+    // sera necesario buscar la referencia
+
+    console.log(tileChild);
+    const test = checkEmptyTiles(tileWindow, tileChild);
+    if (tileChild.windows.length !== 0 || test === false) {
+      console.log("not space " + tileChild.windows.length + " " + test);
       return false;
     }
   }
 
+  console.log("space");
   return true;
 }
 
 // Extend windows in empty space searching tiles without windows
-function extendWindow(windowItem, tileItem) {
-  if (checkEmptyTiles(windowItem.tile, tileItem.parent) === false) {
+function extendWindow(windowItem, tileItem, tileIgnore) {
+  if (tileItem === null) return;
+
+  if (checkEmptyTiles(windowItem.tile, tileItem.parent, tileIgnore) === false) {
     tileItem.manage(windowItem);
   } else {
     extendWindow(windowItem, tileItem.parent);

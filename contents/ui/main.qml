@@ -128,7 +128,8 @@ Window {
                     }
                     if (config.windowsExtend === true) {
                         for (let x = 0; x < windowsOther.length; x++) {
-                            Util.extendWindow(windowsOther[x], windowsOther[x].tile);
+                            console.log(x);
+                            Util.extendWindow(windowsOther[x], windowsOther[x].tile, windowMain.tile);
                         }
                     }
                     return false;
