@@ -101,7 +101,7 @@ function setTiles(tileParent, layout) {
       layout[index].ref = tileParent.tiles[index];
     }
 
-    setGeometry(layout[index]);
+    setGeometryTile(layout[index]);
   }
 
   for (let x = 0; x < layout.length; x++) {
@@ -114,7 +114,7 @@ function setTiles(tileParent, layout) {
 }
 
 // Set tile size and position
-function setGeometry(item) {
+function setGeometryTile(item) {
   if (item.width !== undefined) {
     const delta =
       item.width * item.ref.parent.absoluteGeometry.width -
@@ -183,47 +183,180 @@ function deleteTiles(tiles) {
   }
 }
 
-// Check if the is empty without windows
-function checkEmptyTiles(tileWindow, tileItem, tileIgnore) {
-  if (tileItem === null) {
-    console.log("tile undefined");
-    return false;
-  }
+//Extend window if empty space is available
+function extendWindows(tilesLayout, windows, panelsSize) {
+  resetWindowGeometry(windows, panelsSize);
 
-  if (tileItem.windows.length !== 0) {
-    console.log("tile has windows");
-    return false;
-  }
+  const windowQueue = [...windows];
+  const tileQueue = tilesLayout.map((tile) => ({ tile, completed: false }));
 
-  for (const tileChild of tileItem.tiles) {
-    if (tileChild === tileWindow || tileChild === tileIgnore) {
-      console.log("jump");
+  for (const window of windowQueue) {
+    if (window.tile === null) {
       continue;
     }
 
-    // ERROR: al cerrar la ultima ventana del layout, no rellena el hueco, dice que el tile sigue teniendo una ventana
-    // `tile has windows` esto significa que aun no ha desaparecido la ventana cuando se ejecuta el codigo,
-    // sera necesario buscar la referencia
+    let windowChanged = false;
 
-    console.log(tileChild);
-    const test = checkEmptyTiles(tileWindow, tileChild);
-    if (tileChild.windows.length !== 0 || test === false) {
-      console.log("not space " + tileChild.windows.length + " " + test);
-      return false;
+    for (const tileItem of tileQueue) {
+      const tile = tileItem.tile;
+
+      if (tile.windows.length !== 0 || tileItem.completed === true) {
+        continue;
+      }
+
+      const tileEndpointX =
+        tile.absoluteGeometry.x + tile.absoluteGeometry.width;
+      const tileEndpointY =
+        tile.absoluteGeometry.y + tile.absoluteGeometry.height;
+
+      const windowEndpointX =
+        window.tile.absoluteGeometry.x + window.tile.absoluteGeometry.width;
+      const windowEndpointY =
+        window.tile.absoluteGeometry.y + window.tile.absoluteGeometry.height;
+
+      //left
+      if (
+        tile.absoluteGeometry.x < window.frameGeometry.x &&
+        tileEndpointX === window.frameGeometry.x
+      ) {
+        setGeometryWindow(
+          window,
+          {
+            x: tile.absoluteGeometry.x,
+            y: window.tile.absoluteGeometry.y,
+            width:
+              tile.absoluteGeometry.width + window.tile.absoluteGeometry.width,
+            height: window.tile.absoluteGeometry.height,
+          },
+          panelsSize,
+        );
+
+        tileItem.completed = true;
+        windowChanged = true;
+        console.log("left");
+      }
+
+      //top
+      if (
+        tile.absoluteGeometry.y < window.frameGeometry.y &&
+        tileEndpointY === window.frameGeometry.y
+      ) {
+        setGeometryWindow(
+          window,
+          {
+            x: window.tile.absoluteGeometry.x,
+            y: tile.absoluteGeometry.y,
+            width: tile.absoluteGeometry.width,
+            height:
+              tile.absoluteGeometry.height +
+              window.tile.absoluteGeometry.height,
+          },
+          panelsSize,
+        );
+
+        tileItem.completed = true;
+        windowChanged = true;
+        console.log("top");
+      }
+
+      //right
+      if (
+        tile.absoluteGeometry.x > window.frameGeometry.x &&
+        tile.absoluteGeometry.x === windowEndpointX
+      ) {
+        setGeometryWindow(
+          window,
+          {
+            x: window.tile.absoluteGeometry.x,
+            y: window.tile.absoluteGeometry.y,
+            width:
+              tile.absoluteGeometry.width + window.tile.absoluteGeometry.width,
+            height: tile.absoluteGeometry.height,
+          },
+          panelsSize,
+        );
+
+        tileItem.completed = true;
+        windowChanged = true;
+        console.log("right");
+      }
+
+      //bottom
+      if (
+        tile.absoluteGeometry.y > window.frameGeometry.y &&
+        tile.absoluteGeometry.y === windowEndpointY
+      ) {
+        setGeometryWindow(
+          window,
+          {
+            x: window.tile.absoluteGeometry.x,
+            y: window.tile.absoluteGeometry.y,
+            width: tile.absoluteGeometry.width,
+            height:
+              tile.absoluteGeometry.height +
+              window.tile.absoluteGeometry.height,
+          },
+          panelsSize,
+        );
+
+        tileItem.completed = true;
+        windowChanged = true;
+        console.log("bottom");
+      }
     }
-  }
 
-  console.log("space");
-  return true;
+    if (windowChanged === true) windowQueue.push(window);
+  }
 }
 
-// Extend windows in empty space searching tiles without windows
-function extendWindow(windowItem, tileItem, tileIgnore) {
-  if (tileItem === null) return;
-
-  if (checkEmptyTiles(windowItem.tile, tileItem.parent, tileIgnore) === false) {
-    tileItem.manage(windowItem);
-  } else {
-    extendWindow(windowItem, tileItem.parent);
+//Set default tile size
+function resetWindowGeometry(windows, panelsSize) {
+  for (const window of windows) {
+    setGeometryWindow(
+      window,
+      {
+        x: window.tile.absoluteGeometry.x,
+        y: window.tile.absoluteGeometry.y,
+        width: window.tile.absoluteGeometry.width,
+        height: window.tile.absoluteGeometry.height,
+      },
+      panelsSize,
+    );
   }
+}
+
+//Wrapper
+function setGeometryWindow(window, geometry, panelsSize) {
+  window.frameGeometry = {
+    x:
+      geometry.x +
+      window.tile.padding +
+      (window.tile.absoluteGeometry.x === 0 ? panelsSize.left : 0),
+    y:
+      geometry.y +
+      window.tile.padding +
+      (window.tile.absoluteGeometry.y === 0 ? panelsSize.top : 0),
+    width:
+      geometry.width -
+      (window.tile.absoluteGeometry.x === 0 ? panelsSize.left : 0) -
+      (window.tile.absoluteGeometry.width +
+        window.tile.absoluteGeometry.x -
+        panelsSize.right -
+        panelsSize.left ===
+      panelsSize.workarea.width
+        ? panelsSize.right
+        : 0) -
+      window.tile.padding * 2,
+    height:
+      geometry.height -
+      (window.tile.absoluteGeometry.y === 0 ? panelsSize.top : 0) -
+      (window.tile.absoluteGeometry.height +
+        window.tile.absoluteGeometry.y -
+        panelsSize.bottom -
+        panelsSize.top ===
+      panelsSize.workarea.height
+        ? panelsSize.bottom
+        : 0) -
+      window.tile.padding * 2,
+  };
 }

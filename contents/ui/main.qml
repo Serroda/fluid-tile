@@ -108,10 +108,7 @@ Window {
                         } else {
                             windowMain.setMaximize(false, false);
                             if (config.windowsExtend === true) {
-                                for (let x = 0; x < windowsOther.length; x++) {
-                                    Util.extendWindow(windowsOther[x], windowsOther[x].tile);
-                                }
-                                Util.extendWindow(windowMain, windowMain.tile);
+                                Util.extendWindows(tilesOrdered, [windowMain, ...windowsOther], getSizePanels(itemScreen, itemDesktop));
                             }
                         }
 
@@ -127,10 +124,8 @@ Window {
                         }
                     }
                     if (config.windowsExtend === true) {
-                        for (let x = 0; x < windowsOther.length; x++) {
-                            console.log(x);
-                            Util.extendWindow(windowsOther[x], windowsOther[x].tile, windowMain.tile);
-                        }
+                        //TODO: Error on delete last window, ignore window needed
+                        Util.extendWindows(tilesOrdered, windowsOther, getSizePanels(itemScreen, itemDesktop));
                     }
                     return false;
                 }
@@ -220,6 +215,18 @@ Window {
 
             root.removeDesktopInfo = {};
         }
+    }
+
+    //Get panel sizes in the workspace
+    function getSizePanels(itemScreen, itemDesktop) {
+        const workArea = Workspace.clientArea(Workspace.WorkArea, itemScreen, itemDesktop);
+        return {
+            left: workArea.x,
+            top: workArea.y,
+            right: Workspace.virtualScreenSize.width - (workArea.width + workArea.x),
+            bottom: Workspace.virtualScreenSize.height - (workArea.height + workArea.y),
+            workarea: workArea
+        };
     }
 
     //Get all tiles from the actual desktop with all screens
