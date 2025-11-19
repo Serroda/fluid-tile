@@ -40,10 +40,11 @@ If you like the project, you can support me by buying me a coffee or with other 
   <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/screenshot5.png" width="200"/>
 
 ## Wiki
+
+- [Home](https://codeberg.org/Serroda/fluid-tile/wiki/Home)
 - [Installation](https://codeberg.org/Serroda/fluid-tile/wiki/Installation)
 - [User settings](https://codeberg.org/Serroda/fluid-tile/wiki/User-settings)
 - [Custom layout](https://codeberg.org/Serroda/fluid-tile/wiki/Custom-layout)
-- [How do I prevent certain applications from moving around the layout with **Blocklist**? ](https://codeberg.org/Serroda/fluid-tile/wiki/Blocklist)
 
 ## F.A.Q
 
