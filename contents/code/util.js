@@ -187,125 +187,105 @@ function deleteTiles(tiles) {
 function extendWindows(tilesLayout, windows, panelsSize) {
   resetWindowGeometry(windows, panelsSize);
 
-  const windowQueue = [...windows];
-  const tileQueue = tilesLayout.map((tile) => ({ tile, completed: false }));
+  //TODO: comprobar si en esta posicion de tileVirtual existe ya una ventana
+  const windowQueue = windows.map((window) => ({
+    window,
+    tileVirtual: window.tile.absoluteGeometry,
+  }));
 
-  for (const window of windowQueue) {
+  for (const windowItem of windowQueue) {
+    const window = windowItem.window;
+
     if (window.tile === null) {
       continue;
     }
 
     let windowChanged = false;
 
-    for (const tileItem of tileQueue) {
-      const tile = tileItem.tile;
-
-      if (tile.windows.length !== 0 || tileItem.completed === true) {
+    for (const tile of tilesLayout) {
+      if (
+        tile.windows.length !== 0 ||
+        checkSpace(windowQueue, tile) === false
+      ) {
         continue;
       }
 
-      const tileEndpointX =
-        tile.absoluteGeometry.x + tile.absoluteGeometry.width;
-      const tileEndpointY =
-        tile.absoluteGeometry.y + tile.absoluteGeometry.height;
+      const windowTileGeometry = windowItem.tileVirtual;
 
-      const windowEndpointX =
-        window.tile.absoluteGeometry.x + window.tile.absoluteGeometry.width;
-      const windowEndpointY =
-        window.tile.absoluteGeometry.y + window.tile.absoluteGeometry.height;
+      // console.log(JSON.stringify(windowTileGeometry));
+      // console.log(tile.absoluteGeometry);
 
-      //left
-      if (
-        tile.absoluteGeometry.x < window.frameGeometry.x &&
-        tileEndpointX === window.frameGeometry.x
-      ) {
-        setGeometryWindow(
-          window,
-          {
-            x: tile.absoluteGeometry.x,
-            y: window.tile.absoluteGeometry.y,
-            width:
-              tile.absoluteGeometry.width + window.tile.absoluteGeometry.width,
-            height: window.tile.absoluteGeometry.height,
-          },
-          panelsSize,
-        );
-
-        tileItem.completed = true;
+      if (windowTileGeometry.x > tile.absoluteGeometry.x) {
+        windowItem.tileVirtual = {
+          x: tile.absoluteGeometry.x,
+          y: windowTileGeometry.y,
+          width: tile.absoluteGeometry.width + windowTileGeometry.width,
+          height: windowTileGeometry.height,
+          top: windowTileGeometry.top,
+          bottom: windowTileGeometry.bottom,
+          left: tile.absoluteGeometry.x,
+          right:
+            tile.absoluteGeometry.width +
+            windowTileGeometry.width +
+            tile.absoluteGeometry.x,
+        };
         windowChanged = true;
         console.log("left");
-      }
-
-      //top
-      if (
-        tile.absoluteGeometry.y < window.frameGeometry.y &&
-        tileEndpointY === window.frameGeometry.y
-      ) {
-        setGeometryWindow(
-          window,
-          {
-            x: window.tile.absoluteGeometry.x,
-            y: tile.absoluteGeometry.y,
-            width: tile.absoluteGeometry.width,
-            height:
-              tile.absoluteGeometry.height +
-              window.tile.absoluteGeometry.height,
-          },
-          panelsSize,
-        );
-
-        tileItem.completed = true;
+      } else if (windowTileGeometry.y < tile.absoluteGeometry.y) {
+        windowItem.tileVirtual = {
+          x: windowTileGeometry.x,
+          y: tile.absoluteGeometry.y,
+          width: windowTileGeometry.width,
+          height: tile.absoluteGeometry.height + windowTileGeometry.height,
+          top: tile.absoluteGeometry.y,
+          bottom:
+            tile.absoluteGeometry.height +
+            windowTileGeometry.height +
+            tile.absoluteGeometry.y,
+          left: windowTileGeometry.left,
+          right: windowTileGeometry.right,
+        };
         windowChanged = true;
         console.log("top");
-      }
+      } else if (windowTileGeometry.x < tile.absoluteGeometry.x) {
+        windowItem.tileVirtual = {
+          x: windowTileGeometry.x,
+          y: windowTileGeometry.y,
+          width: tile.absoluteGeometry.width + windowTileGeometry.width,
+          height: windowTileGeometry.height,
+          top: windowTileGeometry.top,
+          bottom: windowTileGeometry.bottom,
+          left: windowTileGeometry.left,
+          right:
+            tile.absoluteGeometry.width +
+            windowTileGeometry.width +
+            tile.absoluteGeometry.x,
+        };
 
-      //right
-      if (
-        tile.absoluteGeometry.x > window.frameGeometry.x &&
-        tile.absoluteGeometry.x === windowEndpointX
-      ) {
-        setGeometryWindow(
-          window,
-          {
-            x: window.tile.absoluteGeometry.x,
-            y: window.tile.absoluteGeometry.y,
-            width:
-              tile.absoluteGeometry.width + window.tile.absoluteGeometry.width,
-            height: tile.absoluteGeometry.height,
-          },
-          panelsSize,
-        );
-
-        tileItem.completed = true;
         windowChanged = true;
         console.log("right");
-      }
-
-      //bottom
-      if (
-        tile.absoluteGeometry.y > window.frameGeometry.y &&
-        tile.absoluteGeometry.y === windowEndpointY
-      ) {
-        setGeometryWindow(
-          window,
-          {
-            x: window.tile.absoluteGeometry.x,
-            y: window.tile.absoluteGeometry.y,
-            width: tile.absoluteGeometry.width,
-            height:
-              tile.absoluteGeometry.height +
-              window.tile.absoluteGeometry.height,
-          },
-          panelsSize,
-        );
-
-        tileItem.completed = true;
+      } else if (windowTileGeometry.y < tile.absoluteGeometry.y) {
+        windowItem.tileVirtual = {
+          x: windowTileGeometry.x,
+          y: windowTileGeometry.y,
+          width: windowTileGeometry.width,
+          height: tile.absoluteGeometry.height + windowTileGeometry.height,
+          top: windowTileGeometry.top,
+          bottom:
+            tile.absoluteGeometry.height +
+            windowTileGeometry.height +
+            tile.absoluteGeometry.y,
+          left: windowTileGeometry.left,
+          right: windowTileGeometry.right,
+        };
         windowChanged = true;
         console.log("bottom");
       }
-    }
 
-    if (windowChanged === true) windowQueue.push(window);
+      if (windowChanged === true) {
+        setGeometryWindow(window, windowItem.tileVirtual, panelsSize);
+      }
+    }
   }
 }
 
@@ -325,35 +305,49 @@ function resetWindowGeometry(windows, panelsSize) {
   }
 }
 
+//Check space in the tile
+function checkSpace(windows, tile) {
+  for (const window of windows) {
+    console.log(JSON.stringify(window.tileVirtual));
+    console.log(JSON.stringify(tile.absoluteGeometry));
+    //TODO: ERROR
+    if (
+      (tile.absoluteGeometry.left < window.tileVirtual.left ||
+        tile.absoluteGeometry.left < window.tileVirtual.left ||
+        tile.absoluteGeometry.right < window.tileVirtual.right) &&
+      (tile.absoluteGeometry.top > window.tileVirtual.top ||
+        tile.absoluteGeometry.bottom < window.tileVirtual.bottom)
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 //Wrapper
 function setGeometryWindow(window, geometry, panelsSize) {
   window.frameGeometry = {
     x:
       geometry.x +
       window.tile.padding +
-      (window.tile.absoluteGeometry.x === 0 ? panelsSize.left : 0),
+      (geometry.x === 0 ? panelsSize.left : 0),
     y:
       geometry.y +
       window.tile.padding +
-      (window.tile.absoluteGeometry.y === 0 ? panelsSize.top : 0),
+      (geometry.y === 0 ? panelsSize.top : 0),
     width:
       geometry.width -
-      (window.tile.absoluteGeometry.x === 0 ? panelsSize.left : 0) -
-      (window.tile.absoluteGeometry.width +
-        window.tile.absoluteGeometry.x -
-        panelsSize.right -
-        panelsSize.left ===
+      (geometry.x === 0 ? panelsSize.left : 0) -
+      (geometry.width + geometry.x - panelsSize.right - panelsSize.left ===
       panelsSize.workarea.width
         ? panelsSize.right
         : 0) -
       window.tile.padding * 2,
     height:
       geometry.height -
-      (window.tile.absoluteGeometry.y === 0 ? panelsSize.top : 0) -
-      (window.tile.absoluteGeometry.height +
-        window.tile.absoluteGeometry.y -
-        panelsSize.bottom -
-        panelsSize.top ===
+      (geometry.y === 0 ? panelsSize.top : 0) -
+      (geometry.height + geometry.y - panelsSize.bottom - panelsSize.top ===
       panelsSize.workarea.height
         ? panelsSize.bottom
         : 0) -
