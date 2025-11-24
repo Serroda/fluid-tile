@@ -187,12 +187,12 @@ function deleteTiles(tiles) {
 function extendWindows(tilesLayout, windows, panelsSize) {
   resetWindowGeometry(windows, panelsSize);
 
-  const tilesQueue = tilesLayout.map((tile) => ({ tile, windowsExtended: [] }));
-
   for (const window of windows) {
     if (window.tile === null) {
       continue;
     }
+
+    window.tileVirtual = undefined;
 
     const tilesAround = {
       left: [],
@@ -203,36 +203,31 @@ function extendWindows(tilesLayout, windows, panelsSize) {
 
     const windowGeometry = window.tile.absoluteGeometry;
 
-    for (const tileItem of tilesQueue) {
-      if (tileItem.tile.windows.length !== 0) {
+    for (const tile of tilesLayout) {
+      if (tile.windows.length !== 0) {
         continue;
       }
 
       if (
-        windowGeometry.x > tileItem.tile.absoluteGeometry.x &&
-        checkSameRow(windowGeometry, tileItem.tile) === true &&
-        checkWindows(windows, tileItem.tile, window, "left", "left") === false
+        windowGeometry.x > tile.absoluteGeometry.x &&
+        checkSameRow(windowGeometry, tile) === true
       ) {
-        tilesAround.left.push(tileItem);
+        tilesAround.left.push(tile);
       } else if (
-        windowGeometry.y > tileItem.tile.absoluteGeometry.y &&
-        checkSameColumn(windowGeometry, tileItem.tile) === true &&
-        checkWindows(windows, tileItem.tile, window, "top", "top") === false
+        windowGeometry.y > tile.absoluteGeometry.y &&
+        checkSameColumn(windowGeometry, tile) === true
       ) {
-        tilesAround.top.push(tileItem);
+        tilesAround.top.push(tile);
       } else if (
-        windowGeometry.x < tileItem.tile.absoluteGeometry.x &&
-        checkSameRow(windowGeometry, tileItem.tile) === true &&
-        checkWindows(windows, tileItem.tile, window, "right", "right") === false
+        windowGeometry.x < tile.absoluteGeometry.x &&
+        checkSameRow(windowGeometry, tile) === true
       ) {
-        tilesAround.right.push(tileItem);
+        tilesAround.right.push(tile);
       } else if (
-        windowGeometry.y < tileItem.tile.absoluteGeometry.y &&
-        checkSameColumn(windowGeometry, tileItem.tile) === true &&
-        checkWindows(windows, tileItem.tile, window, "bottom", "bottom") ===
-          false
+        windowGeometry.y < tile.absoluteGeometry.y &&
+        checkSameColumn(windowGeometry, tile) === true
       ) {
-        tilesAround.bottom.push(tileItem);
+        tilesAround.bottom.push(tile);
       }
     }
 
@@ -255,60 +250,33 @@ function extendWindows(tilesLayout, windows, panelsSize) {
         }
       });
 
-      console.log(tileType + ": " + tiles.length);
+      loopTiles: for (const tile of tiles) {
+        for (const windowOther of windows) {
+          if (windowOther === window) {
+            continue;
+          }
 
-      loopTile: for (const tileItem of tiles) {
-        const finalWidth =
-          tileItem.tile.absoluteGeometry.width + windowGeometry.width;
-        const finalHeight =
-          tileItem.tile.absoluteGeometry.height + windowGeometry.height;
-
-        console.log(JSON.stringify(tileItem.windowsExtended));
-
-        if (tileItem.windowsExtended.length !== 0) {
-          const windowFuture = getBorders(
-            windowGeometry.x,
-            windowGeometry.y,
-            finalWidth,
-            finalHeight,
-          );
-
-          for (const windowExtended of tileItem.windowsExtended) {
-            if (
-              (windowFuture.left > windowExtended.left &&
-                windowFuture.left < windowExtended.right) ||
-              (windowFuture.right > windowExtended.left &&
-                windowFuture.right < windowExtended.right) ||
-              (windowFuture.top < windowExtended.bottom &&
-                windowFuture.top > windowExtended.top) ||
-              (windowFuture.bottom < windowExtended.bottom &&
-                windowFuture.bottom > windowExtended.top)
-            ) {
-              console.log(
-                "Area detectada con la ventana nueva:" +
-                  JSON.stringify(windowFuture),
-              );
-              console.log(
-                "Area detectada en el tile:" + JSON.stringify(windowExtended),
-              );
-              break loopTile;
-            }
+          if (checkConflicts(window, windowOther, tileType) === true) {
+            break loopTiles;
           }
         }
 
-        console.log("new geometry");
+        const finalWidth = tile.absoluteGeometry.width + windowGeometry.width;
+        const finalHeight =
+          tile.absoluteGeometry.height + windowGeometry.height;
+
         let newGeometry = null;
 
         switch (tileType) {
           case "left":
             newGeometry = {
-              x: tileItem.tile.absoluteGeometry.x,
+              x: tile.absoluteGeometry.x,
               width: finalWidth,
             };
             break;
           case "top":
             newGeometry = {
-              y: tileItem.tile.absoluteGeometry.y,
+              y: tile.absoluteGeometry.y,
               height: finalHeight,
             };
             break;
@@ -328,13 +296,8 @@ function extendWindows(tilesLayout, windows, panelsSize) {
           continue;
         }
 
-        setGeometryWindow(window, newGeometry, panelsSize);
-        const areaOccupied = calculateOccupiedArea(
-          window.frameGeometry,
-          tileItem.tile.absoluteGeometry,
-        );
-
-        tileItem.windowsExtended.push(areaOccupied);
+        const tileVirtual = setGeometryWindow(window, newGeometry, panelsSize);
+        window.tileVirtual = tileVirtual;
       }
     }
   }
@@ -369,13 +332,42 @@ function checkSameRow(windowGeometry, tile) {
   );
 }
 
-function checkWindows(windows, tile, windowIgnore, modeWindow, modeTile) {
-  return windows.some(
-    (window) =>
-      window !== windowIgnore &&
-      window.tile.absoluteGeometry[modeWindow] ===
-        tile.absoluteGeometry[modeTile],
-  );
+function checkConflicts(windowMain, windowOther, type) {
+  const geometryMain =
+    windowMain.tileVirtual !== undefined
+      ? windowMain.tileVirtual
+      : windowMain.tile.absoluteGeometry;
+
+  const geometryOther =
+    windowOther.tileVirtual !== undefined
+      ? windowOther.tileVirtual
+      : windowOther.tile.absoluteGeometry;
+
+  const noConflictRow =
+    (geometryMain.top <= geometryOther.top &&
+      geometryMain.bottom <= geometryOther.top) ||
+    (geometryMain.top >= geometryOther.bottom &&
+      geometryMain.bottom >= geometryOther.bottom);
+
+  const noConflictColumn =
+    (geometryMain.left <= geometryOther.left &&
+      geometryMain.right <= geometryOther.left) ||
+    (geometryMain.left >= geometryOther.right &&
+      geometryMain.right >= geometryOther.right);
+
+  switch (type) {
+    case "left":
+      return geometryMain.left === geometryOther.right && !noConflictRow;
+
+    case "right":
+      return geometryMain.right === geometryOther.left && !noConflictRow;
+
+    case "top":
+      return geometryMain.top === geometryOther.bottom && !noConflictColumn;
+
+    case "bottom":
+      return geometryMain.bottom === geometryOther.top && !noConflictColumn;
+  }
 }
 
 function checkSameColumn(windowGeometry, tile) {
@@ -413,33 +405,7 @@ function setGeometryWindow(window, geometry, panelsSize) {
         : 0) -
       window.tile.padding * 2,
   };
-}
 
-function calculateOccupiedArea(windowLimits, tileLimits) {
-  const area = {
-    left: tileLimits.left,
-    top: tileLimits.top,
-    right: tileLimits.right,
-    bottom: tileLimits.bottom,
-  };
-
-  if (windowLimits.left > area.left && windowLimits.left < area.right) {
-    area.left = windowLimits.left;
-  }
-  if (windowLimits.right > area.left && windowLimits.right < area.right) {
-    area.right = windowLimits.right;
-  }
-  if (windowLimits.top > area.top && windowLimits.top < area.bottom) {
-    area.top = windowLimits.top;
-  }
-  if (windowLimits.bottom > area.top && windowLimits.bottom < area.bottom) {
-    area.bottom = windowLimits.bottom;
-  }
-
-  return area;
-}
-
-function getBorders(x, y, width, height) {
   return {
     left: x,
     top: y,
