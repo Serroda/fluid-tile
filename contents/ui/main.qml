@@ -45,6 +45,7 @@ Window {
         }
     }
 
+    //ok
     //Prepare for set tile layout
     function setLayout(desktop, layout) {
         for (const screen of Workspace.screens) {
@@ -58,12 +59,14 @@ Window {
         }
     }
 
+    //ok
     //Get tiles from the screen and virtual desktop
     function getOrderedTiles(desktop, screen) {
         const tileRoot = Workspace.rootTile(screen, desktop);
         return Util.orderTiles(tileRoot.tiles.length !== 0 ? tileRoot.tiles : [tileRoot], config.tilesPriority);
     }
 
+    //ok
     // Get all windows from the virtual desktop except the given window
     function getWindows(windowMain, desktop, screen) {
         const windows = [];
@@ -77,6 +80,7 @@ Window {
         return windows;
     }
 
+    //ok
     // Set window tiles
     // mode: 0 => addWindow
     // mode: 1 => removeWindow
@@ -124,7 +128,6 @@ Window {
                         }
                     }
                     if (config.windowsExtend === true) {
-                        //TODO: Error on delete last window, ignore window needed
                         Util.extendWindows(tilesOrdered, windowsOther, getSizePanels(itemScreen, itemDesktop));
                     }
                     return false;
@@ -134,6 +137,7 @@ Window {
         return true;
     }
 
+    //ok
     //Trigger when a window is added to the desktop
     function onWindowAdded(windowNew) {
         if (Util.checkBlocklist(windowNew, config.appsBlocklist, config.modalsIgnore) === true) {
@@ -168,6 +172,7 @@ Window {
         }
     }
 
+    //ok
     //Trigger when a window is remove to the desktop
     function onWindowRemoved(windowClosed) {
         if (Util.checkBlocklist(windowClosed, config.appsBlocklist, config.modalsIgnore) === true) {
@@ -217,6 +222,7 @@ Window {
         }
     }
 
+    //ok
     //Get panel sizes in the workspace
     function getSizePanels(itemScreen, itemDesktop) {
         const workArea = Workspace.clientArea(Workspace.WorkArea, itemScreen, itemDesktop);
@@ -229,6 +235,7 @@ Window {
         };
     }
 
+    //ok
     //Get all tiles from the actual desktop with all screens
     function getTilesFromActualDesktop() {
         let tiles = [];
@@ -238,13 +245,14 @@ Window {
         return tiles;
     }
 
+    //ok
     //Set signals to all Windows
     function setWindowsSignals() {
         for (const windowItem of Workspace.stackingOrder) {
             setSignalsToWindow(windowItem);
         }
     }
-
+    //ok
     //Set signals to window
     function setSignalsToWindow(windowMain) {
         if (Util.checkBlocklist(windowMain, config.appsBlocklist, config.modalsIgnore) === false) {
@@ -267,12 +275,14 @@ Window {
         }
     }
 
+    //ok
     //Reset UI
     function resetLayout() {
         layoutOrdered = [];
         layoutOrdered = getTilesFromActualDesktop();
     }
 
+    //ok
     //Save tile when user focus a window
     function onUserFocusWindow(windowMain) {
         if (windowMain.active === true) {
@@ -281,6 +291,7 @@ Window {
         }
     }
 
+    //ok
     //Save tile when user focus a window
     function exchangeTiles(windowMain, tileNew) {
         if (windowFocused.window === undefined || windowFocused.tile === undefined || windowFocused.tile === null || tileNew === null) {
@@ -299,11 +310,13 @@ Window {
         }
     }
 
+    //ok
     // When a window start move with the cursor
     function onUserMoveStart() {
         resetLayout();
     }
 
+    //ok
     // When a window is moving with the cursor
     function onUserMoveStepped(windowGeometry) {
         if (windowGeometryOnMove.width === undefined && windowGeometryOnMove.height === undefined) {
@@ -326,6 +339,7 @@ Window {
         });
     }
 
+    //ok
     //When the user release the window
     function onUserMoveFinished(windowMoved) {
         if (visible === true) {

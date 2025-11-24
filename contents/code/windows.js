@@ -1,195 +1,95 @@
-//OK
-function getDefaultLayouts(index) {
-  return [
-    [{ x: 0, y: 0 }],
-    [
-      { x: 0, y: 0 },
-      { x: 0.5, y: 0 },
-    ],
-    [
-      { x: 0, y: 0 },
-      { x: 0, y: 0.5 },
-    ],
-    [
-      {
-        x: 0,
-        y: 0,
-        tiles: [
-          { x: 0, y: 0 },
-          { x: 0, y: 0.5 },
-        ],
-      },
-      {
-        x: 0.5,
-        y: 0,
-      },
-    ],
-    [
-      { x: 0, y: 0 },
-      {
-        x: 0.5,
-        y: 0,
-        tiles: [
-          { x: 0, y: 0 },
-          { x: 0, y: 0.5 },
-        ],
-      },
-    ],
-    [
-      {
-        x: 0,
-        y: 0,
-        tiles: [
-          { x: 0, y: 0 },
-          { x: 0, y: 0.5 },
-        ],
-      },
-      {
-        x: 0.5,
-        y: 0,
-        tiles: [
-          { x: 0, y: 0 },
-          { x: 0, y: 0.5 },
-        ],
-      },
-    ],
-  ][index];
-}
+//TODO:
+// Get all windows from the virtual desktop except the given window
+function getWindows(windowMain, desktop, screen) {
+  const windows = [];
 
-//OK
-//Block apps
-function checkBlocklist(windowItem, appsBlocklist, modalsIgnore) {
-  return (
-    windowItem.normalWindow === false ||
-    windowItem.resizeable === false ||
-    windowItem.maximizable === false ||
-    (modalsIgnore === true ? windowItem.transient === true : false) ||
-    appsBlocklist
-      .toLowerCase()
-      .includes(windowItem.resourceClass.toLowerCase()) === true
-  );
-}
-
-//OK
-//Set tile layout
-function setTiles(tileParent, layout) {
-  if (layout.length === 1) {
-    return true;
-  }
-
-  let splitMode = null;
-
-  if (layout.every((item) => item.x === 0)) {
-    splitMode = 2;
-  } else if (layout.every((item) => item.y === 0)) {
-    splitMode = 1;
-  } else if (layout.every((item) => item.x !== 0 && item.y !== 0)) {
-    splitMode = 0;
-  }
-
-  if (splitMode === null) {
-    return false;
-  }
-
-  //Create childs
-  if (tileParent.tiles.length === 0) {
-    tileParent.layoutDirection = splitMode;
-    tileParent.split(tileParent.layoutDirection);
-  }
-
-  for (let index = 0; index < layout.length; index++) {
-    if (splitMode === 0 && index > 0) {
-      layout[index].ref = tileParent.split(splitMode)[0];
-    } else {
-      layout[index].ref = tileParent.tiles[index];
-    }
-
-    setGeometryTile(layout[index]);
-  }
-
-  for (let x = 0; x < layout.length; x++) {
-    if (layout[x].tiles !== undefined) {
-      setTiles(layout[x].ref, layout[x].tiles);
+  for (const windowItem of Workspace.stackingOrder) {
+    if (
+      windowItem !== windowMain &&
+      windowItem.output === screen &&
+      windowItem.desktops.includes(desktop) === true &&
+      Util.checkBlocklist(
+        windowItem,
+        config.appsBlocklist,
+        config.modalsIgnore,
+      ) === false
+    ) {
+      windows.push(windowItem);
     }
   }
 
+  return windows;
+}
+
+//TODO:
+// Set window tiles
+// mode: 0 => addWindow
+// mode: 1 => removeWindow
+function setWindowsTiles(windowMain, desktops, screens, maximize, mode) {
+  for (const itemDesktop of desktops) {
+    for (const itemScreen of screens) {
+      const windowsOther = getWindows(windowMain, itemDesktop, itemScreen);
+      const tilesOrdered = getOrderedTiles(itemDesktop, itemScreen);
+
+      if (
+        mode === 1 &&
+        config.windowsOrderClose === false &&
+        windowsOther.length > 1
+      ) {
+        return true;
+      }
+
+      if (mode === 0) {
+        //Set tile if the custom mosaic has space
+        if (windowsOther.length + 1 <= tilesOrdered.length) {
+          for (let x = 0; x < windowsOther.length; x++) {
+            windowsOther[x].desktops = [itemDesktop];
+            windowsOther[x].setMaximize(false, false);
+            tilesOrdered[x + 1].manage(windowsOther[x]);
+          }
+
+          Workspace.currentDesktop = itemDesktop;
+          windowMain.desktops = [itemDesktop];
+          tilesOrdered[0].manage(windowMain);
+
+          if (maximize === true && windowsOther.length === 0) {
+            windowMain.setMaximize(true, true);
+          } else {
+            windowMain.setMaximize(false, false);
+            if (config.windowsExtend === true) {
+              Util.extendWindows(
+                tilesOrdered,
+                [windowMain, ...windowsOther],
+                getSizePanels(itemScreen, itemDesktop),
+              );
+            }
+          }
+
+          return false;
+        }
+      } else if (mode === 1 && windowsOther.length !== 0) {
+        for (let x = 0; x < windowsOther.length; x++) {
+          if (maximize === true && windowsOther.length === 1) {
+            windowsOther[x].setMaximize(true, true);
+          } else {
+            windowsOther[x].setMaximize(false, false);
+            tilesOrdered[x].manage(windowsOther[x]);
+          }
+        }
+        if (config.windowsExtend === true) {
+          Util.extendWindows(
+            tilesOrdered,
+            windowsOther,
+            getSizePanels(itemScreen, itemDesktop),
+          );
+        }
+        return false;
+      }
+    }
+  }
   return true;
 }
 
-//OK
-// Set tile size and position
-function setGeometryTile(item) {
-  if (item.width !== undefined) {
-    const delta =
-      item.width * item.ref.parent.absoluteGeometry.width -
-      item.ref.absoluteGeometry.width;
-    item.ref.resizeByPixels(delta, Qt.RightEdge);
-  }
-
-  if (item.height !== undefined) {
-    const delta =
-      item.height * item.ref.parent.absoluteGeometry.height -
-      item.ref.absoluteGeometry.height;
-    item.ref.resizeByPixels(delta, Qt.BottomEdge);
-  }
-
-  item.ref.relativeGeometry.x = item.x;
-  item.ref.relativeGeometry.y = item.y;
-}
-
-//OK
-//Get tiles, ordered by tilesPriority
-function orderTiles(tiles, tilesPriority) {
-  let tilesOrdered = [];
-
-  for (let tile of tiles) {
-    if (tile.tiles.length !== 0) {
-      tilesOrdered = tilesOrdered.concat(orderTiles(tile.tiles, tilesPriority));
-    } else {
-      tilesOrdered.push(tile);
-    }
-  }
-
-  return tilesOrdered.sort((a, b) => {
-    for (const priority of tilesPriority) {
-      let comparison = 0;
-      switch (priority) {
-        case "Width":
-          comparison = b.absoluteGeometry.width - a.absoluteGeometry.width;
-          break;
-        case "Height":
-          comparison = b.absoluteGeometry.height - a.absoluteGeometry.height;
-          break;
-        case "Top":
-          comparison = a.absoluteGeometry.y - b.absoluteGeometry.y;
-          break;
-        case "Right":
-          comparison = b.absoluteGeometry.x - a.absoluteGeometry.x;
-          break;
-        case "Left":
-          comparison = a.absoluteGeometry.x - b.absoluteGeometry.x;
-          break;
-        case "Bottom":
-          comparison = b.absoluteGeometry.y - a.absoluteGeometry.y;
-          break;
-      }
-      if (comparison !== 0) {
-        return comparison;
-      }
-    }
-    return 0;
-  });
-}
-
-//OK
-//Delete reverse tile layout
-function deleteTiles(tiles) {
-  for (let index = tiles.length; index > 0; index--) {
-    tiles[index - 1].remove();
-  }
-}
-
-//OK
 //Extend window if empty space is available
 function extendWindows(tilesLayout, windows, panelsSize) {
   resetWindowGeometry(windows, panelsSize);
@@ -310,7 +210,6 @@ function extendWindows(tilesLayout, windows, panelsSize) {
   }
 }
 
-//OK
 //Set default tile size
 function resetWindowGeometry(windows, panelsSize) {
   for (const window of windows) {
@@ -331,7 +230,6 @@ function resetWindowGeometry(windows, panelsSize) {
   }
 }
 
-//OK
 function checkSameRow(windowGeometry, tile) {
   return (
     (windowGeometry.top >= tile.absoluteGeometry.top &&
@@ -341,7 +239,6 @@ function checkSameRow(windowGeometry, tile) {
   );
 }
 
-//OK
 function checkConflicts(windowMain, windowOther, type) {
   const geometryMain =
     windowMain.tileVirtual !== undefined
@@ -380,7 +277,6 @@ function checkConflicts(windowMain, windowOther, type) {
   }
 }
 
-//OK
 function checkSameColumn(windowGeometry, tile) {
   return (
     (windowGeometry.left >= tile.absoluteGeometry.left &&
@@ -390,7 +286,6 @@ function checkSameColumn(windowGeometry, tile) {
   );
 }
 
-//ok
 function setGeometryWindow(window, geometry, panelsSize) {
   const x = geometry.x ?? window.tile.absoluteGeometry.x;
   const y = geometry.y ?? window.tile.absoluteGeometry.y;
@@ -424,4 +319,124 @@ function setGeometryWindow(window, geometry, panelsSize) {
     right: x + width,
     bottom: y + height,
   };
+}
+
+//TODO:
+//Trigger when a window is added to the desktop
+function onWindowAdded(windowNew) {
+  if (
+    Util.checkBlocklist(
+      windowNew,
+      config.appsBlocklist,
+      config.modalsIgnore,
+    ) === true
+  ) {
+    return;
+  }
+
+  const continueProcess = setWindowsTiles(
+    windowNew,
+    Workspace.desktops,
+    Workspace.screens,
+    config.maximizeOpen,
+    0,
+  );
+
+  if (config.desktopAdd === true && continueProcess === true) {
+    Workspace.createDesktop(Workspace.desktops.length, "");
+    Workspace.currentDesktop =
+      Workspace.desktops[Workspace.desktops.length - 1];
+    windowNew.desktops = [Workspace.currentDesktop];
+
+    if (config.maximizeOpen === true) {
+      windowNew.setMaximize(true, true);
+    }
+
+    let layout = Util.getDefaultLayouts(config.layoutDefault - 1);
+
+    if (config.layoutCustom !== undefined) {
+      layout = config.layoutCustom;
+    }
+
+    setLayout(Workspace.currentDesktop, layout);
+
+    if (config.maximizeOpen === false) {
+      const tilesOrdered = getTilesFromActualDesktop();
+
+      windowNew.setMaximize(false, false);
+      tilesOrdered[0].manage(windowNew);
+    }
+  }
+}
+
+//TODO:
+//Trigger when a window is remove to the desktop
+function onWindowRemoved(windowClosed) {
+  if (
+    Util.checkBlocklist(
+      windowClosed,
+      config.appsBlocklist,
+      config.modalsIgnore,
+    ) === true
+  ) {
+    return;
+  }
+
+  const continueProcess = setWindowsTiles(
+    windowClosed,
+    windowClosed.desktops,
+    [windowClosed.output],
+    config.maximizeClose,
+    1,
+  );
+
+  if (
+    continueProcess === false ||
+    config.desktopRemove === false ||
+    Workspace.desktops.length === 1 ||
+    Workspace.desktops.length <= config.desktopRemoveMin
+  ) {
+    return;
+  }
+
+  removeDesktopInfo.desktopsId = windowClosed.desktops.map((d) => d.id);
+  removeDesktopInfo.windowClosed = windowClosed;
+  timerRemoveDesktop.start();
+}
+
+//TODO:
+//Set signals to all Windows
+function setWindowsSignals() {
+  for (const windowItem of Workspace.stackingOrder) {
+    setSignalsToWindow(windowItem);
+  }
+}
+
+//TODO:
+//Set signals to window
+function setSignalsToWindow(windowMain) {
+  if (
+    Util.checkBlocklist(
+      windowMain,
+      config.appsBlocklist,
+      config.modalsIgnore,
+    ) === false
+  ) {
+    if (config.UIEnable === true) {
+      windowMain.interactiveMoveResizeStarted.connect(onUserMoveStart);
+      windowMain.interactiveMoveResizeStepped.connect(onUserMoveStepped);
+      windowMain.interactiveMoveResizeFinished.connect(() => {
+        onUserMoveFinished(windowMain);
+      });
+    }
+
+    if (config.windowsOrderMove === true) {
+      windowMain.activeChanged.connect(() => {
+        onUserFocusWindow(windowMain);
+      });
+      windowMain.tileChanged.connect((tile) => {
+        exchangeTiles(windowMain, tile);
+      });
+    }
+  }
 }
