@@ -1,25 +1,14 @@
-import { useTiles } from "./tiles";
+import { useTiles } from "./tiles.mjs";
 
-export function useUI(workspace, config) {
+export function useUI(workspace, config, rootUI) {
   const apiTile = useTiles(workspace, config);
-  const layoutOrdered = [];
-  let windowFocused = {};
-  let windowGeometryOnMove = {};
-  let UIVisible = false;
-  let tileActived = -1;
 
-  //Save tile when user focus a window
-  function onUserFocusWindow(windowMain) {
-    if (windowMain.active === true) {
-      windowFocused.tile = windowMain.tile;
-      windowFocused.window = windowMain;
-    }
-  }
+  let windowGeometryOnMove = {};
 
   // When a window start move with the cursor, reset ui
   function onUserMoveStart() {
-    layoutOrdered = [];
-    layoutOrdered = apiTile.getTilesFromActualDesktop();
+    rootUI.layoutOrdered = [];
+    rootUI.layoutOrdered = apiTile.getTilesFromActualDesktop();
   }
 
   // When a window is moving with the cursor
@@ -41,10 +30,10 @@ export function useUI(workspace, config) {
       return;
     }
 
-    UIVisible = true;
+    rootUI.visible = true;
 
     const cursor = workspace.cursorPos;
-    tileActived = layoutOrdered.findIndex((tile) => {
+    rootUI.tileActived = rootUI.layoutOrdered.findIndex((tile) => {
       const limitX = tile.absoluteGeometry.x + tile.absoluteGeometry.width;
       const limitY = tile.absoluteGeometry.y + tile.absoluteGeometry.height;
       return (
@@ -58,11 +47,11 @@ export function useUI(workspace, config) {
 
   //When the user release the window
   function onUserMoveFinished(windowMoved) {
-    if (UIVisible === true) {
-      UIVisible = false;
-      layoutOrdered[tileActived]?.manage(windowMoved);
+    if (rootUI.visible === true) {
+      rootUI.visible = false;
+      rootUI.layoutOrdered[rootUI.tileActived]?.manage(windowMoved);
       windowGeometryOnMove = {};
-      tileActived = -1;
+      rootUI.tileActived = -1;
     }
   }
 
@@ -70,9 +59,5 @@ export function useUI(workspace, config) {
     onUserMoveFinished,
     onUserMoveStepped,
     onUserMoveStart,
-    onUserFocusWindow,
-    UIVisible,
-    layoutOrdered,
-    tileActived,
   };
 }
