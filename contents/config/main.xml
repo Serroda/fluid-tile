@@ -14,7 +14,13 @@
         <entry name="WindowsOrderMove" type="Bool">
             <default>true</default>
         </entry>
-        <entry name="WindowsExtend" type="Bool">
+        <entry name="WindowsExtendOpen" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="WindowsExtendClose" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="WindowsExtendMove" type="Bool">
             <default>true</default>
         </entry>
         <entry name="DesktopAdd" type="Bool">
