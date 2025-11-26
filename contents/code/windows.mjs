@@ -62,7 +62,7 @@ export function useWindows(workspace, config, rootUI) {
               windowMain.setMaximize(true, true);
             } else {
               windowMain.setMaximize(false, false);
-              if (config.windowsExtend === true) {
+              if (config.windowsExtendOpen === true) {
                 extendWindows(
                   tilesOrdered,
                   [windowMain, ...windowsOther],
@@ -82,7 +82,7 @@ export function useWindows(workspace, config, rootUI) {
               tilesOrdered[x].manage(windowsOther[x]);
             }
           }
-          if (config.windowsExtend === true) {
+          if (config.windowsExtendClose === true) {
             extendWindows(
               tilesOrdered,
               windowsOther,
@@ -321,7 +321,7 @@ export function useWindows(workspace, config, rootUI) {
         width -
         (x === 0 ? panelsSize.left : 0) -
         (width + x - panelsSize.right - panelsSize.left ===
-        panelsSize.workarea.width
+          panelsSize.workarea.width
           ? panelsSize.right
           : 0) -
         window.tile.padding * 2,
@@ -329,7 +329,7 @@ export function useWindows(workspace, config, rootUI) {
         height -
         (y === 0 ? panelsSize.top : 0) -
         (height + y - panelsSize.top - panelsSize.bottom ===
-        panelsSize.workarea.height
+          panelsSize.workarea.height
           ? panelsSize.bottom
           : 0) -
         window.tile.padding * 2,
@@ -423,7 +423,10 @@ export function useWindows(workspace, config, rootUI) {
 
   //Set signals to window
   function setSignalsToWindow(windowMain) {
+    onUserFocusWindow(windowMain);
+
     if (apiBlocklist.checkBlocklist(windowMain) === false) {
+      let userMoveFinished = false;
       if (config.UIEnable === true) {
         windowMain.interactiveMoveResizeStarted.connect(apiUI.onUserMoveStart);
         windowMain.interactiveMoveResizeStepped.connect(
@@ -431,6 +434,7 @@ export function useWindows(workspace, config, rootUI) {
         );
         windowMain.interactiveMoveResizeFinished.connect(() => {
           apiUI.onUserMoveFinished(windowMain);
+          userMoveFinished = true;
         });
       }
 
@@ -440,6 +444,26 @@ export function useWindows(workspace, config, rootUI) {
         });
         windowMain.tileChanged.connect((tile) => {
           apiTiles.exchangeTiles(windowMain, tile, windowFocused);
+
+          if (config.windowsExtendMove === true && userMoveFinished === true) {
+            const tilesOrdered = apiTiles.getTilesFromActualDesktop();
+            const windows = getWindows(
+              windowMain,
+              workspace.currentDesktop,
+              workspace.activeScreen,
+            );
+
+            extendWindows(
+              tilesOrdered,
+              [windowMain, ...windows],
+              apiWorkarea.getPanelsSize(
+                workspace.activeScreen,
+                workspace.currentDesktop,
+              ),
+            );
+
+            userMoveFinished = false;
+          }
         });
       }
     }
