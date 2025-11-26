@@ -32,8 +32,20 @@ export function useWindows(workspace, config, rootUI) {
   // mode: 0 => addWindow
   // mode: 1 => removeWindow
   function setWindowsTiles(windowMain, desktops, screens, maximize, mode) {
-    for (const itemDesktop of desktops) {
-      for (const itemScreen of screens) {
+    const indexStartDesktop = desktops.findIndex(
+      (d) => d === workspace.currentDesktop,
+    );
+    const indexStartScreen = screens.findIndex(
+      (s) => s === workspace.activeScreen,
+    );
+
+    let indexDesktop = indexStartDesktop;
+    let indexScreen = indexStartScreen;
+
+    do {
+      const itemDesktop = desktops[indexDesktop];
+      do {
+        const itemScreen = screens[indexScreen];
         const windowsOther = getWindows(windowMain, itemDesktop, itemScreen);
         const tilesOrdered = apiTiles.getOrderedTiles(itemDesktop, itemScreen);
 
@@ -91,8 +103,12 @@ export function useWindows(workspace, config, rootUI) {
           }
           return false;
         }
-      }
-    }
+
+        indexScreen = (indexScreen + 1) % screens.length;
+      } while (indexScreen !== indexStartScreen);
+      indexDesktop = (indexDesktop + 1) % desktops.length;
+    } while (indexDesktop !== indexStartDesktop);
+
     return true;
   }
 
