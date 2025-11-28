@@ -8,7 +8,12 @@ export function useWindows(workspace, config, rootUI) {
   const apiBlocklist = useBlocklist(config.appsBlocklist, config.modalsIgnore);
   const apiWorkarea = useWorkarea(workspace);
   const apiUI = useUI(workspace, config, rootUI);
-  let windowFocused = {};
+
+  //
+  const state = {
+    windowFocused: {},
+    addedRemoved: false,
+  };
 
   // Get all windows from the virtual desktop except the given window
   function getWindows(windowMain, desktop, screen) {
@@ -74,6 +79,7 @@ export function useWindows(workspace, config, rootUI) {
               windowMain.setMaximize(true, true);
             } else {
               windowMain.setMaximize(false, false);
+
               if (config.windowsExtendOpen === true) {
                 extendWindows(
                   tilesOrdered,
@@ -86,14 +92,15 @@ export function useWindows(workspace, config, rootUI) {
             return false;
           }
         } else if (mode === 1 && windowsOther.length !== 0) {
-          for (let x = 0; x < windowsOther.length; x++) {
-            if (maximize === true && windowsOther.length === 1) {
-              windowsOther[x].setMaximize(true, true);
-            } else {
+          if (maximize === true && windowsOther.length === 1) {
+            windowsOther[0].setMaximize(true, true);
+          } else {
+            for (let x = 0; x < windowsOther.length; x++) {
               windowsOther[x].setMaximize(false, false);
               tilesOrdered[x].manage(windowsOther[x]);
             }
           }
+
           if (config.windowsExtendClose === true) {
             extendWindows(
               tilesOrdered,
@@ -101,6 +108,7 @@ export function useWindows(workspace, config, rootUI) {
               apiWorkarea.getPanelsSize(itemScreen, itemDesktop),
             );
           }
+
           return false;
         }
 
@@ -171,11 +179,11 @@ export function useWindows(workspace, config, rootUI) {
           switch (tileType) {
             case "left":
             case "right":
-              return b.tile.absoluteGeometry.x - a.tile.absoluteGeometry.x;
+              return b.absoluteGeometry.x - a.absoluteGeometry.x;
 
             case "top":
             case "bottom":
-              return b.tile.absoluteGeometry.y - a.tile.absoluteGeometry.y;
+              return b.absoluteGeometry.y - a.absoluteGeometry.y;
           }
         });
 
@@ -337,7 +345,7 @@ export function useWindows(workspace, config, rootUI) {
         width -
         (x === 0 ? panelsSize.left : 0) -
         (width + x - panelsSize.right - panelsSize.left ===
-          panelsSize.workarea.width
+        panelsSize.workarea.width
           ? panelsSize.right
           : 0) -
         window.tile.padding * 2,
@@ -345,7 +353,7 @@ export function useWindows(workspace, config, rootUI) {
         height -
         (y === 0 ? panelsSize.top : 0) -
         (height + y - panelsSize.top - panelsSize.bottom ===
-          panelsSize.workarea.height
+        panelsSize.workarea.height
           ? panelsSize.bottom
           : 0) -
         window.tile.padding * 2,
@@ -364,6 +372,8 @@ export function useWindows(workspace, config, rootUI) {
     if (apiBlocklist.checkBlocklist(windowNew) === true) {
       return;
     }
+
+    state.addedRemoved = true;
 
     const continueProcess = setWindowsTiles(
       windowNew,
@@ -406,6 +416,8 @@ export function useWindows(workspace, config, rootUI) {
       return false;
     }
 
+    state.addedRemoved = true;
+
     const continueProcess = setWindowsTiles(
       windowClosed,
       windowClosed.desktops,
@@ -429,59 +441,76 @@ export function useWindows(workspace, config, rootUI) {
     }
   }
 
-  //Save tile when user focus a window
+  //Save tile when user focus a window and add signal
   function onUserFocusWindow(windowMain) {
-    if (windowMain.active === true) {
-      windowFocused.tile = windowMain.tile;
-      windowFocused.window = windowMain;
+    if (windowMain.active === true && windowMain.tile !== null) {
+      state.windowFocused.tile = windowMain.tile;
+      state.windowFocused.window = windowMain;
+      windowMain.tileChanged.connect(onTileChanged);
+    } else {
+      windowMain.tileChanged.disconnect(onTileChanged);
+    }
+  }
+
+  //When a window tile is changed, exchange windows and extend windows
+  function onTileChanged(tileNew) {
+    if (state.addedRemoved === true) {
+      state.addedRemoved = false;
+      return;
+    }
+
+    if (
+      tileNew !== null &&
+      config.windowsOrderMove === true &&
+      tileNew?.windows.filter((w) => w !== state.windowFocused.window).length >
+        0
+    ) {
+      apiTiles.exchangeTiles(
+        state.windowFocused.window,
+        tileNew,
+        state.windowFocused,
+      );
+
+      state.windowFocused.tile = state.windowFocused.window.tile;
+    }
+
+    if (config.windowsExtendMove === true) {
+      const tilesOrdered = apiTiles.getTilesFromActualDesktop();
+      const windows = getWindows(
+        state.windowFocused.window,
+        workspace.currentDesktop,
+        workspace.activeScreen,
+      );
+      extendWindows(
+        tilesOrdered,
+        [state.windowFocused.window, ...windows],
+        apiWorkarea.getPanelsSize(
+          workspace.activeScreen,
+          workspace.currentDesktop,
+        ),
+      );
     }
   }
 
   //Set signals to window
   function setSignalsToWindow(windowMain) {
-    onUserFocusWindow(windowMain);
+    if (apiBlocklist.checkBlocklist(windowMain) === true) {
+      return;
+    }
 
-    if (apiBlocklist.checkBlocklist(windowMain) === false) {
-      let userMoveFinished = false;
-      if (config.UIEnable === true) {
-        windowMain.interactiveMoveResizeStarted.connect(apiUI.onUserMoveStart);
-        windowMain.interactiveMoveResizeStepped.connect(
-          apiUI.onUserMoveStepped,
-        );
-        windowMain.interactiveMoveResizeFinished.connect(() => {
-          apiUI.onUserMoveFinished(windowMain);
-          userMoveFinished = true;
-        });
-      }
+    if (config.UIEnable === true) {
+      windowMain.interactiveMoveResizeStarted.connect(apiUI.onUserMoveStart);
+      windowMain.interactiveMoveResizeStepped.connect(apiUI.onUserMoveStepped);
+      windowMain.interactiveMoveResizeFinished.connect(() => {
+        apiUI.onUserMoveFinished(windowMain);
+      });
+    }
 
-      if (config.windowsOrderMove === true) {
-        windowMain.activeChanged.connect(() => {
-          onUserFocusWindow(windowMain);
-        });
-        windowMain.tileChanged.connect((tile) => {
-          apiTiles.exchangeTiles(windowMain, tile, windowFocused);
-
-          if (config.windowsExtendMove === true && userMoveFinished === true) {
-            const tilesOrdered = apiTiles.getTilesFromActualDesktop();
-            const windows = getWindows(
-              windowMain,
-              workspace.currentDesktop,
-              workspace.activeScreen,
-            );
-
-            extendWindows(
-              tilesOrdered,
-              [windowMain, ...windows],
-              apiWorkarea.getPanelsSize(
-                workspace.activeScreen,
-                workspace.currentDesktop,
-              ),
-            );
-
-            userMoveFinished = false;
-          }
-        });
-      }
+    if (config.windowsOrderMove === true || config.windowsExtendMove === true) {
+      onUserFocusWindow(windowMain);
+      windowMain.activeChanged.connect(() => {
+        onUserFocusWindow(windowMain);
+      });
     }
   }
 
@@ -522,5 +551,6 @@ export function useWindows(workspace, config, rootUI) {
     onTimerFinished,
     setWindowsSignals,
     setSignalsToWindow,
+    state,
   };
 }
