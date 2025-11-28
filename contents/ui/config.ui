@@ -499,7 +499,7 @@ Remove this value to return to the default layouts</string>
        <x>10</x>
        <y>10</y>
        <width>380</width>
-       <height>90</height>
+       <height>100</height>
       </rect>
      </property>
      <layout class="QFormLayout" name="onOpen">
@@ -548,6 +548,28 @@ Remove this value to return to the default layouts</string>
         </property>
        </widget>
       </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="kcfg_WindowsExtendOpen">
+        <property name="toolTip">
+         <string>Do not leave empty tiles by extending the window</string>
+        </property>
+        <property name="statusTip">
+         <string/>
+        </property>
+        <property name="locale">
+         <locale language="English" country="Eswatini"/>
+        </property>
+        <property name="text">
+         <string>Extend windows</string>
+        </property>
+        <property name="autoRepeat">
+         <bool>false</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </widget>
@@ -560,7 +582,7 @@ Remove this value to return to the default layouts</string>
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>480</width>
+       <width>567</width>
        <height>180</height>
       </rect>
      </property>
@@ -656,6 +678,28 @@ This timer avoid crash wayland, beacuse the process try open the window
         </property>
        </widget>
       </item>
+      <item row="3" column="1">
+       <widget class="QCheckBox" name="kcfg_WindowsExtendClose">
+        <property name="toolTip">
+         <string>Do not leave empty tiles by extending the window</string>
+        </property>
+        <property name="statusTip">
+         <string/>
+        </property>
+        <property name="locale">
+         <locale language="English" country="Eswatini"/>
+        </property>
+        <property name="text">
+         <string>Extend windows</string>
+        </property>
+        <property name="autoRepeat">
+         <bool>false</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </widget>
@@ -669,7 +713,7 @@ This timer avoid crash wayland, beacuse the process try open the window
        <x>10</x>
        <y>10</y>
        <width>401</width>
-       <height>60</height>
+       <height>74</height>
       </rect>
      </property>
      <layout class="QFormLayout" name="onMoved">
@@ -711,6 +755,28 @@ This timer avoid crash wayland, beacuse the process try open the window
         </property>
         <property name="text">
          <string>If the target tile has windows, move to the origin tile</string>
+        </property>
+        <property name="autoRepeat">
+         <bool>false</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="kcfg_WindowsExtendMove">
+        <property name="toolTip">
+         <string>Do not leave empty tiles by extending the window</string>
+        </property>
+        <property name="statusTip">
+         <string/>
+        </property>
+        <property name="locale">
+         <locale language="English" country="Eswatini"/>
+        </property>
+        <property name="text">
+         <string>Extend windows</string>
         </property>
         <property name="autoRepeat">
          <bool>false</bool>
