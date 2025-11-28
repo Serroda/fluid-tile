@@ -1,19 +1,11 @@
 import { useBlocklist } from "./blocklist.mjs";
 import { useWorkarea } from "./workarea.mjs";
 import { useTiles } from "./tiles.mjs";
-import { useUI } from "./ui.mjs";
 
-export function useWindows(workspace, config, rootUI) {
+export function useWindows(workspace, config) {
   const apiTiles = useTiles(workspace, config);
   const apiBlocklist = useBlocklist(config.appsBlocklist, config.modalsIgnore);
   const apiWorkarea = useWorkarea(workspace);
-  const apiUI = useUI(workspace, config, rootUI);
-
-  //
-  const state = {
-    windowFocused: {},
-    addedRemoved: false,
-  };
 
   // Get all windows from the virtual desktop except the given window
   function getWindows(windowMain, desktop, screen) {
@@ -129,8 +121,6 @@ export function useWindows(workspace, config, rootUI) {
         continue;
       }
 
-      window.tileVirtual = undefined;
-
       const tilesAround = {
         left: [],
         top: [],
@@ -192,9 +182,17 @@ export function useWindows(workspace, config, rootUI) {
             break;
           }
 
-          const finalWidth = tile.absoluteGeometry.width + windowGeometry.width;
+          const finalWidth =
+            tile.absoluteGeometry.width +
+            (window.tileVirtual !== undefined
+              ? window.tileVirtual.width
+              : windowGeometry.width);
+
           const finalHeight =
-            tile.absoluteGeometry.height + windowGeometry.height;
+            tile.absoluteGeometry.height +
+            (window.tileVirtual !== undefined
+              ? window.tileVirtual.height
+              : windowGeometry.height);
 
           let newGeometry = null;
 
@@ -241,6 +239,8 @@ export function useWindows(workspace, config, rootUI) {
   //Set default tile size
   function resetWindowGeometry(windows, panelsSize) {
     for (const window of windows) {
+      window.tileVirtual = undefined;
+
       if (window.tile === null) {
         continue;
       }
@@ -333,10 +333,14 @@ export function useWindows(workspace, config, rootUI) {
 
   //Set window size and return `virtualTile`
   function setGeometryWindow(window, geometry, panelsSize) {
-    const x = geometry.x ?? window.tile.absoluteGeometry.x;
-    const y = geometry.y ?? window.tile.absoluteGeometry.y;
-    const width = geometry.width ?? window.tile.absoluteGeometry.width;
-    const height = geometry.height ?? window.tile.absoluteGeometry.height;
+    const tileRef = window.tileVirtual ?? window.tile.absoluteGeometry;
+
+    const x = geometry.x !== undefined ? geometry.x : tileRef.left;
+    const y = geometry.y !== undefined ? geometry.y : tileRef.top;
+
+    const width = geometry.width !== undefined ? geometry.width : tileRef.width;
+    const height =
+      geometry.height !== undefined ? geometry.height : tileRef.height;
 
     window.frameGeometry = {
       x: x + window.tile.padding + (x === 0 ? panelsSize.left : 0),
@@ -344,22 +348,24 @@ export function useWindows(workspace, config, rootUI) {
       width:
         width -
         (x === 0 ? panelsSize.left : 0) -
-        (width + x - panelsSize.right - panelsSize.left ===
-        panelsSize.workarea.width
+        (tileRef.right - panelsSize.right - panelsSize.left ===
+          panelsSize.workarea.width
           ? panelsSize.right
           : 0) -
         window.tile.padding * 2,
       height:
         height -
         (y === 0 ? panelsSize.top : 0) -
-        (height + y - panelsSize.top - panelsSize.bottom ===
-        panelsSize.workarea.height
+        (tileRef.bottom - panelsSize.top - panelsSize.bottom ===
+          panelsSize.workarea.height
           ? panelsSize.bottom
           : 0) -
         window.tile.padding * 2,
     };
 
     return {
+      width,
+      height,
       left: x,
       top: y,
       right: x + width,
@@ -367,190 +373,9 @@ export function useWindows(workspace, config, rootUI) {
     };
   }
 
-  //Trigger when a window is added to the desktop
-  function onWindowAdded(windowNew) {
-    if (apiBlocklist.checkBlocklist(windowNew) === true) {
-      return;
-    }
-
-    state.addedRemoved = true;
-
-    const continueProcess = setWindowsTiles(
-      windowNew,
-      workspace.desktops,
-      workspace.screens,
-      config.maximizeOpen,
-      0,
-    );
-
-    if (config.desktopAdd === true && continueProcess === true) {
-      workspace.createDesktop(workspace.desktops.length, "");
-      workspace.currentDesktop =
-        workspace.desktops[workspace.desktops.length - 1];
-      windowNew.desktops = [workspace.currentDesktop];
-
-      if (config.maximizeOpen === true) {
-        windowNew.setMaximize(true, true);
-      }
-
-      let layout = apiTiles.getDefaultLayouts(config.layoutDefault - 1);
-
-      if (config.layoutCustom !== undefined) {
-        layout = config.layoutCustom;
-      }
-
-      apiTiles.setLayout(workspace.currentDesktop, layout);
-
-      if (config.maximizeOpen === false) {
-        const tilesOrdered = apiTiles.getTilesFromActualDesktop();
-
-        windowNew.setMaximize(false, false);
-        tilesOrdered[0].manage(windowNew);
-      }
-    }
-  }
-
-  //Trigger when a window is remove to the desktop
-  function onWindowRemoved(windowClosed) {
-    if (apiBlocklist.checkBlocklist(windowClosed) === true) {
-      return false;
-    }
-
-    state.addedRemoved = true;
-
-    const continueProcess = setWindowsTiles(
-      windowClosed,
-      windowClosed.desktops,
-      [windowClosed.output],
-      config.maximizeClose,
-      1,
-    );
-
-    return (
-      continueProcess === true &&
-      config.desktopRemove === true &&
-      workspace.desktops.length > 1 &&
-      workspace.desktops.length > config.desktopRemoveMin
-    );
-  }
-
-  //Set signals to all Windows
-  function setWindowsSignals() {
-    for (const windowItem of workspace.stackingOrder) {
-      setSignalsToWindow(windowItem);
-    }
-  }
-
-  //Save tile when user focus a window and add signal
-  function onUserFocusWindow(windowMain) {
-    if (windowMain.active === true && windowMain.tile !== null) {
-      state.windowFocused.tile = windowMain.tile;
-      state.windowFocused.window = windowMain;
-      windowMain.tileChanged.connect(onTileChanged);
-    } else {
-      windowMain.tileChanged.disconnect(onTileChanged);
-    }
-  }
-
-  //When a window tile is changed, exchange windows and extend windows
-  function onTileChanged(tileNew) {
-    if (state.addedRemoved === true) {
-      state.addedRemoved = false;
-      return;
-    }
-
-    if (
-      tileNew !== null &&
-      config.windowsOrderMove === true &&
-      tileNew?.windows.filter((w) => w !== state.windowFocused.window).length >
-        0
-    ) {
-      apiTiles.exchangeTiles(
-        state.windowFocused.window,
-        tileNew,
-        state.windowFocused,
-      );
-
-      state.windowFocused.tile = state.windowFocused.window.tile;
-    }
-
-    if (config.windowsExtendMove === true) {
-      const tilesOrdered = apiTiles.getTilesFromActualDesktop();
-      const windows = getWindows(
-        state.windowFocused.window,
-        workspace.currentDesktop,
-        workspace.activeScreen,
-      );
-      extendWindows(
-        tilesOrdered,
-        [state.windowFocused.window, ...windows],
-        apiWorkarea.getPanelsSize(
-          workspace.activeScreen,
-          workspace.currentDesktop,
-        ),
-      );
-    }
-  }
-
-  //Set signals to window
-  function setSignalsToWindow(windowMain) {
-    if (apiBlocklist.checkBlocklist(windowMain) === true) {
-      return;
-    }
-
-    if (config.UIEnable === true) {
-      windowMain.interactiveMoveResizeStarted.connect(apiUI.onUserMoveStart);
-      windowMain.interactiveMoveResizeStepped.connect(apiUI.onUserMoveStepped);
-      windowMain.interactiveMoveResizeFinished.connect(() => {
-        apiUI.onUserMoveFinished(windowMain);
-      });
-    }
-
-    if (config.windowsOrderMove === true || config.windowsExtendMove === true) {
-      onUserFocusWindow(windowMain);
-      windowMain.activeChanged.connect(() => {
-        onUserFocusWindow(windowMain);
-      });
-    }
-  }
-
-  function onTimerFinished() {
-    //Case: Applications that open a window and, when an action is performed,
-    //close the window and open another window (Chrome profile selector).
-    //This timer avoid crash wayland
-    const desktopsRemove = [];
-
-    desktopLoop: for (const desktopItem of workspace.desktops.filter((d) =>
-      rootUI.removeDesktopInfo.desktopsId.includes(d.id),
-    )) {
-      for (const screenItem of workspace.screens) {
-        const windowsOtherSpecialCases = getWindows(
-          rootUI.removeDesktopInfo.windowClosed,
-          desktopItem,
-          screenItem,
-        );
-
-        if (windowsOtherSpecialCases.length !== 0) {
-          continue desktopLoop;
-        }
-      }
-
-      desktopsRemove.push(desktopItem);
-    }
-
-    for (const desktop of desktopsRemove) {
-      workspace.removeDesktop(desktop);
-    }
-
-    rootUI.removeDesktopInfo = {};
-  }
-
   return {
-    onWindowAdded,
-    onWindowRemoved,
-    onTimerFinished,
-    setWindowsSignals,
-    setSignalsToWindow,
-    state,
+    setWindowsTiles,
+    getWindows,
+    extendWindows,
   };
 }

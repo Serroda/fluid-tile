@@ -1,7 +1,7 @@
 import QtQuick
 import org.kde.kwin
 import "./components"
-import "../code/windows.mjs" as ApiWindow
+import "../code/main.mjs" as Engine
 
 Window {
     id: root
@@ -12,7 +12,7 @@ Window {
     visible: false
 
     property var config: ({})
-    property var apiWindow: ({})
+    property var engine: ({})
     property var removeDesktopInfo: ({})
     property var layoutOrdered: []
     property int tileActived: -1
@@ -45,7 +45,7 @@ Window {
             console.log("LayoutCustom variable error: " + error);
         }
 
-        apiWindow = ApiWindow.useWindows(Workspace, config, root);
+        engine = Engine.useTriggers(Workspace, config, root);
     }
 
     Timer {
@@ -54,7 +54,7 @@ Window {
         repeat: false
         running: false
         onTriggered: {
-            root.apiWindow.onTimerFinished();
+            root.engine.onTimerFinished();
         }
     }
 
@@ -62,12 +62,12 @@ Window {
         target: Workspace
 
         function onWindowAdded(client) {
-            root.apiWindow.onWindowAdded(client);
-            root.apiWindow.setSignalsToWindow(client);
+            root.engine.onWindowAdded(client);
+            root.engine.setSignalsToWindow(client);
         }
 
         function onWindowRemoved(client) {
-            const deleteDesktop = root.apiWindow.onWindowRemoved(client);
+            const deleteDesktop = root.engine.onWindowRemoved(client);
             if (deleteDesktop === false) {
                 return;
             }
@@ -79,7 +79,7 @@ Window {
 
     Component.onCompleted: {
         loadConfig();
-        apiWindow.setWindowsSignals();
+        engine.setWindowsSignals();
     }
 
     //Tile layout

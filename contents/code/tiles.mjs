@@ -205,11 +205,11 @@ export function useTiles(workspace, config) {
   }
 
   //Save tile when user focus a window
-  function exchangeTiles(windowMain, tileNew, windowFocused) {
+  function exchangeTiles(windowMain, tileNew, tileOld) {
     for (const windowItem of tileNew.windows) {
       windowItem.setMaximize(false, false);
       if (windowItem !== windowMain) {
-        windowFocused.tile.manage(windowItem);
+        tileOld.manage(windowItem);
       }
     }
   }
