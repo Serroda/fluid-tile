@@ -381,9 +381,29 @@ export function useWindows(workspace, config) {
     };
   }
 
+  function focusWindow(window) {
+    if (window === undefined) {
+      const windows = getWindows(
+        undefined,
+        workspace.currentDesktop,
+        workspace.activeScreen,
+      );
+
+      if (windows.length > 0) {
+        workspace.activeWindow = windows[0];
+        return windows[0];
+      }
+    } else {
+      workspace.activeWindow = window;
+      return window;
+    }
+    return null;
+  }
+
   return {
     setWindowsTiles,
     getWindows,
     extendWindows,
+    focusWindow,
   };
 }

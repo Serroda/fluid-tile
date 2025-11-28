@@ -56,6 +56,8 @@ export function useTriggers(workspace, config, rootUI) {
         windowNew.setMaximize(false, false);
         tilesOrdered[0].manage(windowNew);
       }
+
+      apiWindows.focusWindow(windowNew);
     }
   }
 
@@ -194,10 +196,24 @@ export function useTriggers(workspace, config, rootUI) {
     rootUI.removeDesktopInfo = {};
   }
 
+  // Focus window when a current desktop is changed
+  function onCurrentDesktopChanged() {
+    if (state.addedRemoved === true) {
+      state.addedRemoved = false;
+      return;
+    }
+
+    const window = apiWindows.focusWindow();
+    if (config.windowsOrderMove === true || config.windowsExtendMove === true) {
+      onUserFocusWindow(window);
+    }
+  }
+
   return {
     onWindowAdded,
     onWindowRemoved,
     onTimerFinished,
+    onCurrentDesktopChanged,
     setWindowsSignals,
     setSignalsToWindow,
   };

@@ -75,6 +75,10 @@ Window {
             root.removeDesktopInfo.windowClosed = client;
             timerRemoveDesktop.start();
         }
+
+        function onCurrentDesktopChanged() {
+            root.engine.onCurrentDesktopChanged();
+        }
     }
 
     Component.onCompleted: {
