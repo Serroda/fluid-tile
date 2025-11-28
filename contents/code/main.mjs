@@ -114,7 +114,7 @@ export function useTriggers(workspace, config, rootUI) {
       tileNew !== null &&
       config.windowsOrderMove === true &&
       tileNew?.windows.filter((w) => w !== state.windowFocused.window).length >
-      0
+        0
     ) {
       apiTiles.exchangeTiles(
         state.windowFocused.window,
@@ -126,14 +126,12 @@ export function useTriggers(workspace, config, rootUI) {
     }
 
     if (config.windowsExtendMove === true) {
-      const tilesOrdered = apiTiles.getTilesFromActualDesktop();
       const windows = apiWindows.getWindows(
         undefined,
         workspace.currentDesktop,
         workspace.activeScreen,
       );
       apiWindows.extendWindows(
-        tilesOrdered,
         windows,
         apiWorkarea.getPanelsSize(
           workspace.activeScreen,
