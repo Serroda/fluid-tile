@@ -2,7 +2,6 @@ import { useTiles } from "./tiles.mjs";
 
 export function useUI(workspace, config, rootUI) {
   const apiTile = useTiles(workspace, config);
-
   let windowGeometryOnMove = {};
 
   // When a window start move with the cursor, reset ui

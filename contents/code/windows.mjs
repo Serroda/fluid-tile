@@ -281,7 +281,10 @@ export function useWindows(workspace, config) {
   //Check if the window collides with other windows
   function checkConflictsAllWindows(windowMain, windows, type) {
     for (const windowOther of windows) {
-      if (windowOther === windowMain) {
+      if (
+        windowOther === windowMain ||
+        (windowOther.tile === null && windowOther.tileVirtual === undefined)
+      ) {
         continue;
       }
 
@@ -342,25 +345,30 @@ export function useWindows(workspace, config) {
     const height =
       geometry.height !== undefined ? geometry.height : tileRef.height;
 
+    let offsetX = window.tile.padding;
+    let offsetY = window.tile.padding;
+
+    if (x === 0) {
+      offsetX += panelsSize.left + window.tile.padding;
+    }
+
+    if (y === 0) {
+      offsetY += panelsSize.top + window.tile.padding;
+    }
+
+    if (x + width === panelsSize.workarea.right + panelsSize.right) {
+      offsetX += panelsSize.right;
+    }
+
+    if (y + height === panelsSize.workarea.bottom + panelsSize.bottom) {
+      offsetY += panelsSize.bottom;
+    }
+
     window.frameGeometry = {
-      x: x + window.tile.padding + (x === 0 ? panelsSize.left : 0),
-      y: y + window.tile.padding + (y === 0 ? panelsSize.top : 0),
-      width:
-        width -
-        (x === 0 ? panelsSize.left : 0) -
-        (tileRef.right - panelsSize.right - panelsSize.left ===
-          panelsSize.workarea.width
-          ? panelsSize.right
-          : 0) -
-        window.tile.padding * 2,
-      height:
-        height -
-        (y === 0 ? panelsSize.top : 0) -
-        (tileRef.bottom - panelsSize.top - panelsSize.bottom ===
-          panelsSize.workarea.height
-          ? panelsSize.bottom
-          : 0) -
-        window.tile.padding * 2,
+      x: x + (x === 0 ? panelsSize.left + window.tile.padding : 0),
+      y: y + (y === 0 ? panelsSize.top + window.tile.padding : 0),
+      width: width - offsetX,
+      height: height - offsetY,
     };
 
     return {
