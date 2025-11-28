@@ -128,7 +128,7 @@ export function useWindows(workspace, config) {
         bottom: [],
       };
 
-      const windowGeometry = window.tile.absoluteGeometry;
+      const windowGeometry = window.tileVirtual ?? window.tile.absoluteGeometry;
 
       for (const tile of tilesLayout) {
         if (tile.windows.length !== 0) {
@@ -182,17 +182,17 @@ export function useWindows(workspace, config) {
             break;
           }
 
-          const finalWidth =
-            tile.absoluteGeometry.width +
-            (window.tileVirtual !== undefined
-              ? window.tileVirtual.width
-              : windowGeometry.width);
+          let finalWidth = tile.absoluteGeometry.width + windowGeometry.width;
 
-          const finalHeight =
-            tile.absoluteGeometry.height +
-            (window.tileVirtual !== undefined
-              ? window.tileVirtual.height
-              : windowGeometry.height);
+          let finalHeight =
+            tile.absoluteGeometry.height + windowGeometry.height;
+
+          if (tile.absoluteGeometry.x === windowGeometry.left) {
+            finalWidth = windowGeometry.width;
+          }
+          if (tile.absoluteGeometry.y === windowGeometry.top) {
+            finalHeight = windowGeometry.height;
+          }
 
           let newGeometry = null;
 
