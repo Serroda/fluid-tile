@@ -171,11 +171,11 @@ export function useWindows(workspace, config) {
                 (woNew.top + woNew.height / 2),
             );
 
-            return distance < acc.distance
+            return acc.distance === -1 || distance < acc.distance
               ? { distance, geometry: woNew }
               : acc;
           },
-          { distance: panelsSize.workarea.right, geometry: null },
+          { distance: -1, geometry: newGeometry },
         );
 
         switch (key) {
