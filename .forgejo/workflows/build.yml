@@ -1,0 +1,25 @@
+on:
+  release:
+    types: [published]
+
+jobs:
+  download_rename_publish:
+    runs-on: codeberg-tiny-lazy
+    container:
+      image: alpine:latest
+    steps:
+      - name: download_release
+        uses: actions/forgejo-release@v2.7.3
+        with:
+          direction: download
+          release-dir: dist/release
+      - name: rename_file
+        shell: sh
+        run: |
+          mkdir -p dist/build
+          mv dist/release/*.zip dist/build/fluid-tile-${{github.ref_name}}.kwinscript
+      - name: upload_kwinscript
+        uses: actions/forgejo-release@v2.7.3
+        with:
+          direction: upload
+          release-dir: dist/build
