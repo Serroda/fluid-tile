@@ -121,7 +121,7 @@ export function useWindows(workspace, config) {
 
       const windowGeometry = window.tileVirtual ?? window.tile.absoluteGeometry;
       const windowsOther = windows
-        .filter((w) => w !== window)
+        .filter((w) => w !== window && w.tile !== null)
         .map((w) => getRealGeometry(w));
 
       const newGeometry = {
@@ -131,11 +131,26 @@ export function useWindows(workspace, config) {
         bottom: panelsSize.workarea.bottom,
       };
 
+      //Only check windows on the vertical axis that
+      //belong to the same column. This prevents windows
+      //from being placed on top of each other, while
+      //on the horizontal axis we search all rows
+      //for windows that may cause conflicts,
+      //thus being more restrictive when establishing the window size.
+
       const windowsConflict = {
         left: windowsOther.filter((wo) => wo.right <= windowGeometry.left),
-        top: windowsOther.filter((wo) => wo.bottom <= windowGeometry.top),
+        top: windowsOther.filter(
+          (wo) =>
+            wo.bottom <= windowGeometry.top &&
+            checkSameColumn(windowGeometry, wo) === true,
+        ),
         right: windowsOther.filter((wo) => wo.left >= windowGeometry.right),
-        bottom: windowsOther.filter((wo) => wo.top >= windowGeometry.bottom),
+        bottom: windowsOther.filter(
+          (wo) =>
+            wo.top >= windowGeometry.bottom &&
+            checkSameColumn(windowGeometry, wo) === true,
+        ),
       };
 
       for (const key in windowsConflict) {
@@ -178,7 +193,6 @@ export function useWindows(workspace, config) {
             break;
         }
       }
-
       const tileVirtual = setGeometryWindow(window, newGeometry, panelsSize);
       window.tileVirtual = tileVirtual;
     }
@@ -193,16 +207,7 @@ export function useWindows(workspace, config) {
         continue;
       }
 
-      setGeometryWindow(
-        window,
-        {
-          left: window.tile.absoluteGeometry.left,
-          top: window.tile.absoluteGeometry.top,
-          right: window.tile.absoluteGeometry.right,
-          bottom: window.tile.absoluteGeometry.bottom,
-        },
-        panelsSize,
-      );
+      setGeometryWindow(window, {}, panelsSize);
     }
   }
 
@@ -275,6 +280,16 @@ export function useWindows(workspace, config) {
       return window;
     }
     return null;
+  }
+
+  //Check if the tile is in the same column
+  function checkSameColumn(windowGeometry, windowGeometryOther) {
+    return (
+      (windowGeometry.left >= windowGeometryOther.left &&
+        windowGeometry.left < windowGeometryOther.right) ||
+      (windowGeometry.right <= windowGeometryOther.right &&
+        windowGeometry.right > windowGeometryOther.left)
+    );
   }
 
   return {
