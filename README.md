@@ -18,14 +18,15 @@ If you like the project, you can support me by buying me a coffee or with other 
 - 🚀 Working on KDE Plasma 6.4 (or superior)
 - 🛠️ KWin native tiling
 - 🪟 Smooth tiling
-- 🖼️ Working with custom layout (Meta + T)
+- 🖼️ Working with KWin tile manager (Meta + T shortcut)
+- ⚙️ User options
 - 💻 Auto create and delete virtual desktops
 - ⛔ Blocklist for apps to which you don't want the script to apply
-- ⚙️ User options
 - 🔢 Configures the priority order of windows according to the width, height and position of the tiles
 - 🔳 Select the default tile layout when creating a new virtual desktop
 - 🖌️ Custom layout when creating a new virtual desktop
 - 🤏🏻 Move your windows between tiles with the UI
+- 🕸️ Extend the windows without leaving empty spaces in the layout
 
 ## Preview
 
