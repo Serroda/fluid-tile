@@ -78,14 +78,7 @@ export function useTriggers(workspace, config, rootUI) {
     );
 
     if (continueProcess === false) {
-      const window = apiWindows.focusWindow();
-
-      if (
-        window !== null &&
-        (config.windowsOrderMove === true || config.windowsExtendMove === true)
-      ) {
-        onUserFocusWindow(window);
-      }
+      apiWindows.focusWindow();
     }
 
     return (
@@ -105,12 +98,18 @@ export function useTriggers(workspace, config, rootUI) {
 
   //Save tile when user focus a window and add signal
   function onUserFocusWindow(windowMain) {
-    if (windowMain.active === true && windowMain.tile !== null) {
+    if (
+      windowMain.active === true &&
+      windowMain.tile !== null &&
+      windowMain.signalTileChangedConnected !== true
+    ) {
       state.windowFocused.tile = windowMain.tile;
       state.windowFocused.window = windowMain;
+      windowMain.signalTileChangedConnected = true;
       windowMain.tileChanged.connect(onTileChanged);
     } else {
       windowMain.tileChanged.disconnect(onTileChanged);
+      windowMain.signalTileChangedConnected = false;
     }
   }
 
@@ -137,18 +136,17 @@ export function useTriggers(workspace, config, rootUI) {
     }
 
     if (config.windowsExtendMove === true) {
-      const windows = apiWindows.getWindows(
-        undefined,
-        workspace.currentDesktop,
-        workspace.activeScreen,
-      );
-      apiWindows.extendWindows(
-        windows,
-        apiWorkarea.getPanelsSize(
-          workspace.activeScreen,
+      for (const screen of workspace.screens) {
+        const windows = apiWindows.getWindows(
+          undefined,
           workspace.currentDesktop,
-        ),
-      );
+          screen,
+        );
+        apiWindows.extendWindows(
+          windows,
+          apiWorkarea.getPanelsSize(screen, workspace.currentDesktop),
+        );
+      }
     }
   }
 
@@ -212,14 +210,7 @@ export function useTriggers(workspace, config, rootUI) {
       return;
     }
 
-    const window = apiWindows.focusWindow();
-
-    if (
-      window !== null &&
-      (config.windowsOrderMove === true || config.windowsExtendMove === true)
-    ) {
-      onUserFocusWindow(window);
-    }
+    apiWindows.focusWindow();
   }
 
   return {
