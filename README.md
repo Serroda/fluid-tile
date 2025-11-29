@@ -45,20 +45,6 @@ If you like the project, you can support me by buying me a coffee or with other 
 - [Home](https://codeberg.org/Serroda/fluid-tile/wiki/Home)
 - [Installation](https://codeberg.org/Serroda/fluid-tile/wiki/Installation)
 - [User settings](https://codeberg.org/Serroda/fluid-tile/wiki/User-settings)
+- [Shortcuts](https://codeberg.org/Serroda/fluid-tile/wiki/Shortcuts)
 - [Custom layout](https://codeberg.org/Serroda/fluid-tile/wiki/Custom-layout)
-
-## F.A.Q
-
-### Differences between other tile managers
-
-The main difference is that `Fluid tile` uses the native KWin API to manage windows and layout, ensuring a smoother integration with native KDE, this means that the customization options are more limited for the user compared to other options.
-
-Install `Fluid tile` if you want a native KDE tiling, while if you want something more customized use other options like Krohnkite or Polonium
-
-### Shortcuts
-
-You can use the native KDE shortcuts, my recommendation is to change the shortcuts for `Window Management`, specifically change `Custom Quick Tile Window to the Bottom/Left/Right/Top` to `Meta + Down/Left/Right/Up` for smoother use
-
-### My settings have not been applied
-
-You have to disable and enable **Fluid tile** from `KWin scripts` to apply user settings 
+- [F.A.Q](https://codeberg.org/Serroda/fluid-tile/wiki/F.A.Q)
