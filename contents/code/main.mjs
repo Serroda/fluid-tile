@@ -77,6 +77,17 @@ export function useTriggers(workspace, config, rootUI) {
       1,
     );
 
+    if (continueProcess === false) {
+      const window = apiWindows.focusWindow();
+
+      if (
+        window !== null &&
+        (config.windowsOrderMove === true || config.windowsExtendMove === true)
+      ) {
+        onUserFocusWindow(window);
+      }
+    }
+
     return (
       continueProcess === true &&
       config.desktopRemove === true &&
@@ -202,7 +213,11 @@ export function useTriggers(workspace, config, rootUI) {
     }
 
     const window = apiWindows.focusWindow();
-    if (config.windowsOrderMove === true || config.windowsExtendMove === true) {
+
+    if (
+      window !== null &&
+      (config.windowsOrderMove === true || config.windowsExtendMove === true)
+    ) {
       onUserFocusWindow(window);
     }
   }
