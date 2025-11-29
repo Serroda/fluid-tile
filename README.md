@@ -27,7 +27,7 @@ If you like the project, you can support me by buying me a coffee or with other 
 - 🖌️ Custom layout when creating a new virtual desktop
 - 🤏🏻 Move your windows between tiles with the UI
 - 🕸️ Extend the windows without leaving empty spaces in the layout
-
+- 🖥️🖥️ Works with multiple screens
 ## Preview
 
 <a href="https://youtu.be/Dk0h8WTxI20"><img src="https://i.ytimg.com/vi/Dk0h8WTxI20/maxresdefault.jpg" width="450"></a>
