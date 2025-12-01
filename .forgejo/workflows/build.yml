@@ -1,0 +1,23 @@
+on:
+  release:
+    types: [published]
+
+jobs:
+  download_rename_publish:
+    runs-on: codeberg-tiny-lazy
+    container:
+      image: alpine:latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: install zip
+        run: apk add --no-cache zip
+      - name: create kwinscript package
+        run: |
+          zip -r fluid-tile-${{github.ref_name}}.kwinscript metadata.json contents/
+          mkdir build
+          mv ./fluid-tile-${{github.ref_name}}.kwinscript ./build
+      - name: upload kwinscript
+        uses: actions/forgejo-release@v2.7.3
+        with:
+          direction: upload
+          release-dir: build
