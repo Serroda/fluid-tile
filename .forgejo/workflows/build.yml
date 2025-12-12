@@ -9,7 +9,7 @@ jobs:
       image: node:20-alpine
     steps:
       - name: install packages
-        run: apk add --no-cache zip bash jq curl dpkg
+        run: apk add --no-cache zip bash jq curl tea
       - uses: actions/checkout@v4
       - name: create kwinscript package
         run: |
