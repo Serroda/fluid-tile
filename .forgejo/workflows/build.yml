@@ -6,11 +6,11 @@ jobs:
   download_rename_publish:
     runs-on: codeberg-tiny-lazy
     container:
-      image: alpine:latest
+      image: node:20-alpine
     steps:
-      - uses: actions/checkout@v6
       - name: install zip
-        run: apk add --no-cache zip
+        run: apk add --no-cache zip git
+      - uses: actions/checkout@v4
       - name: create kwinscript package
         run: |
           zip -r fluid-tile-${{github.ref_name}}.kwinscript metadata.json contents/
