@@ -12,7 +12,7 @@ body:
   - type: textarea
     id: description
     attributes:
-      label: Describe the bug
+      label: Describe the issue
       description: What happened?
       placeholder: My computer has exploded
     validations:
