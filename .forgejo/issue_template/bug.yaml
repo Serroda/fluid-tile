@@ -1,0 +1,37 @@
+name: Bug Report
+title: "[Bug]: "
+ref: "main"
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: title
+    attributes:
+      label: Bug title
+      description: Write a short title for your bug, please be specific
+      placeholder: The windows are not rearranged correctly
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: What happened?
+      placeholder: My computer has exploded
+    validations:
+      required: true
+  - type: input
+    id: version-kde
+    attributes:
+      label: KDE Version
+      description: What KDE version are you running?
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. Use journalctl and search for logs containing the term `kwin_wayland`
+      render: shell
