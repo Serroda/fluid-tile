@@ -1,0 +1,19 @@
+name: New Feature
+about: Propose new functionalities and features
+title: "[Feature]: "
+ref: "main"
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this feature report! Please be specific
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe your idea
+      description: Tell me about your idea and the new feature you would like to see in **Fluid tile**
+      placeholder: My computer has exploded
+    validations:
+      required: true
