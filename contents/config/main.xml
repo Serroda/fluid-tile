@@ -8,6 +8,9 @@
         <entry name="MaximizeClose" type="Bool">
             <default>true</default>
         </entry>
+        <entry name="WindowsOrderOpen" type="Bool">
+            <default>true</default>
+        </entry>
         <entry name="WindowsOrderClose" type="Bool">
             <default>true</default>
         </entry>

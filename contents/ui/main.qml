@@ -24,6 +24,7 @@ Window {
             tilesPriority: KWin.readConfig("TilesPriority", "Width,Height,Top,Left,Right,Bottom").split(","),
             maximizeClose: KWin.readConfig("MaximizeClose", true),
             maximizeOpen: KWin.readConfig("MaximizeOpen", true),
+            windowsOrderOpen: KWin.readConfig("WindowsOrderOpen", true),
             windowsOrderClose: KWin.readConfig("WindowsOrderClose", true),
             windowsOrderMove: KWin.readConfig("WindowsOrderMove", true),
             windowsExtendOpen: KWin.readConfig("WindowsExtendOpen", true),

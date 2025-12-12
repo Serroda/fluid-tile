@@ -46,26 +46,28 @@ export function useWindows(workspace, config) {
         const windowsOther = getWindows(windowMain, itemDesktop, itemScreen);
         const tilesOrdered = apiTiles.getOrderedTiles(itemDesktop, itemScreen);
 
-        if (
-          mode === 1 &&
-          config.windowsOrderClose === false &&
-          windowsOther.length > 1
-        ) {
-          return true;
-        }
-
         if (mode === 0) {
           //Set tile if the custom mosaic has space
           if (windowsOther.length + 1 <= tilesOrdered.length) {
+            workspace.currentDesktop = itemDesktop;
+            windowMain.desktops = [itemDesktop];
+
             for (let x = 0; x < windowsOther.length; x++) {
               windowsOther[x].desktops = [itemDesktop];
               windowsOther[x].setMaximize(false, false);
-              tilesOrdered[x + 1].manage(windowsOther[x]);
+
+              if (config.windowsOrderOpen === true) {
+                tilesOrdered[x + 1].manage(windowsOther[x]);
+              } else {
+                tilesOrdered[x].manage(windowsOther[x]);
+              }
             }
 
-            workspace.currentDesktop = itemDesktop;
-            windowMain.desktops = [itemDesktop];
-            tilesOrdered[0].manage(windowMain);
+            if (config.windowsOrderOpen === true) {
+              tilesOrdered[0].manage(windowMain);
+            } else {
+              tilesOrdered[tilesOrdered.length - 1].manage(windowMain);
+            }
 
             if (maximize === true && windowsOther.length === 0) {
               windowMain.setMaximize(true, true);
@@ -85,7 +87,7 @@ export function useWindows(workspace, config) {
         } else if (mode === 1 && windowsOther.length !== 0) {
           if (maximize === true && windowsOther.length === 1) {
             windowsOther[0].setMaximize(true, true);
-          } else {
+          } else if (config.windowsOrderClose === true) {
             for (let x = 0; x < windowsOther.length; x++) {
               windowsOther[x].setMaximize(false, false);
               tilesOrdered[x].manage(windowsOther[x]);
@@ -164,11 +166,11 @@ export function useWindows(workspace, config) {
           (acc, woNew) => {
             const distance = Math.hypot(
               windowGeometry.left +
-                windowGeometry.width / 2 -
-                (woNew.left + woNew.width / 2),
+              windowGeometry.width / 2 -
+              (woNew.left + woNew.width / 2),
               windowGeometry.top +
-                windowGeometry.height / 2 -
-                (woNew.top + woNew.height / 2),
+              windowGeometry.height / 2 -
+              (woNew.top + woNew.height / 2),
             );
 
             return acc.distance === -1 || distance < acc.distance

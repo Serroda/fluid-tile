@@ -49,8 +49,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>612</width>
-        <height>820</height>
+        <width>616</width>
+        <height>802</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -173,6 +173,13 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QCheckBox" name="kcfg_WindowsOrderOpen">
+             <property name="text">
+              <string>Rearrange windows</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
          <widget class="QWidget" name="closed">
@@ -276,7 +283,7 @@ This timer avoid crash wayland, beacuse the process try open the window
               <locale language="English" country="Eswatini"/>
              </property>
              <property name="text">
-              <string>Reorder windows</string>
+              <string>Rearrange windows</string>
              </property>
             </widget>
            </item>
