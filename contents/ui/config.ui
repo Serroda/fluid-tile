@@ -25,805 +25,777 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <property name="spacing">
-    <number>0</number>
-   </property>
-   <property name="leftMargin">
-    <number>0</number>
+    <number>12</number>
    </property>
    <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
+    <number>12</number>
    </property>
    <property name="bottomMargin">
-    <number>0</number>
+    <number>12</number>
    </property>
    <item>
-    <widget class="QScrollArea" name="scrollArea">
-     <property name="widgetResizable">
-      <bool>true</bool>
+    <widget class="QLabel" name="titleOpen">
+     <property name="font">
+      <font>
+       <bold>true</bold>
+      </font>
      </property>
-     <widget class="QWidget" name="scrollAreaWidgetContents">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>616</width>
-        <height>802</height>
-       </rect>
+     <property name="locale">
+      <locale language="English" country="Eswatini"/>
+     </property>
+     <property name="text">
+      <string>When a window has been ...</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="tabWidget_2">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>500</width>
+       <height>170</height>
+      </size>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LayoutDirection::LeftToRight</enum>
+     </property>
+     <property name="locale">
+      <locale language="English" country="Spain"/>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="opened">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_7">
+      <property name="locale">
+       <locale language="English" country="Spain"/>
+      </property>
+      <attribute name="title">
+       <string>Opened</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QCheckBox" name="kcfg_MaximizeOpen">
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>Maximize if you have only one window</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="kcfg_DesktopAdd">
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>Create new virtual desktop if you dont have more space</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="kcfg_ModalsIgnore">
+         <property name="toolTip">
+          <string>Only works if the window is transient</string>
+         </property>
+         <property name="statusTip">
+          <string/>
+         </property>
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>Ignore modals opened by an application</string>
+         </property>
+         <property name="autoRepeat">
+          <bool>false</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="kcfg_WindowsExtendOpen">
+         <property name="toolTip">
+          <string>Do not leave empty tiles by extending the window</string>
+         </property>
+         <property name="statusTip">
+          <string/>
+         </property>
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>Extend windows</string>
+         </property>
+         <property name="autoRepeat">
+          <bool>false</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="kcfg_WindowsOrderOpen">
+         <property name="text">
+          <string>Rearrange windows</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="closed">
+      <attribute name="title">
+       <string>Closed</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="3" column="0">
+        <widget class="QSpinBox" name="kcfg_DesktopRemoveDelay">
+         <property name="toolTip">
+          <string>Case: Applications that open a window and, when an action is performed,
+close the window and open another window (Chrome profile selector).
+This timer avoid crash wayland, beacuse the process try open the window
+ in the deleted virtual desktop</string>
+         </property>
+         <property name="suffix">
+          <string> milliseconds</string>
+         </property>
+         <property name="maximum">
+          <number>5000</number>
+         </property>
+         <property name="singleStep">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_DesktopMin">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Minimum number of virtual desktops </string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QSpinBox" name="kcfg_DesktopRemoveMin">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>99</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QCheckBox" name="kcfg_DesktopRemove">
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>Delete virtual desktop if it is empty</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_delay">
+         <property name="toolTip">
+          <string>Case: Applications that open a window and, when an action is performed,
+close the window and open another window (Chrome profile selector).
+This timer avoid crash wayland, beacuse the process try open the window
+ in the deleted virtual desktop</string>
+         </property>
+         <property name="text">
+          <string>Delay to remove virtual desktop</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QCheckBox" name="kcfg_WindowsExtendClose">
+         <property name="toolTip">
+          <string>Do not leave empty tiles by extending the window</string>
+         </property>
+         <property name="statusTip">
+          <string/>
+         </property>
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>Extend windows</string>
+         </property>
+         <property name="autoRepeat">
+          <bool>false</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QCheckBox" name="kcfg_WindowsOrderClose">
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>Rearrange windows</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="kcfg_MaximizeClose">
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>Maximize the last window</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="moved">
+      <attribute name="title">
+       <string>Moved</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QCheckBox" name="kcfg_UIEnable">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="statusTip">
+          <string/>
+         </property>
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>Enable UI to set windows on tiles</string>
+         </property>
+         <property name="autoRepeat">
+          <bool>false</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="kcfg_WindowsOrderMove">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="statusTip">
+          <string/>
+         </property>
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>If the target tile has windows, move to the origin tile</string>
+         </property>
+         <property name="autoRepeat">
+          <bool>false</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="kcfg_WindowsExtendMove">
+         <property name="toolTip">
+          <string>Do not leave empty tiles by extending the window</string>
+         </property>
+         <property name="statusTip">
+          <string/>
+         </property>
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>Extend windows</string>
+         </property>
+         <property name="autoRepeat">
+          <bool>false</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="titleOther">
+     <property name="font">
+      <font>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="locale">
+      <locale language="English" country="Eswatini"/>
+     </property>
+     <property name="text">
+      <string>Other options</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>600</width>
+       <height>250</height>
+      </size>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="blocklist">
+      <attribute name="title">
+       <string>⛔ Blocklist apps</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
        <property name="spacing">
-        <number>16</number>
+        <number>12</number>
+       </property>
+       <property name="topMargin">
+        <number>12</number>
        </property>
        <item>
-        <widget class="QLabel" name="titleOpen">
+        <widget class="QLabel" name="labelBlocklist">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="font">
           <font>
-           <bold>true</bold>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="toolTip">
+          <string>How to quickly obtain the name:
+Right-click on the window header &gt; More actions &gt; Configure special preferences for the application
+You will find the “XDG Name” in the header of the window that opens, with text similar to this:
+Preferences for the application “XDG Name” </string>
+         </property>
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>Applications to which you do not want the script to apply (enter the XDG name of the application)</string>
+         </property>
+         <property name="scaledContents">
+          <bool>false</bool>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="KEditListWidget" name="kcfg_AppsBlocklist">
+         <property name="toolTip">
+          <string>How to quickly obtain the name:
+Right-click on the window header &gt; More actions &gt; Configure special preferences for the application
+You will find the “XDG Name” in the header of the window that opens, with text similar to this:
+Preferences for the application “XDG Name” </string>
+         </property>
+         <property name="statusTip">
+          <string/>
+         </property>
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="buttons">
+          <set>KEditListWidget::Button::Add|KEditListWidget::Button::Remove</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tileOrderPriority">
+      <attribute name="title">
+       <string>🔢 Tile order priority</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="spacing">
+        <number>12</number>
+       </property>
+       <property name="topMargin">
+        <number>12</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="labelTilePriority">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="toolTip">
+          <string>Example: If the first property is “Width” and the second is “Height,” the windows will be sorted with preference given to tiles with greater width. If there are tiles with the same width, the tile with greater height will be chosen.</string>
+         </property>
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>Sets the order of tile properties that will have higher priority when arranging desktop windows</string>
+         </property>
+         <property name="scaledContents">
+          <bool>false</bool>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelTilePriority2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="toolTip">
+          <string>Example: If the first property is “Width” and the second is “Height,” the windows will be sorted with preference given to tiles with greater width. If there are tiles with the same width, the tile with greater height will be chosen.</string>
+         </property>
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; color:#aa0000;&quot;&gt;⚠️ WARNING:&lt;/span&gt; Do not change the default values, just order the items&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="scaledContents">
+          <bool>false</bool>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="KEditListWidget" name="kcfg_TilesPriority">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="toolTip">
+          <string>Example: If the first property is “Width” and the second is “Height,” the windows will be sorted with preference given to tiles with greater width. If there are tiles with the same width, the tile with greater height will be chosen.</string>
+         </property>
+         <property name="buttons">
+          <set>KEditListWidget::Button::UpDown</set>
+         </property>
+         <property name="checkAtEntering">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="defaultLayout">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <attribute name="title">
+       <string>🪟 Default layout</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <property name="spacing">
+        <number>12</number>
+       </property>
+       <property name="sizeConstraint">
+        <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+       </property>
+       <property name="topMargin">
+        <number>12</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="labelDefaultLayout">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <bold>false</bold>
           </font>
          </property>
          <property name="locale">
           <locale language="English" country="Eswatini"/>
          </property>
          <property name="text">
-          <string>When a window has been ...</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;left&quot;&gt;Set the KWin default layout when a new virtual desktop is created&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="scaledContents">
+          <bool>false</bool>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QTabWidget" name="tabWidget_2">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>500</width>
-           <height>170</height>
-          </size>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LayoutDirection::LeftToRight</enum>
-         </property>
-         <property name="locale">
-          <locale language="English" country="Spain"/>
-         </property>
-         <property name="currentIndex">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="spacing">
           <number>0</number>
          </property>
-         <widget class="QWidget" name="opened">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
+         <property name="sizeConstraint">
+          <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╔══════════╗&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║          ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║          ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║    1     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║          ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║          ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╚══════════╝&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:10pt;&quot;&gt;1&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╔═════╦═════╗&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║  1  ║  2  ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╚═════╩═════╝&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:10pt;&quot;&gt;2&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╔══════════╗&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║          ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║    1     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╠══════════╣&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║          ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║    2     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╚══════════╝&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:10pt;&quot;&gt;3&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╔═════╦═════╗&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║  2  ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╠═════╣  1  ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║  3  ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╚═════╩═════╝&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:10pt;&quot;&gt;4&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╔═════╦═════╗&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║  2  ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║  1  ╠═════╣&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║  3  ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╚═════╩═════╝&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:10pt;&quot;&gt;5&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╔═════╦═════╗&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║  1  ║  2  ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╠═════╬═════╣&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║  3  ║  4  ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╚═════╩═════╝&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:10pt;&quot;&gt;6&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QComboBox" name="kcfg_LayoutDefault">
+         <item>
+          <property name="text">
+           <string>1</string>
           </property>
-          <property name="locale">
-           <locale language="English" country="Spain"/>
+         </item>
+         <item>
+          <property name="text">
+           <string>2</string>
           </property>
-          <attribute name="title">
-           <string>Opened</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
-            <widget class="QCheckBox" name="kcfg_MaximizeOpen">
-             <property name="locale">
-              <locale language="English" country="Eswatini"/>
-             </property>
-             <property name="text">
-              <string>Maximize if you have only one window</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="kcfg_DesktopAdd">
-             <property name="locale">
-              <locale language="English" country="Eswatini"/>
-             </property>
-             <property name="text">
-              <string>Create new virtual desktop if you dont have more space</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="kcfg_ModalsIgnore">
-             <property name="toolTip">
-              <string>Only works if the window is transient</string>
-             </property>
-             <property name="statusTip">
-              <string/>
-             </property>
-             <property name="locale">
-              <locale language="English" country="Eswatini"/>
-             </property>
-             <property name="text">
-              <string>Ignore modals opened by an application</string>
-             </property>
-             <property name="autoRepeat">
-              <bool>false</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="kcfg_WindowsExtendOpen">
-             <property name="toolTip">
-              <string>Do not leave empty tiles by extending the window</string>
-             </property>
-             <property name="statusTip">
-              <string/>
-             </property>
-             <property name="locale">
-              <locale language="English" country="Eswatini"/>
-             </property>
-             <property name="text">
-              <string>Extend windows</string>
-             </property>
-             <property name="autoRepeat">
-              <bool>false</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="kcfg_WindowsOrderOpen">
-             <property name="text">
-              <string>Rearrange windows</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="closed">
-          <attribute name="title">
-           <string>Closed</string>
-          </attribute>
-          <layout class="QGridLayout" name="gridLayout">
-           <item row="3" column="0">
-            <widget class="QSpinBox" name="kcfg_DesktopRemoveDelay">
-             <property name="toolTip">
-              <string>Case: Applications that open a window and, when an action is performed,
-close the window and open another window (Chrome profile selector).
-This timer avoid crash wayland, beacuse the process try open the window
- in the deleted virtual desktop</string>
-             </property>
-             <property name="suffix">
-              <string> milliseconds</string>
-             </property>
-             <property name="maximum">
-              <number>5000</number>
-             </property>
-             <property name="singleStep">
-              <number>100</number>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_DesktopMin">
-             <property name="toolTip">
-              <string/>
-             </property>
-             <property name="text">
-              <string>Minimum number of virtual desktops </string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QSpinBox" name="kcfg_DesktopRemoveMin">
-             <property name="toolTip">
-              <string/>
-             </property>
-             <property name="minimum">
-              <number>1</number>
-             </property>
-             <property name="maximum">
-              <number>99</number>
-             </property>
-             <property name="singleStep">
-              <number>1</number>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QCheckBox" name="kcfg_DesktopRemove">
-             <property name="locale">
-              <locale language="English" country="Eswatini"/>
-             </property>
-             <property name="text">
-              <string>Delete virtual desktop if it is empty</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_delay">
-             <property name="toolTip">
-              <string>Case: Applications that open a window and, when an action is performed,
-close the window and open another window (Chrome profile selector).
-This timer avoid crash wayland, beacuse the process try open the window
- in the deleted virtual desktop</string>
-             </property>
-             <property name="text">
-              <string>Delay to remove virtual desktop</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
-            <widget class="QCheckBox" name="kcfg_WindowsExtendClose">
-             <property name="toolTip">
-              <string>Do not leave empty tiles by extending the window</string>
-             </property>
-             <property name="statusTip">
-              <string/>
-             </property>
-             <property name="locale">
-              <locale language="English" country="Eswatini"/>
-             </property>
-             <property name="text">
-              <string>Extend windows</string>
-             </property>
-             <property name="autoRepeat">
-              <bool>false</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QCheckBox" name="kcfg_WindowsOrderClose">
-             <property name="locale">
-              <locale language="English" country="Eswatini"/>
-             </property>
-             <property name="text">
-              <string>Rearrange windows</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QCheckBox" name="kcfg_MaximizeClose">
-             <property name="locale">
-              <locale language="English" country="Eswatini"/>
-             </property>
-             <property name="text">
-              <string>Maximize the last window</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="moved">
-          <attribute name="title">
-           <string>Moved</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <item>
-            <widget class="QCheckBox" name="kcfg_UIEnable">
-             <property name="toolTip">
-              <string/>
-             </property>
-             <property name="statusTip">
-              <string/>
-             </property>
-             <property name="locale">
-              <locale language="English" country="Eswatini"/>
-             </property>
-             <property name="text">
-              <string>Enable UI to set windows on tiles</string>
-             </property>
-             <property name="autoRepeat">
-              <bool>false</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="kcfg_WindowsOrderMove">
-             <property name="toolTip">
-              <string/>
-             </property>
-             <property name="statusTip">
-              <string/>
-             </property>
-             <property name="locale">
-              <locale language="English" country="Eswatini"/>
-             </property>
-             <property name="text">
-              <string>If the target tile has windows, move to the origin tile</string>
-             </property>
-             <property name="autoRepeat">
-              <bool>false</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="kcfg_WindowsExtendMove">
-             <property name="toolTip">
-              <string>Do not leave empty tiles by extending the window</string>
-             </property>
-             <property name="statusTip">
-              <string/>
-             </property>
-             <property name="locale">
-              <locale language="English" country="Eswatini"/>
-             </property>
-             <property name="text">
-              <string>Extend windows</string>
-             </property>
-             <property name="autoRepeat">
-              <bool>false</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+         </item>
+         <item>
+          <property name="text">
+           <string>3</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>6</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="titleOther">
-         <property name="font">
-          <font>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="locale">
-          <locale language="English" country="Eswatini"/>
+        <widget class="QLabel" name="label_8">
+         <property name="toolTip">
+          <string>If you add a value to this field, it will take priority over the default layouts above it
+Remove this value to return to the default layouts</string>
          </property>
          <property name="text">
-          <string>Other options</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom layout&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QTabWidget" name="tabWidget">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>600</width>
-           <height>250</height>
-          </size>
-         </property>
-         <property name="currentIndex">
-          <number>0</number>
-         </property>
-         <widget class="QWidget" name="blocklist">
-          <attribute name="title">
-           <string>⛔ Blocklist apps</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <property name="spacing">
-            <number>12</number>
-           </property>
-           <property name="topMargin">
-            <number>12</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="labelBlocklist">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="font">
-              <font>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="toolTip">
-              <string>How to quickly obtain the name:
-Right-click on the window header &gt; More actions &gt; Configure special preferences for the application
-You will find the “XDG Name” in the header of the window that opens, with text similar to this:
-Preferences for the application “XDG Name” </string>
-             </property>
-             <property name="locale">
-              <locale language="English" country="Eswatini"/>
-             </property>
-             <property name="text">
-              <string>Applications to which you do not want the script to apply (enter the XDG name of the application)</string>
-             </property>
-             <property name="scaledContents">
-              <bool>false</bool>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="KEditListWidget" name="kcfg_AppsBlocklist">
-             <property name="toolTip">
-              <string>How to quickly obtain the name:
-Right-click on the window header &gt; More actions &gt; Configure special preferences for the application
-You will find the “XDG Name” in the header of the window that opens, with text similar to this:
-Preferences for the application “XDG Name” </string>
-             </property>
-             <property name="statusTip">
-              <string/>
-             </property>
-             <property name="locale">
-              <locale language="English" country="Eswatini"/>
-             </property>
-             <property name="buttons">
-              <set>KEditListWidget::Button::Add|KEditListWidget::Button::Remove</set>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="tileOrderPriority">
-          <attribute name="title">
-           <string>🔢 Tile order priority</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <property name="spacing">
-            <number>12</number>
-           </property>
-           <property name="topMargin">
-            <number>12</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="labelTilePriority">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="font">
-              <font>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="toolTip">
-              <string>Example: If the first property is “Width” and the second is “Height,” the windows will be sorted with preference given to tiles with greater width. If there are tiles with the same width, the tile with greater height will be chosen.</string>
-             </property>
-             <property name="locale">
-              <locale language="English" country="Eswatini"/>
-             </property>
-             <property name="text">
-              <string>Sets the order of tile properties that will have higher priority when arranging desktop windows</string>
-             </property>
-             <property name="scaledContents">
-              <bool>false</bool>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="labelTilePriority2">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="font">
-              <font>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="toolTip">
-              <string>Example: If the first property is “Width” and the second is “Height,” the windows will be sorted with preference given to tiles with greater width. If there are tiles with the same width, the tile with greater height will be chosen.</string>
-             </property>
-             <property name="locale">
-              <locale language="English" country="Eswatini"/>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; color:#aa0000;&quot;&gt;⚠️ WARNING:&lt;/span&gt; Do not change the default values, just order the items&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="scaledContents">
-              <bool>false</bool>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="KEditListWidget" name="kcfg_TilesPriority">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="toolTip">
-              <string>Example: If the first property is “Width” and the second is “Height,” the windows will be sorted with preference given to tiles with greater width. If there are tiles with the same width, the tile with greater height will be chosen.</string>
-             </property>
-             <property name="buttons">
-              <set>KEditListWidget::Button::UpDown</set>
-             </property>
-             <property name="checkAtEntering">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="defaultLayout">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <attribute name="title">
-           <string>🪟 Default layout</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_6">
-           <property name="spacing">
-            <number>12</number>
-           </property>
-           <property name="sizeConstraint">
-            <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
-           </property>
-           <property name="topMargin">
-            <number>12</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="labelDefaultLayout">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="font">
-              <font>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="locale">
-              <locale language="English" country="Eswatini"/>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;left&quot;&gt;Set the KWin default layout when a new virtual desktop is created&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="scaledContents">
-              <bool>false</bool>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout">
-             <property name="spacing">
-              <number>0</number>
-             </property>
-             <property name="sizeConstraint">
-              <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QLabel" name="label_2">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>150</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <pointsize>12</pointsize>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╔══════════╗&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║          ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║          ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║    1     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║          ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║          ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╚══════════╝&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:10pt;&quot;&gt;1&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>150</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <pointsize>12</pointsize>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╔═════╦═════╗&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║  1  ║  2  ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╚═════╩═════╝&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:10pt;&quot;&gt;2&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_3">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>150</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <pointsize>12</pointsize>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╔══════════╗&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║          ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║    1     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╠══════════╣&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║          ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║    2     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╚══════════╝&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:10pt;&quot;&gt;3&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_4">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>150</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <pointsize>12</pointsize>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╔═════╦═════╗&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║  2  ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╠═════╣  1  ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║  3  ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╚═════╩═════╝&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:10pt;&quot;&gt;4&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_5">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>150</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <pointsize>12</pointsize>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╔═════╦═════╗&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║  2  ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║  1  ╠═════╣&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║  3  ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╚═════╩═════╝&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:10pt;&quot;&gt;5&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_6">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>150</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <pointsize>12</pointsize>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╔═════╦═════╗&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║  1  ║  2  ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╠═════╬═════╣&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║  3  ║  4  ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╚═════╩═════╝&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:10pt;&quot;&gt;6&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <widget class="QComboBox" name="kcfg_LayoutDefault">
-             <item>
-              <property name="text">
-               <string>1</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>2</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>3</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>4</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>5</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>6</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_8">
-             <property name="toolTip">
-              <string>If you add a value to this field, it will take priority over the default layouts above it
+        <widget class="QLabel" name="label_9">
+         <property name="toolTip">
+          <string>If you add a value to this field, it will take priority over the default layouts above it
 Remove this value to return to the default layouts</string>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom layout&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_9">
-             <property name="toolTip">
-              <string>If you add a value to this field, it will take priority over the default layouts above it
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;a href=&quot;https://codeberg.org/Serroda/fluid-tile/wiki/Custom-layout&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#ffbaba;&quot;&gt;How can I create a custom layout?&lt;/span&gt;&lt;/a&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPlainTextEdit" name="kcfg_LayoutCustom">
+         <property name="toolTip">
+          <string>If you add a value to this field, it will take priority over the default layouts above it
 Remove this value to return to the default layouts</string>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;a href=&quot;https://codeberg.org/Serroda/fluid-tile/wiki/Custom-layout&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#ffbaba;&quot;&gt;How can I create a custom layout?&lt;/span&gt;&lt;/a&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPlainTextEdit" name="kcfg_LayoutCustom">
-             <property name="toolTip">
-              <string>If you add a value to this field, it will take priority over the default layouts above it
-Remove this value to return to the default layouts</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+         </property>
         </widget>
        </item>
       </layout>
