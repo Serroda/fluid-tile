@@ -8,8 +8,8 @@ jobs:
     container:
       image: node:20-alpine
     steps:
-      - name: install zip
-        run: apk add --no-cache zip git
+      - name: install zip and bash
+        run: apk add --no-cache zip bash
       - uses: actions/checkout@v4
       - name: create kwinscript package
         run: |
