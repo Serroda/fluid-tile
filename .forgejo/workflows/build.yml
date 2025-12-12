@@ -1,6 +1,6 @@
 on:
-  release:
-    types: [published]
+  push:
+    tags: ["v*"]
 
 jobs:
   download_rename_publish:
