@@ -21,3 +21,4 @@ jobs:
         with:
           direction: upload
           release-dir: build
+          prerelease: true
