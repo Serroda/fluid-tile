@@ -124,7 +124,7 @@ export function useTriggers(workspace, config, rootUI) {
       tileNew !== null &&
       config.windowsOrderMove === true &&
       tileNew?.windows.filter((w) => w !== state.windowFocused.window).length >
-        0
+      0
     ) {
       apiTiles.exchangeTiles(
         state.windowFocused.window,
@@ -201,6 +201,25 @@ export function useTriggers(workspace, config, rootUI) {
     }
 
     rootUI.removeDesktopInfo = {};
+
+    const windows = apiWindows.getWindows(
+      undefined,
+      workspace.currentDesktop,
+      workspace.activeScreen,
+    );
+
+    if (
+      windows.length !== 0 &&
+      (config.windowsExtendClose === true || config.windowsExtendOpen === true)
+    ) {
+      apiWindows.extendWindows(
+        windows,
+        apiWorkarea.getPanelsSize(
+          workspace.activeScreen,
+          workspace.currentDesktop,
+        ),
+      );
+    }
   }
 
   // Focus window when a current desktop is changed
