@@ -38,8 +38,11 @@ export function useTriggers(workspace, config, rootUI) {
         workspace.desktops[workspace.desktops.length - 1];
       windowNew.desktops = [workspace.currentDesktop];
 
+      const tilesOrdered = apiTiles.getTilesFromActualDesktop();
+
       if (config.maximizeOpen === true) {
         windowNew.setMaximize(true, true);
+        windowNew.tileMaximize = tilesOrdered[0];
       }
 
       let layout = apiTiles.getDefaultLayouts(config.layoutDefault - 1);
@@ -51,14 +54,12 @@ export function useTriggers(workspace, config, rootUI) {
       apiTiles.setLayout(workspace.currentDesktop, layout);
 
       if (config.maximizeOpen === false) {
-        const tilesOrdered = apiTiles.getTilesFromActualDesktop();
-
         windowNew.setMaximize(false, false);
         tilesOrdered[0].manage(windowNew);
       }
-
-      apiWindows.focusWindow(windowNew);
     }
+
+    state.addedRemoved = false;
   }
 
   //Trigger when a window is remove to the desktop
@@ -78,6 +79,7 @@ export function useTriggers(workspace, config, rootUI) {
     );
 
     if (continueProcess === false) {
+      state.addedRemoved = false;
       apiWindows.focusWindow();
     }
 
@@ -98,12 +100,20 @@ export function useTriggers(workspace, config, rootUI) {
 
   //Save tile when user focus a window and add signal
   function onUserFocusWindow(windowMain) {
+    let tile = null;
+
+    if (windowMain.tile !== null) {
+      tile = windowMain.tile;
+    } else if (windowMain.tileMaximize !== undefined) {
+      tile = windowMain.tileMaximize;
+    }
+
     if (
       windowMain.active === true &&
-      windowMain.tile !== null &&
+      tile !== null &&
       windowMain.signalTileChangedConnected !== true
     ) {
-      state.windowFocused.tile = windowMain.tile;
+      state.windowFocused.tile = tile;
       state.windowFocused.window = windowMain;
       windowMain.signalTileChangedConnected = true;
       windowMain.tileChanged.connect(onTileChanged);
@@ -116,7 +126,6 @@ export function useTriggers(workspace, config, rootUI) {
   //When a window tile is changed, exchange windows and extend windows
   function onTileChanged(tileNew) {
     if (state.addedRemoved === true) {
-      state.addedRemoved = false;
       return;
     }
 
@@ -220,18 +229,17 @@ export function useTriggers(workspace, config, rootUI) {
         ),
       );
     }
+
+    state.addedRemoved = false;
   }
 
   // Focus window when a current desktop is changed
   function onCurrentDesktopChanged() {
     apiUI.resetLayout();
 
-    if (state.addedRemoved === true) {
-      state.addedRemoved = false;
-      return;
+    if (state.addedRemoved === false) {
+      apiWindows.focusWindow();
     }
-
-    apiWindows.focusWindow();
   }
 
   return {
