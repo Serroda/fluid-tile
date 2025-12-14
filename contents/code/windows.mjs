@@ -67,7 +67,9 @@ export function useWindows(workspace, config) {
             if (config.windowsOrderOpen === true) {
               tilesOrdered[0].manage(windowMain);
             } else {
-              tilesOrdered[windowsOther.length].manage(windowMain);
+              tilesOrdered
+                .find((tile) => tile.windows.length === 0)
+                ?.manage(windowMain);
             }
 
             if (maximize === true && windowsOther.length === 0) {
@@ -169,11 +171,11 @@ export function useWindows(workspace, config) {
           (acc, woNew) => {
             const distance = Math.hypot(
               windowGeometry.left +
-              windowGeometry.width / 2 -
-              (woNew.left + woNew.width / 2),
+                windowGeometry.width / 2 -
+                (woNew.left + woNew.width / 2),
               windowGeometry.top +
-              windowGeometry.height / 2 -
-              (woNew.top + woNew.height / 2),
+                windowGeometry.height / 2 -
+                (woNew.top + woNew.height / 2),
             );
 
             return acc.distance === -1 || distance < acc.distance
