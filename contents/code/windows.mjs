@@ -58,7 +58,7 @@ export function useWindows(workspace, config) {
 
               if (config.windowsOrderOpen === true) {
                 tilesOrdered[x + 1].manage(windowsOther[x]);
-              } else {
+              } else if (windowsOther[x].tile === null) {
                 tilesOrdered[x].manage(windowsOther[x]);
               }
             }
@@ -66,7 +66,7 @@ export function useWindows(workspace, config) {
             if (config.windowsOrderOpen === true) {
               tilesOrdered[0].manage(windowMain);
             } else {
-              tilesOrdered[tilesOrdered.length - 1].manage(windowMain);
+              tilesOrdered[windowsOther.length].manage(windowMain);
             }
 
             if (maximize === true && windowsOther.length === 0) {
