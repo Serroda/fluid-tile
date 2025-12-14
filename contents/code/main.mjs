@@ -224,6 +224,8 @@ export function useTriggers(workspace, config, rootUI) {
 
   // Focus window when a current desktop is changed
   function onCurrentDesktopChanged() {
+    apiUI.resetLayout();
+
     if (state.addedRemoved === true) {
       state.addedRemoved = false;
       return;

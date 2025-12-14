@@ -4,10 +4,15 @@ export function useUI(workspace, config, rootUI) {
   const apiTile = useTiles(workspace, config);
   let windowGeometryOnMove = {};
 
-  // When a window start move with the cursor, reset ui
-  function onUserMoveStart() {
+  //Paint tiles
+  function resetLayout() {
     rootUI.layoutOrdered = [];
     rootUI.layoutOrdered = apiTile.getTilesFromActualDesktop();
+  }
+
+  // When a window start move with the cursor, reset ui
+  function onUserMoveStart() {
+    resetLayout();
   }
 
   // When a window is moving with the cursor
@@ -58,5 +63,6 @@ export function useUI(workspace, config, rootUI) {
     onUserMoveFinished,
     onUserMoveStepped,
     onUserMoveStart,
+    resetLayout,
   };
 }
