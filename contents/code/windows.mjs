@@ -55,26 +55,32 @@ export function useWindows(workspace, config) {
             for (let x = 0; x < windowsOther.length; x++) {
               windowsOther[x].desktops = [itemDesktop];
               windowsOther[x].setMaximize(false, false);
-              windowsOther[x].tileMaximize = undefined;
 
               if (config.windowsOrderOpen === true) {
                 tilesOrdered[x + 1].manage(windowsOther[x]);
+                windowsOther[x].tilePrevious = tilesOrdered[x + 1];
               } else if (windowsOther[x].tile === null) {
                 tilesOrdered[x].manage(windowsOther[x]);
+                windowsOther[x].tilePrevious = tilesOrdered[x];
               }
             }
 
             if (config.windowsOrderOpen === true) {
               tilesOrdered[0].manage(windowMain);
+              windowMain.tilePrevious = tilesOrdered[0];
             } else {
-              tilesOrdered
-                .find((tile) => tile.windows.length === 0)
-                ?.manage(windowMain);
+              const tileEmpty = tilesOrdered.find(
+                (tile) => tile.windows.length === 0,
+              );
+
+              if (tileEmpty !== undefined) {
+                tileEmpty.manage(windowMain);
+                windowMain.tilePrevious = tileEmpty;
+              }
             }
 
             if (maximize === true && windowsOther.length === 0) {
               windowMain.setMaximize(true, true);
-              windowMain.tileMaximize = tilesOrdered[0];
             } else {
               windowMain.setMaximize(false, false);
 
@@ -90,12 +96,13 @@ export function useWindows(workspace, config) {
           }
         } else if (mode === 1 && windowsOther.length !== 0) {
           if (maximize === true && windowsOther.length === 1) {
-            windowsOther[0].tileMaximize = tilesOrdered[1];
+            windowsOther[0].tilePrevious = tilesOrdered[1];
             windowsOther[0].setMaximize(true, true);
           } else if (config.windowsOrderClose === true) {
             for (let x = 0; x < windowsOther.length; x++) {
               windowsOther[x].setMaximize(false, false);
               tilesOrdered[x].manage(windowsOther[x]);
+              windowsOther[x].tilePrevious = tilesOrdered[x];
             }
           }
 

@@ -210,8 +210,22 @@ export function useTiles(workspace, config) {
       windowItem.setMaximize(false, false);
       if (windowItem !== windowMain) {
         tileOld.manage(windowItem);
+        windowItem.tilePrevious = tileOld;
       }
     }
+  }
+
+  //Return the tile before maximize window
+  function getPreviousTile(window) {
+    if (window.tile !== null) {
+      return window.tile;
+    }
+
+    if (window.tilePrevious !== undefined) {
+      return window.tilePrevious;
+    }
+
+    return null;
   }
 
   return {
@@ -220,5 +234,6 @@ export function useTiles(workspace, config) {
     getDefaultLayouts,
     exchangeTiles,
     setLayout,
+    getPreviousTile,
   };
 }

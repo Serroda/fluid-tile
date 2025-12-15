@@ -53,7 +53,11 @@ export function useUI(workspace, config, rootUI) {
   function onUserMoveFinished(windowMoved) {
     if (rootUI.visible === true) {
       rootUI.visible = false;
-      rootUI.layoutOrdered[rootUI.tileActived]?.manage(windowMoved);
+      const tile = rootUI.layoutOrdered[rootUI.tileActived];
+      if (tile !== undefined) {
+        tile.manage(windowMoved);
+        windowMoved.tilePrevious = tile;
+      }
       windowGeometryOnMove = {};
       rootUI.tileActived = -1;
     }

@@ -42,7 +42,7 @@ export function useTriggers(workspace, config, rootUI) {
 
       if (config.maximizeOpen === true) {
         windowNew.setMaximize(true, true);
-        windowNew.tileMaximize = tilesOrdered[0];
+        windowNew.tilePrevious = tilesOrdered[0];
       }
 
       let layout = apiTiles.getDefaultLayouts(config.layoutDefault - 1);
@@ -100,13 +100,7 @@ export function useTriggers(workspace, config, rootUI) {
 
   //Save tile when user focus a window and add signal
   function onUserFocusWindow(windowMain) {
-    let tile = null;
-
-    if (windowMain.tile !== null) {
-      tile = windowMain.tile;
-    } else if (windowMain.tileMaximize !== undefined) {
-      tile = windowMain.tileMaximize;
-    }
+    const tile = apiTiles.getPreviousTile(windowMain);
 
     if (
       windowMain.active === true &&
@@ -133,7 +127,7 @@ export function useTriggers(workspace, config, rootUI) {
       tileNew !== null &&
       config.windowsOrderMove === true &&
       tileNew?.windows.filter((w) => w !== state.windowFocused.window).length >
-      0
+        0
     ) {
       apiTiles.exchangeTiles(
         state.windowFocused.window,
@@ -142,6 +136,7 @@ export function useTriggers(workspace, config, rootUI) {
       );
 
       state.windowFocused.tile = state.windowFocused.window.tile;
+      state.windowFocused.window.tilePrevious = state.windowFocused.window.tile;
     }
 
     if (config.windowsExtendMove === true) {
@@ -178,6 +173,36 @@ export function useTriggers(workspace, config, rootUI) {
       windowMain.activeChanged.connect(() => {
         onUserFocusWindow(windowMain);
       });
+    }
+
+    windowMain.maximizedAboutToChange.connect((mode) => {
+      onMaximizeChange(mode, windowMain);
+    });
+  }
+
+  function onMaximizeChange(mode, windowMain) {
+    if (mode !== 0) {
+      return;
+    }
+
+    //If not fullscreen
+    const tilePrevious = apiTiles.getPreviousTile(windowMain);
+    tilePrevious?.manage(windowMain);
+
+    const windows = apiWindows.getWindows(
+      windowMain,
+      workspace.currentDesktop,
+      workspace.activeScreen,
+    );
+
+    if (windows.length > 0) {
+      apiWindows.extendWindows(
+        [windowMain, ...windows],
+        apiWorkarea.getPanelsSize(
+          workspace.activeScreen,
+          workspace.currentDesktop,
+        ),
+      );
     }
   }
 
