@@ -137,6 +137,11 @@ export function useTiles(workspace, config) {
   //Get tiles from the screen and virtual desktop
   function getOrderedTiles(desktop, screen) {
     const tileRoot = workspace.rootTile(screen, desktop);
+
+    if (tileRoot === null) {
+      return [];
+    }
+
     return orderTiles(
       tileRoot.tiles.length !== 0 ? tileRoot.tiles : [tileRoot],
       config.tilesPriority,
@@ -205,10 +210,11 @@ export function useTiles(workspace, config) {
   }
 
   //Save tile when user focus a window
-  function exchangeTiles(windowMain, tileNew, tileOld) {
-    for (const windowItem of tileNew.windows) {
+  function exchangeTiles(windowMain, windowsExchange, tileOld, desktopNew) {
+    for (const windowItem of windowsExchange) {
       windowItem.setMaximize(false, false);
       if (windowItem !== windowMain) {
+        windowItem.desktops = [desktopNew];
         tileOld.manage(windowItem);
         windowItem.tilePrevious = tileOld;
       }

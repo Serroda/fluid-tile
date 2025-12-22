@@ -13,7 +13,9 @@ export function useTriggers(workspace, config, rootUI) {
 
   const state = {
     windowFocused: {},
-    addedRemoved: false,
+    adding: false,
+    exchanged: false,
+    desktopExtend: null,
   };
 
   //Trigger when a window is added to the desktop
@@ -22,7 +24,7 @@ export function useTriggers(workspace, config, rootUI) {
       return;
     }
 
-    state.addedRemoved = true;
+    state.adding = true;
 
     const continueProcess = apiWindows.setWindowsTiles(
       windowNew,
@@ -41,8 +43,8 @@ export function useTriggers(workspace, config, rootUI) {
       const tilesOrdered = apiTiles.getTilesFromActualDesktop();
 
       if (config.maximizeOpen === true) {
-        windowNew.setMaximize(true, true);
         windowNew.tilePrevious = tilesOrdered[0];
+        windowNew.setMaximize(true, true);
       }
 
       let layout = apiTiles.getDefaultLayouts(config.layoutDefault - 1);
@@ -56,10 +58,9 @@ export function useTriggers(workspace, config, rootUI) {
       if (config.maximizeOpen === false) {
         windowNew.setMaximize(false, false);
         tilesOrdered[0].manage(windowNew);
+        windowNew.tilePrevious = tilesOrdered[0];
       }
     }
-
-    state.addedRemoved = false;
   }
 
   //Trigger when a window is remove to the desktop
@@ -67,8 +68,6 @@ export function useTriggers(workspace, config, rootUI) {
     if (apiBlocklist.checkBlocklist(windowClosed) === true) {
       return false;
     }
-
-    state.addedRemoved = true;
 
     const continueProcess = apiWindows.setWindowsTiles(
       windowClosed,
@@ -79,7 +78,6 @@ export function useTriggers(workspace, config, rootUI) {
     );
 
     if (continueProcess === false) {
-      state.addedRemoved = false;
       apiWindows.focusWindow();
     }
 
@@ -109,6 +107,8 @@ export function useTriggers(workspace, config, rootUI) {
     ) {
       state.windowFocused.tile = tile;
       state.windowFocused.window = windowMain;
+      state.windowFocused.desktop = workspace.currentDesktop;
+
       windowMain.signalTileChangedConnected = true;
       windowMain.tileChanged.connect(onTileChanged);
     } else {
@@ -119,27 +119,51 @@ export function useTriggers(workspace, config, rootUI) {
 
   //When a window tile is changed, exchange windows and extend windows
   function onTileChanged(tileNew) {
-    if (state.addedRemoved === true) {
+    //Trigger when a window is maximized and minimized
+    //when a window exchange
+    if (
+      state.adding === true ||
+      rootUI.tileActived !== -1 ||
+      tileNew === null
+    ) {
+      state.adding = false;
       return;
     }
 
+    const windowsOther = apiWindows
+      .getWindows(
+        state.windowFocused.window,
+        workspace.currentDesktop,
+        workspace.activeScreen,
+      )
+      .filter(
+        (window) => window.tile === tileNew || window.tilePrevious === tileNew,
+      );
+
     if (
       tileNew !== null &&
-      config.windowsOrderMove === true &&
-      tileNew?.windows.filter((w) => w !== state.windowFocused.window).length >
-        0
+      windowsOther.length !== 0 &&
+      config.windowsOrderMove === true
     ) {
       apiTiles.exchangeTiles(
         state.windowFocused.window,
-        tileNew,
+        windowsOther,
         state.windowFocused.tile,
+        state.windowFocused.desktop,
       );
 
       state.windowFocused.tile = state.windowFocused.window.tile;
       state.windowFocused.window.tilePrevious = state.windowFocused.window.tile;
+      state.exchanged = true;
+    } else {
+      state.exchanged = false;
     }
 
     if (config.windowsExtendMove === true) {
+      if (workspace.currentDesktop !== state.windowFocused.desktop) {
+        state.desktopExtend = state.windowFocused.desktop;
+      }
+
       for (const screen of workspace.screens) {
         const windows = apiWindows.getWindows(
           undefined,
@@ -182,27 +206,18 @@ export function useTriggers(workspace, config, rootUI) {
 
   function onMaximizeChange(mode, windowMain) {
     if (mode !== 0) {
+      if (windowMain.tilePrevious === undefined && windowMain.tile === null) {
+        const tilesOrdered = apiTiles.getTilesFromActualDesktop();
+        windowMain.tilePrevious = tilesOrdered[0];
+      }
       return;
     }
 
     //If not fullscreen
     const tilePrevious = apiTiles.getPreviousTile(windowMain);
-    tilePrevious?.manage(windowMain);
-
-    const windows = apiWindows.getWindows(
-      windowMain,
-      workspace.currentDesktop,
-      workspace.activeScreen,
-    );
-
-    if (windows.length > 0) {
-      apiWindows.extendWindows(
-        [windowMain, ...windows],
-        apiWorkarea.getPanelsSize(
-          workspace.activeScreen,
-          workspace.currentDesktop,
-        ),
-      );
+    //When a window is maximized window.tile is always null
+    if (tilePrevious !== null) {
+      tilePrevious.manage(windowMain);
     }
   }
 
@@ -235,35 +250,19 @@ export function useTriggers(workspace, config, rootUI) {
     }
 
     rootUI.removeDesktopInfo = {};
-
-    const windows = apiWindows.getWindows(
-      undefined,
-      workspace.currentDesktop,
-      workspace.activeScreen,
-    );
-
-    if (
-      windows.length !== 0 &&
-      (config.windowsExtendClose === true || config.windowsExtendOpen === true)
-    ) {
-      apiWindows.extendWindows(
-        windows,
-        apiWorkarea.getPanelsSize(
-          workspace.activeScreen,
-          workspace.currentDesktop,
-        ),
-      );
-    }
-
-    state.addedRemoved = false;
+    apiWindows.extendWindowsCurrentDesktop();
   }
 
   // Focus window when a current desktop is changed
   function onCurrentDesktopChanged() {
     apiUI.resetLayout();
 
-    if (state.addedRemoved === false) {
-      apiWindows.focusWindow();
+    if (
+      state.desktopExtend === workspace.currentDesktop &&
+      state.exchanged === false
+    ) {
+      apiWindows.extendWindowsCurrentDesktop();
+      state.desktopExtend = null;
     }
   }
 
