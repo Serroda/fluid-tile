@@ -46,6 +46,10 @@ export function useWindows(workspace, config) {
         const windowsOther = getWindows(windowMain, itemDesktop, itemScreen);
         const tilesOrdered = apiTiles.getOrderedTiles(itemDesktop, itemScreen);
 
+        if (tilesOrdered.length === 0) {
+          return true;
+        }
+
         if (mode === 0) {
           //Set tile if the custom mosaic has space
           if (windowsOther.length + 1 <= tilesOrdered.length) {
@@ -106,7 +110,11 @@ export function useWindows(workspace, config) {
             }
           }
 
-          if (config.windowsExtendClose === true) {
+          if (
+            config.windowsExtendClose === true &&
+            windowsOther.length > 1 &&
+            config.windowsOrderClose === false
+          ) {
             extendWindows(
               windowsOther,
               apiWorkarea.getPanelsSize(itemScreen, itemDesktop),
@@ -129,13 +137,16 @@ export function useWindows(workspace, config) {
     resetWindowGeometry(windows, panelsSize);
 
     for (const window of windows) {
-      if (window.tile === null) {
+      if (window.tile === null || window.tilePrevious === undefined) {
         continue;
       }
 
-      const windowGeometry = window.tileVirtual ?? window.tile.absoluteGeometry;
+      const windowGeometry = getRealGeometry(window);
       const windowsOther = windows
-        .filter((w) => w !== window && w.tile !== null)
+        .filter(
+          (w) =>
+            w !== window && (w.tile !== null || w.tilePrevious !== undefined),
+        )
         .map((w) => getRealGeometry(w));
 
       const newGeometry = {
@@ -166,7 +177,6 @@ export function useWindows(workspace, config) {
             checkSameColumn(windowGeometry, wo) === true,
         ),
       };
-
       for (const key in windowsConflict) {
         const item = windowsConflict[key];
 
@@ -217,7 +227,7 @@ export function useWindows(workspace, config) {
     for (const window of windows) {
       window.tileVirtual = undefined;
 
-      if (window.tile === null) {
+      if (window.tile === null && window.tilePrevious === undefined) {
         continue;
       }
 
@@ -226,30 +236,41 @@ export function useWindows(workspace, config) {
   }
 
   function getRealGeometry(window) {
-    return window.tileVirtual ?? window.tile.absoluteGeometry;
+    return (
+      window.tileVirtual ??
+      (window.tile !== null
+        ? window.tile.absoluteGeometry
+        : window.tilePrevious.absoluteGeometry)
+    );
   }
 
   //Set window size and return `virtualTile`
   function setGeometryWindow(window, geometry, panelsSize) {
-    const tileRef = window.tileVirtual ?? window.tile.absoluteGeometry;
+    const tileRef = window.tile !== null ? window.tile : window.tilePrevious;
+    const tileRefGeometry = getRealGeometry(window);
 
-    const left = geometry.left !== undefined ? geometry.left : tileRef.left;
-    const top = geometry.top !== undefined ? geometry.top : tileRef.top;
+    const left =
+      geometry.left !== undefined ? geometry.left : tileRefGeometry.left;
+    const top = geometry.top !== undefined ? geometry.top : tileRefGeometry.top;
 
     const width =
-      geometry.right !== undefined ? geometry.right - left : tileRef.width;
+      geometry.right !== undefined
+        ? geometry.right - left
+        : tileRefGeometry.width;
     const height =
-      geometry.bottom !== undefined ? geometry.bottom - top : tileRef.height;
+      geometry.bottom !== undefined
+        ? geometry.bottom - top
+        : tileRefGeometry.height;
 
-    let offsetX = window.tile.padding;
-    let offsetY = window.tile.padding;
+    let offsetX = tileRef.padding;
+    let offsetY = tileRef.padding;
 
     if (left === panelsSize.left) {
-      offsetX += window.tile.padding;
+      offsetX += tileRef.padding;
     }
 
     if (top === panelsSize.top) {
-      offsetY += window.tile.padding;
+      offsetY += tileRef.padding;
     }
 
     if (left + width === panelsSize.workarea.right + panelsSize.right) {
@@ -261,8 +282,8 @@ export function useWindows(workspace, config) {
     }
 
     window.frameGeometry = {
-      x: left + (left === panelsSize.left ? window.tile.padding : 0),
-      y: top + (top === panelsSize.top ? window.tile.padding : 0),
+      x: left + (left === panelsSize.left ? tileRef.padding : 0),
+      y: top + (top === panelsSize.top ? tileRef.padding : 0),
       width: width - offsetX,
       height: height - offsetY,
     };
@@ -306,10 +327,38 @@ export function useWindows(workspace, config) {
     );
   }
 
+  function extendWindowsCurrentDesktop() {
+    if (
+      config.windowsExtendClose === false &&
+      config.windowsExtendOpen === false
+    ) {
+      return;
+    }
+
+    const windows = getWindows(
+      undefined,
+      workspace.currentDesktop,
+      workspace.activeScreen,
+    );
+
+    if (windows.length === 0) {
+      return;
+    }
+
+    extendWindows(
+      windows,
+      apiWorkarea.getPanelsSize(
+        workspace.activeScreen,
+        workspace.currentDesktop,
+      ),
+    );
+  }
+
   return {
     setWindowsTiles,
     getWindows,
     extendWindows,
+    extendWindowsCurrentDesktop,
     focusWindow,
   };
 }
