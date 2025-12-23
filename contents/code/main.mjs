@@ -15,7 +15,7 @@ export function useTriggers(workspace, config, rootUI) {
     windowFocused: {},
     adding: false,
     exchanged: false,
-    desktopExtend: null,
+    desktopsExtend: [],
   };
 
   //Trigger when a window is added to the desktop
@@ -40,13 +40,6 @@ export function useTriggers(workspace, config, rootUI) {
         workspace.desktops[workspace.desktops.length - 1];
       windowNew.desktops = [workspace.currentDesktop];
 
-      const tilesOrdered = apiTiles.getTilesFromActualDesktop();
-
-      if (config.maximizeOpen === true) {
-        windowNew.tilePrevious = tilesOrdered[0];
-        windowNew.setMaximize(true, true);
-      }
-
       let layout = apiTiles.getDefaultLayouts(config.layoutDefault - 1);
 
       if (config.layoutCustom !== undefined) {
@@ -55,11 +48,16 @@ export function useTriggers(workspace, config, rootUI) {
 
       apiTiles.setLayout(workspace.currentDesktop, layout);
 
-      if (config.maximizeOpen === false) {
+      const tilesOrdered = apiTiles.getTilesFromActualDesktop();
+
+      if (config.maximizeOpen === true) {
+        windowNew.setMaximize(true, true);
+      } else {
         windowNew.setMaximize(false, false);
         tilesOrdered[0].manage(windowNew);
-        windowNew.tilePrevious = tilesOrdered[0];
       }
+
+      windowNew.tilePrevious = tilesOrdered[0];
     }
   }
 
@@ -94,6 +92,45 @@ export function useTriggers(workspace, config, rootUI) {
     for (const windowItem of workspace.stackingOrder) {
       setSignalsToWindow(windowItem);
     }
+  }
+
+  //Set signals to window
+  function setSignalsToWindow(windowMain) {
+    if (apiBlocklist.checkBlocklist(windowMain) === true) {
+      return;
+    }
+
+    if (config.UIEnable === true) {
+      windowMain.interactiveMoveResizeStarted.connect(apiUI.onUserMoveStart);
+      windowMain.interactiveMoveResizeStepped.connect(apiUI.onUserMoveStepped);
+      windowMain.interactiveMoveResizeFinished.connect(() => {
+        apiUI.onUserMoveFinished(windowMain);
+      });
+    }
+
+    if (config.windowsOrderMove === true || config.windowsExtendMove === true) {
+      onUserFocusWindow(windowMain);
+      windowMain.activeChanged.connect(() => {
+        onUserFocusWindow(windowMain);
+      });
+    }
+
+    windowMain.maximizedAboutToChange.connect((mode) => {
+      onMaximizeChange(mode, windowMain);
+    });
+
+    windowMain.minimizedChanged.connect(() => {
+      onMinimizedChange(windowMain);
+    });
+
+    windowMain.moveResizeCursorChanged.connect(() => {
+      onResizeCursorChanged();
+    });
+  }
+
+  //When a window is resized with the cursor
+  function onResizeCursorChanged() {
+    apiWindows.extendWindowsCurrentDesktop();
   }
 
   //Save tile when user focus a window and add signal
@@ -160,8 +197,11 @@ export function useTriggers(workspace, config, rootUI) {
     }
 
     if (config.windowsExtendMove === true) {
-      if (workspace.currentDesktop !== state.windowFocused.desktop) {
-        state.desktopExtend = state.windowFocused.desktop;
+      if (
+        workspace.currentDesktop !== state.windowFocused.desktop &&
+        state.desktopsExtend.includes(state.windowFocused.desktop) === false
+      ) {
+        state.desktopsExtend.push(state.windowFocused.desktop);
       }
 
       for (const screen of workspace.screens) {
@@ -178,47 +218,34 @@ export function useTriggers(workspace, config, rootUI) {
     }
   }
 
-  //Set signals to window
-  function setSignalsToWindow(windowMain) {
-    if (apiBlocklist.checkBlocklist(windowMain) === true) {
-      return;
-    }
-
-    if (config.UIEnable === true) {
-      windowMain.interactiveMoveResizeStarted.connect(apiUI.onUserMoveStart);
-      windowMain.interactiveMoveResizeStepped.connect(apiUI.onUserMoveStepped);
-      windowMain.interactiveMoveResizeFinished.connect(() => {
-        apiUI.onUserMoveFinished(windowMain);
-      });
-    }
-
-    if (config.windowsOrderMove === true || config.windowsExtendMove === true) {
-      onUserFocusWindow(windowMain);
-      windowMain.activeChanged.connect(() => {
-        onUserFocusWindow(windowMain);
-      });
-    }
-
-    windowMain.maximizedAboutToChange.connect((mode) => {
-      onMaximizeChange(mode, windowMain);
-    });
-  }
-
+  //When window is not maximized, set a previous tile
   function onMaximizeChange(mode, windowMain) {
+    if (windowMain.tilePrevious === undefined && windowMain.tile === null) {
+      const tilesOrdered = apiTiles.getTilesFromActualDesktop();
+      windowMain.tilePrevious = tilesOrdered[0];
+    }
+
     if (mode !== 0) {
-      if (windowMain.tilePrevious === undefined && windowMain.tile === null) {
-        const tilesOrdered = apiTiles.getTilesFromActualDesktop();
-        windowMain.tilePrevious = tilesOrdered[0];
-      }
       return;
     }
 
     //If not fullscreen
     const tilePrevious = apiTiles.getPreviousTile(windowMain);
     //When a window is maximized window.tile is always null
-    if (tilePrevious !== null) {
-      tilePrevious.manage(windowMain);
+    tilePrevious?.manage(windowMain);
+  }
+
+  //When a window is minimized, extend windows
+  function onMinimizedChange(windowMain) {
+    if (
+      windowMain.desktops.includes(workspace.currentDesktop) === false &&
+      state.desktopsExtend.includes(workspace.currentDesktop) === false
+    ) {
+      state.desktopsExtend.push(workspace.currentDesktop);
+      return;
     }
+
+    apiWindows.extendWindowsCurrentDesktop();
   }
 
   function onTimerFinished() {
@@ -258,11 +285,14 @@ export function useTriggers(workspace, config, rootUI) {
     apiUI.resetLayout();
 
     if (
-      state.desktopExtend === workspace.currentDesktop &&
+      state.desktopsExtend.includes(workspace.currentDesktop) === true &&
       state.exchanged === false
     ) {
       apiWindows.extendWindowsCurrentDesktop();
-      state.desktopExtend = null;
+      state.desktopsExtend.splice(
+        state.desktopsExtend.indexOf(workspace.currentDesktop),
+        1,
+      );
     }
   }
 

@@ -137,7 +137,11 @@ export function useWindows(workspace, config) {
     resetWindowGeometry(windows, panelsSize);
 
     for (const window of windows) {
-      if (window.tile === null || window.tilePrevious === undefined) {
+      if (
+        window.tile === null ||
+        window.tilePrevious === undefined ||
+        window.minimized === true
+      ) {
         continue;
       }
 
@@ -145,7 +149,9 @@ export function useWindows(workspace, config) {
       const windowsOther = windows
         .filter(
           (w) =>
-            w !== window && (w.tile !== null || w.tilePrevious !== undefined),
+            w !== window &&
+            (w.tile !== null || w.tilePrevious !== undefined) &&
+            w.minimized === false,
         )
         .map((w) => getRealGeometry(w));
 
@@ -188,11 +194,11 @@ export function useWindows(workspace, config) {
           (acc, woNew) => {
             const distance = Math.hypot(
               windowGeometry.left +
-                windowGeometry.width / 2 -
-                (woNew.left + woNew.width / 2),
+              windowGeometry.width / 2 -
+              (woNew.left + woNew.width / 2),
               windowGeometry.top +
-                windowGeometry.height / 2 -
-                (woNew.top + woNew.height / 2),
+              windowGeometry.height / 2 -
+              (woNew.top + woNew.height / 2),
             );
 
             return acc.distance === -1 || distance < acc.distance
@@ -227,7 +233,10 @@ export function useWindows(workspace, config) {
     for (const window of windows) {
       window.tileVirtual = undefined;
 
-      if (window.tile === null && window.tilePrevious === undefined) {
+      if (
+        window.minimized === true ||
+        (window.tile === null && window.tilePrevious === undefined)
+      ) {
         continue;
       }
 

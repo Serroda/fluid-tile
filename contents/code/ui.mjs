@@ -2,7 +2,6 @@ import { useTiles } from "./tiles.mjs";
 
 export function useUI(workspace, config, rootUI) {
   const apiTile = useTiles(workspace, config);
-  let windowGeometryOnMove = {};
 
   //Paint tiles
   function resetLayout() {
@@ -16,26 +15,8 @@ export function useUI(workspace, config, rootUI) {
   }
 
   // When a window is moving with the cursor
-  function onUserMoveStepped(windowGeometry) {
-    if (
-      windowGeometryOnMove.width === undefined &&
-      windowGeometryOnMove.height === undefined
-    ) {
-      windowGeometryOnMove = {
-        width: windowGeometry.width,
-        height: windowGeometry.height,
-      };
-    }
-
-    if (
-      windowGeometryOnMove.width !== windowGeometry.width &&
-      windowGeometryOnMove.height !== windowGeometry.height
-    ) {
-      return;
-    }
-
+  function onUserMoveStepped(_windowGeometry) {
     rootUI.visible = true;
-
     const cursor = workspace.cursorPos;
     rootUI.tileActived = rootUI.layoutOrdered.findIndex((tile) => {
       const limitX = tile.absoluteGeometry.x + tile.absoluteGeometry.width;
@@ -58,7 +39,6 @@ export function useUI(workspace, config, rootUI) {
         tile.manage(windowMoved);
         windowMoved.tilePrevious = tile;
       }
-      windowGeometryOnMove = {};
       rootUI.tileActived = -1;
     }
   }

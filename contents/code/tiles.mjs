@@ -223,7 +223,7 @@ export function useTiles(workspace, config) {
 
   //Return the tile before maximize window
   function getPreviousTile(window) {
-    if (window.tile !== null) {
+    if (window.tile !== null && window.tile !== undefined) {
       return window.tile;
     }
 
