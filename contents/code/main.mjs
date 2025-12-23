@@ -15,6 +15,7 @@ export function useTriggers(workspace, config, rootUI) {
     windowFocused: {},
     adding: false,
     exchanged: false,
+    resized: false,
     desktopsExtend: [],
   };
 
@@ -122,15 +123,16 @@ export function useTriggers(workspace, config, rootUI) {
     windowMain.minimizedChanged.connect(() => {
       onMinimizedChange(windowMain);
     });
-
-    windowMain.moveResizeCursorChanged.connect(() => {
-      onResizeCursorChanged();
-    });
   }
 
   //When a window is resized with the cursor
   function onResizeCursorChanged() {
-    apiWindows.extendWindowsCurrentDesktop();
+    if (state.resized === true) {
+      apiWindows.extendWindowsCurrentDesktop();
+      state.resized = false;
+    } else {
+      state.resized = true;
+    }
   }
 
   //Save tile when user focus a window and add signal
@@ -140,17 +142,19 @@ export function useTriggers(workspace, config, rootUI) {
     if (
       windowMain.active === true &&
       tile !== null &&
-      windowMain.signalTileChangedConnected !== true
+      windowMain.signalsAdditionalConnected !== true
     ) {
       state.windowFocused.tile = tile;
       state.windowFocused.window = windowMain;
       state.windowFocused.desktop = workspace.currentDesktop;
 
-      windowMain.signalTileChangedConnected = true;
+      windowMain.signalsAdditionalConnected = true;
       windowMain.tileChanged.connect(onTileChanged);
+      windowMain.moveResizedChanged.connect(onResizeCursorChanged);
     } else {
       windowMain.tileChanged.disconnect(onTileChanged);
-      windowMain.signalTileChangedConnected = false;
+      windowMain.moveResizedChanged.disconnect(onResizeCursorChanged);
+      windowMain.signalsAdditionalConnected = false;
     }
   }
 
