@@ -209,7 +209,8 @@ export function useTiles(workspace, config) {
     return tiles;
   }
 
-  //Save tile when user focus a window
+  //Exchange windows tiles
+  //ERROR: Doesnt work between screens
   function exchangeTiles(windowMain, windowsExchange, tileOld, desktopNew) {
     for (const windowItem of windowsExchange) {
       windowItem.setMaximize(false, false);
