@@ -26,6 +26,12 @@
         <entry name="WindowsExtendMove" type="Bool">
             <default>true</default>
         </entry>
+        <entry name="WindowsExtendMinimize" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="WindowsExtendResize" type="Bool">
+            <default>true</default>
+        </entry>
         <entry name="DesktopAdd" type="Bool">
             <default>true</default>
         </entry>

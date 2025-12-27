@@ -30,6 +30,8 @@ Window {
             windowsExtendOpen: KWin.readConfig("WindowsExtendOpen", true),
             windowsExtendClose: KWin.readConfig("WindowsExtendClose", true),
             windowsExtendMove: KWin.readConfig("WindowsExtendMove", true),
+            windowsExtendMinimize: KWin.readConfig("WindowsExtendMinimize", true),
+            windowsExtendResize: KWin.readConfig("WindowsExtendResize", true),
             desktopAdd: KWin.readConfig("DesktopAdd", true),
             desktopRemove: KWin.readConfig("DesktopRemove", false),
             desktopRemoveMin: KWin.readConfig("DesktopRemoveMin", 1),

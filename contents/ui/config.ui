@@ -348,6 +348,64 @@ This timer avoid crash wayland, beacuse the process try open the window
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="minimized">
+      <attribute name="title">
+       <string>Minimized</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <widget class="QCheckBox" name="kcfg_WindowsExtendMinimize">
+         <property name="toolTip">
+          <string>Do not leave empty tiles by extending the window</string>
+         </property>
+         <property name="statusTip">
+          <string/>
+         </property>
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>Extend windows</string>
+         </property>
+         <property name="autoRepeat">
+          <bool>false</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="resized">
+      <attribute name="title">
+       <string>Resized</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_8">
+       <item>
+        <widget class="QCheckBox" name="kcfg_WindowsExtendResize">
+         <property name="toolTip">
+          <string>Do not leave empty tiles by extending the window</string>
+         </property>
+         <property name="statusTip">
+          <string/>
+         </property>
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>Extend windows</string>
+         </property>
+         <property name="autoRepeat">
+          <bool>false</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
