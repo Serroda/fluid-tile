@@ -1,6 +1,5 @@
 import { useBlocklist } from "./blocklist.mjs";
 import { useWindows } from "./windows.mjs";
-import { useWorkarea } from "./workarea.mjs";
 import { useTiles } from "./tiles.mjs";
 import { useUI } from "./ui.mjs";
 
@@ -8,7 +7,6 @@ export function useTriggers(workspace, config, rootUI) {
   const apiBlocklist = useBlocklist(config.appsBlocklist, config.modalsIgnore);
   const apiWindows = useWindows(workspace, config);
   const apiTiles = useTiles(workspace, config);
-  const apiWorkarea = useWorkarea(workspace);
   const apiUI = useUI(workspace, config, rootUI);
 
   const state = {
@@ -120,9 +118,11 @@ export function useTriggers(workspace, config, rootUI) {
       onMaximizeChange(mode, windowMain);
     });
 
-    windowMain.minimizedChanged.connect(() => {
-      onMinimizedChange(windowMain);
-    });
+    if (config.windowsExtendMinimize === true) {
+      windowMain.minimizedChanged.connect(() => {
+        onMinimizedChange(windowMain);
+      });
+    }
   }
 
   //When a window is resized with the cursor
@@ -150,10 +150,15 @@ export function useTriggers(workspace, config, rootUI) {
 
       windowMain.signalsAdditionalConnected = true;
       windowMain.tileChanged.connect(onTileChanged);
-      windowMain.moveResizedChanged.connect(onResizeCursorChanged);
+
+      if (config.windowsExtendResize === true) {
+        windowMain.moveResizedChanged.connect(onResizeCursorChanged);
+      }
     } else {
       windowMain.tileChanged.disconnect(onTileChanged);
-      windowMain.moveResizedChanged.disconnect(onResizeCursorChanged);
+      if (config.windowsExtendResize === true) {
+        windowMain.moveResizedChanged.disconnect(onResizeCursorChanged);
+      }
       windowMain.signalsAdditionalConnected = false;
     }
   }
@@ -175,7 +180,7 @@ export function useTriggers(workspace, config, rootUI) {
       .getWindows(
         state.windowFocused.window,
         workspace.currentDesktop,
-        workspace.activeScreen,
+        state.windowFocused.window.output,
       )
       .filter(
         (window) => window.tile === tileNew || window.tilePrevious === tileNew,
@@ -208,17 +213,7 @@ export function useTriggers(workspace, config, rootUI) {
         state.desktopsExtend.push(state.windowFocused.desktop);
       }
 
-      for (const screen of workspace.screens) {
-        const windows = apiWindows.getWindows(
-          undefined,
-          workspace.currentDesktop,
-          screen,
-        );
-        apiWindows.extendWindows(
-          windows,
-          apiWorkarea.getPanelsSize(screen, workspace.currentDesktop),
-        );
-      }
+      apiWindows.extendWindowsCurrentDesktop(true);
     }
   }
 
@@ -249,7 +244,7 @@ export function useTriggers(workspace, config, rootUI) {
       return;
     }
 
-    apiWindows.extendWindowsCurrentDesktop();
+    apiWindows.extendWindowsCurrentDesktop(true);
   }
 
   function onTimerFinished() {
@@ -281,7 +276,10 @@ export function useTriggers(workspace, config, rootUI) {
     }
 
     rootUI.removeDesktopInfo = {};
-    apiWindows.extendWindowsCurrentDesktop();
+
+    if (config.windowsExtendClose === true) {
+      apiWindows.extendWindowsCurrentDesktop();
+    }
   }
 
   // Focus window when a current desktop is changed
@@ -290,9 +288,10 @@ export function useTriggers(workspace, config, rootUI) {
 
     if (
       state.desktopsExtend.includes(workspace.currentDesktop) === true &&
-      state.exchanged === false
+      ((config.windowsExtendMove === true && state.exchanged === false) ||
+        config.windowsExtendMinimize === true)
     ) {
-      apiWindows.extendWindowsCurrentDesktop();
+      apiWindows.extendWindowsCurrentDesktop(true);
       state.desktopsExtend.splice(
         state.desktopsExtend.indexOf(workspace.currentDesktop),
         1,

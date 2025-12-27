@@ -197,11 +197,11 @@ export function useWindows(workspace, config) {
           (acc, woNew) => {
             const distance = Math.hypot(
               windowGeometry.left +
-              windowGeometry.width / 2 -
-              (woNew.left + woNew.width / 2),
+                windowGeometry.width / 2 -
+                (woNew.left + woNew.width / 2),
               windowGeometry.top +
-              windowGeometry.height / 2 -
-              (woNew.top + woNew.height / 2),
+                windowGeometry.height / 2 -
+                (woNew.top + woNew.height / 2),
             );
 
             return acc.distance === -1 || distance < acc.distance
@@ -339,31 +339,26 @@ export function useWindows(workspace, config) {
     );
   }
 
-  function extendWindowsCurrentDesktop() {
-    if (
-      config.windowsExtendClose === false &&
-      config.windowsExtendOpen === false
-    ) {
-      return;
+  //Helper function
+  function extendWindowsCurrentDesktop(screenAll = false) {
+    let screens = [workspace.activeScreen];
+
+    if (screenAll === true) {
+      screens = workspace.screens;
     }
 
-    const windows = getWindows(
-      undefined,
-      workspace.currentDesktop,
-      workspace.activeScreen,
-    );
+    for (const screen of screens) {
+      const windows = getWindows(undefined, workspace.currentDesktop, screen);
 
-    if (windows.length === 0) {
-      return;
+      if (windows.length === 0) {
+        continue;
+      }
+
+      extendWindows(
+        windows,
+        apiWorkarea.getPanelsSize(screen, workspace.currentDesktop),
+      );
     }
-
-    extendWindows(
-      windows,
-      apiWorkarea.getPanelsSize(
-        workspace.activeScreen,
-        workspace.currentDesktop,
-      ),
-    );
   }
 
   return {
