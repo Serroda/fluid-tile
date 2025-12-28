@@ -12,6 +12,7 @@ export function useTriggers(workspace, config, rootUI) {
   const state = {
     windowFocused: {},
     adding: false,
+    removing: false,
     exchanged: false,
     resized: false,
     desktopsExtend: [],
@@ -58,6 +59,10 @@ export function useTriggers(workspace, config, rootUI) {
 
       windowNew.tilePrevious = tilesOrdered[0];
     }
+
+    if (config.windowsExtendOpen === true) {
+      state.adding = false;
+    }
   }
 
   //Trigger when a window is remove to the desktop
@@ -65,6 +70,8 @@ export function useTriggers(workspace, config, rootUI) {
     if (apiBlocklist.checkBlocklist(windowClosed) === true) {
       return false;
     }
+
+    state.removing = true;
 
     const continueProcess = apiWindows.setWindowsTiles(
       windowClosed,
@@ -76,6 +83,10 @@ export function useTriggers(workspace, config, rootUI) {
 
     if (continueProcess === false) {
       apiWindows.focusWindow();
+    }
+
+    if (config.windowsExtendClose === false) {
+      state.removing = false;
     }
 
     return (
@@ -169,10 +180,12 @@ export function useTriggers(workspace, config, rootUI) {
     //when a window exchange
     if (
       state.adding === true ||
+      state.removing === true ||
       rootUI.tileActived !== -1 ||
       tileNew === null
     ) {
       state.adding = false;
+      state.removing = false;
       return;
     }
 
