@@ -211,14 +211,20 @@ export function useTiles(workspace, config) {
 
   //Exchange windows tiles
   //ERROR: Doesnt work between screens
-  function exchangeTiles(windowMain, windowsExchange, tileOld, desktopNew) {
+  function exchangeTiles(windowsExchange, tileOld, desktopOld, screenOld) {
     for (const windowItem of windowsExchange) {
       windowItem.setMaximize(false, false);
-      if (windowItem !== windowMain) {
-        windowItem.desktops = [desktopNew];
-        tileOld.manage(windowItem);
-        windowItem.tilePrevious = tileOld;
+
+      if (screenOld !== workspace.activeScreen) {
+        workspace.sendClientToScreen(windowItem, screenOld);
       }
+
+      if (desktopOld !== workspace.currentDesktop) {
+        windowItem.desktops = [desktopOld];
+      }
+
+      tileOld.manage(windowItem);
+      windowItem.tilePrevious = tileOld;
     }
   }
 

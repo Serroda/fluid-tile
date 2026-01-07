@@ -17,6 +17,16 @@ Window {
     property var layoutOrdered: []
     property int tileActived: -1
 
+    Timer {
+        id: timerRemoveDesktop
+        interval: root.config.desktopRemoveDelay
+        repeat: false
+        running: false
+        onTriggered: {
+            root.engine.onTimerRemoveDesktopFinished();
+        }
+    }
+    
     // Load user config
     function loadConfig() {
         config = {
@@ -52,15 +62,6 @@ Window {
         engine = Engine.useTriggers(Workspace, config, root);
     }
 
-    Timer {
-        id: timerRemoveDesktop
-        interval: root.config.desktopRemoveDelay
-        repeat: false
-        running: false
-        onTriggered: {
-            root.engine.onTimerFinished();
-        }
-    }
 
     Connections {
         target: Workspace

@@ -85,9 +85,7 @@ export function useTriggers(workspace, config, rootUI) {
       apiWindows.focusWindow();
     }
 
-    if (config.windowsExtendClose === false) {
-      state.removing = false;
-    }
+    state.removing = false;
 
     return (
       continueProcess === true &&
@@ -158,6 +156,7 @@ export function useTriggers(workspace, config, rootUI) {
       state.windowFocused.tile = tile;
       state.windowFocused.window = windowMain;
       state.windowFocused.desktop = workspace.currentDesktop;
+      state.windowFocused.screen = workspace.activeScreen;
 
       windowMain.signalsAdditionalConnected = true;
       windowMain.tileChanged.connect(onTileChanged);
@@ -176,7 +175,7 @@ export function useTriggers(workspace, config, rootUI) {
 
   //When a window tile is changed, exchange windows and extend windows
   function onTileChanged(tileNew) {
-    //Trigger when a window is maximized and minimized
+    //Trigger when a window is maximized but not minimized
     //when a window exchange
     if (
       state.adding === true ||
@@ -193,7 +192,7 @@ export function useTriggers(workspace, config, rootUI) {
       .getWindows(
         state.windowFocused.window,
         workspace.currentDesktop,
-        state.windowFocused.window.output,
+        workspace.activeScreen,
       )
       .filter(
         (window) => window.tile === tileNew || window.tilePrevious === tileNew,
@@ -205,18 +204,21 @@ export function useTriggers(workspace, config, rootUI) {
       config.windowsOrderMove === true
     ) {
       apiTiles.exchangeTiles(
-        state.windowFocused.window,
         windowsOther,
         state.windowFocused.tile,
         state.windowFocused.desktop,
+        state.windowFocused.screen,
       );
 
-      state.windowFocused.tile = state.windowFocused.window.tile;
-      state.windowFocused.window.tilePrevious = state.windowFocused.window.tile;
       state.exchanged = true;
     } else {
       state.exchanged = false;
     }
+
+    state.windowFocused.tile = state.windowFocused.window.tile;
+    state.windowFocused.window.tilePrevious = state.windowFocused.window.tile;
+    state.windowFocused.desktop = state.windowFocused.window.desktops[0];
+    state.windowFocused.screen = state.windowFocused.window.output;
 
     if (config.windowsExtendMove === true) {
       if (
@@ -243,8 +245,10 @@ export function useTriggers(workspace, config, rootUI) {
 
     //If not fullscreen
     const tilePrevious = apiTiles.getPreviousTile(windowMain);
-    //When a window is maximized window.tile is always null
-    tilePrevious?.manage(windowMain);
+    if (tilePrevious !== null && tilePrevious !== undefined) {
+      //When a window is maximized window.tile is always null
+      tilePrevious.manage(windowMain);
+    }
   }
 
   //When a window is minimized, extend windows
@@ -257,10 +261,11 @@ export function useTriggers(workspace, config, rootUI) {
       return;
     }
 
+    windowMain.setMaximize(false, false);
     apiWindows.extendWindowsCurrentDesktop(true);
   }
 
-  function onTimerFinished() {
+  function onTimerRemoveDesktopFinished() {
     //Case: Applications that open a window and, when an action is performed,
     //close the window and open another window (Chrome profile selector).
     //This timer avoid crash wayland
@@ -298,6 +303,7 @@ export function useTriggers(workspace, config, rootUI) {
   // Focus window when a current desktop is changed
   function onCurrentDesktopChanged() {
     apiUI.resetLayout();
+    apiWindows.focusWindow();
 
     if (
       state.desktopsExtend.includes(workspace.currentDesktop) === true &&
@@ -315,7 +321,7 @@ export function useTriggers(workspace, config, rootUI) {
   return {
     onWindowAdded,
     onWindowRemoved,
-    onTimerFinished,
+    onTimerRemoveDesktopFinished,
     onCurrentDesktopChanged,
     setWindowsSignals,
     setSignalsToWindow,
