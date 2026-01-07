@@ -15,9 +15,9 @@ export function useUI(workspace, config, rootUI) {
   }
 
   // When a window is moving with the cursor
-  function onUserMoveStepped(_windowGeometry) {
+  function onUserMoveStepped(windowGeometry) {
     rootUI.visible = true;
-    const cursor = workspace.cursorPos;
+    const cursor = getPosition(windowGeometry);
     rootUI.tileActived = rootUI.layoutOrdered.findIndex((tile) => {
       const limitX = tile.absoluteGeometry.x + tile.absoluteGeometry.width;
       const limitY = tile.absoluteGeometry.y + tile.absoluteGeometry.height;
@@ -41,6 +41,18 @@ export function useUI(workspace, config, rootUI) {
       }
       rootUI.tileActived = -1;
     }
+  }
+
+  //Get cursor position or window position
+  function getPosition(windowGeometry) {
+    if (config.UIWindowCursor === true) {
+      return {
+        x: (windowGeometry.x + windowGeometry.right) / 2,
+        y: windowGeometry.y,
+      };
+    }
+
+    return { x: workspace.cursorPos.x, y: workspace.cursorPos.y };
   }
 
   return {

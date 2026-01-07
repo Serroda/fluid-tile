@@ -346,6 +346,25 @@ This timer avoid crash wayland, beacuse the process try open the window
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;⚠️ &lt;/span&gt;&lt;span style=&quot; font-weight:700; color:#00ff7f;&quot;&gt;RECOMMENDED&lt;/span&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;: For touch screens, enable the following options &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="kcfg_UIWindowCursor">
+         <property name="toolTip">
+          <string>This allows you to move the window from the UI via touch screens,
+improving support and in cases where the cursor is not present.
+The position it takes is the center of the top edge of the window</string>
+         </property>
+         <property name="text">
+          <string>Use the window position instead of the cursor position when the UI is visible</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="minimized">
