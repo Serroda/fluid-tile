@@ -224,18 +224,18 @@ export function useTiles(workspace, config) {
       }
 
       tileOld.manage(windowItem);
-      windowItem.tilePrevious = tileOld;
+      windowItem.tileShadow = tileOld;
     }
   }
 
   //Return the tile before maximize window
-  function getPreviousTile(window) {
+  function getShadowTile(window) {
     if (window.tile !== null && window.tile !== undefined) {
       return window.tile;
     }
 
-    if (window.tilePrevious !== undefined) {
-      return window.tilePrevious;
+    if (window.tileShadow !== undefined) {
+      return window.tileShadow;
     }
 
     return null;
@@ -247,6 +247,6 @@ export function useTiles(workspace, config) {
     getDefaultLayouts,
     exchangeTiles,
     setLayout,
-    getPreviousTile,
+    getShadowTile,
   };
 }

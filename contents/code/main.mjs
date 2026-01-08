@@ -3,7 +3,7 @@ import { useWindows } from "./windows.mjs";
 import { useTiles } from "./tiles.mjs";
 import { useUI } from "./ui.mjs";
 
-export function useTriggers(workspace, config, rootUI) {
+export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
   const apiBlocklist = useBlocklist(config.appsBlocklist, config.modalsIgnore);
   const apiWindows = useWindows(workspace, config);
   const apiTiles = useTiles(workspace, config);
@@ -14,7 +14,6 @@ export function useTriggers(workspace, config, rootUI) {
     adding: false,
     removing: false,
     exchanged: false,
-    resized: false,
     desktopsExtend: [],
   };
 
@@ -57,7 +56,7 @@ export function useTriggers(workspace, config, rootUI) {
         tilesOrdered[0].manage(windowNew);
       }
 
-      windowNew.tilePrevious = tilesOrdered[0];
+      windowNew.tileShadow = tilesOrdered[0];
     }
 
     if (config.windowsExtendOpen === true) {
@@ -85,7 +84,10 @@ export function useTriggers(workspace, config, rootUI) {
       apiWindows.focusWindow();
     }
 
-    state.removing = false;
+    //Avoid execute extendWindows when tile is changed
+    if (config.windowsExtendClose === false) {
+      state.removing = false;
+    }
 
     return (
       continueProcess === true &&
@@ -112,7 +114,10 @@ export function useTriggers(workspace, config, rootUI) {
       windowMain.interactiveMoveResizeStarted.connect(apiUI.onUserMoveStart);
       windowMain.interactiveMoveResizeStepped.connect(apiUI.onUserMoveStepped);
       windowMain.interactiveMoveResizeFinished.connect(() => {
-        apiUI.onUserMoveFinished(windowMain);
+        const windowMoved = apiUI.onUserMoveFinished(windowMain);
+        if (config.windowsExtendResize === true && windowMoved === false) {
+          apiWindows.extendWindowsCurrentDesktop(true);
+        }
       });
     }
 
@@ -134,19 +139,9 @@ export function useTriggers(workspace, config, rootUI) {
     }
   }
 
-  //When a window is resized with the cursor
-  function onResizeCursorChanged() {
-    if (state.resized === true) {
-      apiWindows.extendWindowsCurrentDesktop();
-      state.resized = false;
-    } else {
-      state.resized = true;
-    }
-  }
-
   //Save tile when user focus a window and add signal
   function onUserFocusWindow(windowMain) {
-    const tile = apiTiles.getPreviousTile(windowMain);
+    const tile = apiTiles.getShadowTile(windowMain);
 
     if (
       windowMain.active === true &&
@@ -160,15 +155,8 @@ export function useTriggers(workspace, config, rootUI) {
 
       windowMain.signalsAdditionalConnected = true;
       windowMain.tileChanged.connect(onTileChanged);
-
-      if (config.windowsExtendResize === true) {
-        windowMain.moveResizedChanged.connect(onResizeCursorChanged);
-      }
     } else {
       windowMain.tileChanged.disconnect(onTileChanged);
-      if (config.windowsExtendResize === true) {
-        windowMain.moveResizedChanged.disconnect(onResizeCursorChanged);
-      }
       windowMain.signalsAdditionalConnected = false;
     }
   }
@@ -195,7 +183,7 @@ export function useTriggers(workspace, config, rootUI) {
         workspace.activeScreen,
       )
       .filter(
-        (window) => window.tile === tileNew || window.tilePrevious === tileNew,
+        (window) => window.tile === tileNew || window.tileShadow === tileNew,
       );
 
     if (
@@ -215,11 +203,6 @@ export function useTriggers(workspace, config, rootUI) {
       state.exchanged = false;
     }
 
-    state.windowFocused.tile = state.windowFocused.window.tile;
-    state.windowFocused.window.tilePrevious = state.windowFocused.window.tile;
-    state.windowFocused.desktop = state.windowFocused.window.desktops[0];
-    state.windowFocused.screen = state.windowFocused.window.output;
-
     if (config.windowsExtendMove === true) {
       if (
         workspace.currentDesktop !== state.windowFocused.desktop &&
@@ -228,15 +211,25 @@ export function useTriggers(workspace, config, rootUI) {
         state.desktopsExtend.push(state.windowFocused.desktop);
       }
 
-      apiWindows.extendWindowsCurrentDesktop(true);
+      //Start delay only when you have to exchange in another screen
+      if (state.windowFocused.screen !== workspace.activeScreen) {
+        timerExtendDesktop.start();
+      } else {
+        apiWindows.extendWindowsCurrentDesktop(true);
+      }
     }
+
+    state.windowFocused.tile = state.windowFocused.window.tile;
+    state.windowFocused.window.tileShadow = state.windowFocused.window.tile;
+    state.windowFocused.desktop = state.windowFocused.window.desktops[0];
+    state.windowFocused.screen = state.windowFocused.window.output;
   }
 
   //When window is not maximized, set a previous tile
   function onMaximizeChange(mode, windowMain) {
-    if (windowMain.tilePrevious === undefined && windowMain.tile === null) {
+    if (windowMain.tileShadow === undefined && windowMain.tile === null) {
       const tilesOrdered = apiTiles.getTilesFromActualDesktop();
-      windowMain.tilePrevious = tilesOrdered[0];
+      windowMain.tileShadow = tilesOrdered[0];
     }
 
     if (mode !== 0) {
@@ -244,10 +237,10 @@ export function useTriggers(workspace, config, rootUI) {
     }
 
     //If not fullscreen
-    const tilePrevious = apiTiles.getPreviousTile(windowMain);
-    if (tilePrevious !== null && tilePrevious !== undefined) {
+    const tileShadow = apiTiles.getShadowTile(windowMain);
+    if (tileShadow !== null && tileShadow !== undefined) {
       //When a window is maximized window.tile is always null
-      tilePrevious.manage(windowMain);
+      tileShadow.manage(windowMain);
     }
   }
 
@@ -318,10 +311,15 @@ export function useTriggers(workspace, config, rootUI) {
     }
   }
 
+  function onTimerExtendDesktopFinished() {
+    apiWindows.extendWindowsCurrentDesktop(true);
+  }
+
   return {
     onWindowAdded,
     onWindowRemoved,
     onTimerRemoveDesktopFinished,
+    onTimerExtendDesktopFinished,
     onCurrentDesktopChanged,
     setWindowsSignals,
     setSignalsToWindow,

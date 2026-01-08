@@ -31,16 +31,20 @@ export function useUI(workspace, config, rootUI) {
   }
 
   //When the user release the window
+  // and return if the UI was enable
   function onUserMoveFinished(windowMoved) {
     if (rootUI.visible === true) {
       rootUI.visible = false;
       const tile = rootUI.layoutOrdered[rootUI.tileActived];
       if (tile !== undefined) {
         tile.manage(windowMoved);
-        windowMoved.tilePrevious = tile;
+        windowMoved.tileShadow = tile;
       }
       rootUI.tileActived = -1;
+      return true;
     }
+
+    return false;
   }
 
   //Get cursor position or window position

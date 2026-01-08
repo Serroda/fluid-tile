@@ -62,16 +62,16 @@ export function useWindows(workspace, config) {
 
               if (config.windowsOrderOpen === true) {
                 tilesOrdered[x + 1].manage(windowsOther[x]);
-                windowsOther[x].tilePrevious = tilesOrdered[x + 1];
+                windowsOther[x].tileShadow = tilesOrdered[x + 1];
               } else if (windowsOther[x].tile === null) {
                 tilesOrdered[x].manage(windowsOther[x]);
-                windowsOther[x].tilePrevious = tilesOrdered[x];
+                windowsOther[x].tileShadow = tilesOrdered[x];
               }
             }
 
             if (config.windowsOrderOpen === true) {
               tilesOrdered[0].manage(windowMain);
-              windowMain.tilePrevious = tilesOrdered[0];
+              windowMain.tileShadow = tilesOrdered[0];
             } else {
               const tileEmpty = tilesOrdered.find(
                 (tile) => tile.windows.length === 0,
@@ -79,7 +79,7 @@ export function useWindows(workspace, config) {
 
               if (tileEmpty !== undefined) {
                 tileEmpty.manage(windowMain);
-                windowMain.tilePrevious = tileEmpty;
+                windowMain.tileShadow = tileEmpty;
               }
             }
 
@@ -100,7 +100,7 @@ export function useWindows(workspace, config) {
           }
         } else if (mode === 1 && windowsOther.length !== 0) {
           if (maximize === true && windowsOther.length === 1) {
-            windowsOther[0].tilePrevious = tilesOrdered[1];
+            windowsOther[0].tileShadow = tilesOrdered[1];
 
             if (windowsOther[0].minimized === false) {
               windowsOther[0].setMaximize(true, true);
@@ -109,7 +109,7 @@ export function useWindows(workspace, config) {
             for (let x = 0; x < windowsOther.length; x++) {
               windowsOther[x].setMaximize(false, false);
               tilesOrdered[x].manage(windowsOther[x]);
-              windowsOther[x].tilePrevious = tilesOrdered[x];
+              windowsOther[x].tileShadow = tilesOrdered[x];
             }
           }
 
@@ -138,7 +138,7 @@ export function useWindows(workspace, config) {
     for (const window of windows) {
       if (
         window.tile === null ||
-        window.tilePrevious === undefined ||
+        window.tileShadow === undefined ||
         window.minimized === true
       ) {
         continue;
@@ -149,7 +149,7 @@ export function useWindows(workspace, config) {
         .filter(
           (w) =>
             w !== window &&
-            (w.tile !== null || w.tilePrevious !== undefined) &&
+            (w.tile !== null || w.tileShadow !== undefined) &&
             w.minimized === false,
         )
         .map((w) => getRealGeometry(w));
@@ -235,7 +235,7 @@ export function useWindows(workspace, config) {
 
       if (
         window.minimized === true ||
-        (window.tile === null && window.tilePrevious === undefined)
+        (window.tile === null && window.tileShadow === undefined)
       ) {
         continue;
       }
@@ -250,13 +250,13 @@ export function useWindows(workspace, config) {
       window.tileVirtual ??
       (window.tile !== null
         ? window.tile.absoluteGeometry
-        : window.tilePrevious.absoluteGeometry)
+        : window.tileShadow.absoluteGeometry)
     );
   }
 
   //Set window size and return `virtualTile`
   function setGeometryWindow(window, geometry, panelsSize) {
-    const tileRef = window.tile !== null ? window.tile : window.tilePrevious;
+    const tileRef = window.tile !== null ? window.tile : window.tileShadow;
     const tileRefGeometry = getRealGeometry(window);
 
     const left =

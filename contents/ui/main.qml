@@ -27,6 +27,16 @@ Window {
         }
     }
     
+    Timer {
+        id: timerExtendDesktop
+        interval: root.config.windowsExtendTileChangedDelay
+        repeat: false
+        running: false
+        onTriggered: {
+            root.engine.onTimerExtendDesktopFinished();
+        }
+    }
+    
     // Load user config
     function loadConfig() {
         config = {
@@ -42,6 +52,7 @@ Window {
             windowsExtendMove: KWin.readConfig("WindowsExtendMove", true),
             windowsExtendMinimize: KWin.readConfig("WindowsExtendMinimize", true),
             windowsExtendResize: KWin.readConfig("WindowsExtendResize", true),
+            windowsExtendTileChangedDelay: KWin.readConfig("WindowsExtendTileChangedDelay", 0),
             desktopAdd: KWin.readConfig("DesktopAdd", true),
             desktopRemove: KWin.readConfig("DesktopRemove", false),
             desktopRemoveMin: KWin.readConfig("DesktopRemoveMin", 1),
@@ -59,7 +70,7 @@ Window {
             console.log("LayoutCustom variable error: " + error);
         }
 
-        engine = Engine.useTriggers(Workspace, config, root);
+        engine = Engine.useTriggers(Workspace, config, root, timerExtendDesktop);
     }
 
 

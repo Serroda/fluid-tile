@@ -32,6 +32,9 @@
         <entry name="WindowsExtendResize" type="Bool">
             <default>true</default>
         </entry>
+        <entry name="WindowsExtendTileChangedDelay" type="Int">
+            <default>0</default>
+        </entry>
         <entry name="DesktopAdd" type="Bool">
             <default>true</default>
         </entry>
