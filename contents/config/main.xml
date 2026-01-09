@@ -9,10 +9,10 @@
             <default>true</default>
         </entry>
         <entry name="WindowsOrderOpen" type="Bool">
-            <default>true</default>
+            <default>false</default>
         </entry>
         <entry name="WindowsOrderClose" type="Bool">
-            <default>true</default>
+            <default>false</default>
         </entry>
         <entry name="WindowsOrderMove" type="Bool">
             <default>true</default>
