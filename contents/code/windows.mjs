@@ -63,7 +63,10 @@ export function useWindows(workspace, config) {
               if (config.windowsOrderOpen === true) {
                 tilesOrdered[x + 1].manage(windowsOther[x]);
                 windowsOther[x].tileShadow = tilesOrdered[x + 1];
-              } else if (windowsOther[x].tile === null) {
+              } else if (
+                windowsOther[x].tile === null &&
+                windowsOther[x].tileShadow === undefined
+              ) {
                 tilesOrdered[x].manage(windowsOther[x]);
                 windowsOther[x].tileShadow = tilesOrdered[x];
               }
@@ -99,12 +102,12 @@ export function useWindows(workspace, config) {
             return false;
           }
         } else if (mode === 1 && windowsOther.length !== 0) {
-          if (maximize === true && windowsOther.length === 1) {
-            windowsOther[0].tileShadow = tilesOrdered[1];
-
-            if (windowsOther[0].minimized === false) {
-              windowsOther[0].setMaximize(true, true);
-            }
+          if (
+            maximize === true &&
+            windowsOther.length === 1 &&
+            windowsOther[0].minimized === false
+          ) {
+            windowsOther[0].setMaximize(true, true);
           } else if (config.windowsOrderClose === true) {
             for (let x = 0; x < windowsOther.length; x++) {
               windowsOther[x].setMaximize(false, false);
@@ -316,15 +319,21 @@ export function useWindows(workspace, config) {
         workspace.activeScreen,
       );
 
-      if (windows.length > 0) {
-        workspace.activeWindow = windows[0];
-        return windows[0];
+      if (windows.length === 0) {
+        return null;
       }
+
+      if (windows[0].minimized === true) {
+        return null;
+      }
+
+      workspace.activeWindow = windows[0];
+
+      return windows[0];
     } else {
       workspace.activeWindow = window;
       return window;
     }
-    return null;
   }
 
   //Check if the tile is in the same column
