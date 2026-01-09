@@ -150,12 +150,12 @@ export function useWindows(workspace, config) {
       const windowGeometry = getRealGeometry(window);
       const windowsOther = windows
         .filter(
-          (w) =>
-            w !== window &&
-            (w.tile !== null || w.tileShadow !== undefined) &&
-            w.minimized === false,
+          (wo) =>
+            wo !== window &&
+            (wo.tile !== null || wo.tileShadow !== undefined) &&
+            wo.minimized === false,
         )
-        .map((w) => getRealGeometry(w));
+        .map((wo) => getRealGeometry(wo));
 
       const newGeometry = {
         top: panelsSize.workarea.top,
@@ -169,22 +169,38 @@ export function useWindows(workspace, config) {
       //from being placed on top of each other, while
       //on the horizontal axis we search all rows
       //for windows that may cause conflicts,
-      //thus being more restrictive when establishing the window size.
+      //this being more restrictive when establishing the window size.
 
       const windowsConflict = {
-        left: windowsOther.filter((wo) => wo.right <= windowGeometry.left),
-        top: windowsOther.filter(
-          (wo) =>
-            wo.bottom <= windowGeometry.top &&
-            checkSameColumn(windowGeometry, wo) === true,
-        ),
-        right: windowsOther.filter((wo) => wo.left >= windowGeometry.right),
-        bottom: windowsOther.filter(
-          (wo) =>
-            wo.top >= windowGeometry.bottom &&
-            checkSameColumn(windowGeometry, wo) === true,
-        ),
+        left: [],
+        top: [],
+        right: [],
+        bottom: [],
       };
+
+      for (const windowItem of windowsOther) {
+        if (windowItem.right <= windowGeometry.left) {
+          windowsConflict.left.push(windowItem);
+        }
+
+        if (windowItem.left >= windowGeometry.right) {
+          windowsConflict.right.push(windowItem);
+        }
+
+        const sameColumn = checkSameColumn(windowGeometry, windowItem);
+
+        if (sameColumn === false) {
+          continue;
+        }
+
+        if (windowItem.bottom <= windowGeometry.top) {
+          windowsConflict.top.push(windowItem);
+        }
+
+        if (windowItem.top >= windowGeometry.bottom) {
+          windowsConflict.bottom.push(windowItem);
+        }
+      }
 
       for (const key in windowsConflict) {
         const item = windowsConflict[key];
@@ -248,6 +264,7 @@ export function useWindows(workspace, config) {
     }
   }
 
+  //Get geometry from tiles
   function getRealGeometry(window) {
     return (
       window.tileVirtual ??
@@ -311,6 +328,7 @@ export function useWindows(workspace, config) {
     };
   }
 
+  //Focus window in the workspace
   function focusWindow(window) {
     if (window === undefined) {
       const windows = getWindows(
@@ -346,7 +364,7 @@ export function useWindows(workspace, config) {
     );
   }
 
-  //Helper function
+  //Extend all windows in the current desktop
   function extendWindowsCurrentDesktop(screenAll = false) {
     let screens = [workspace.activeScreen];
 

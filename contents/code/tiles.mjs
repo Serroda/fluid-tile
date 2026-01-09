@@ -210,7 +210,6 @@ export function useTiles(workspace, config) {
   }
 
   //Exchange windows tiles
-  //ERROR: Doesnt work between screens
   function exchangeTiles(windowsExchange, tileOld, desktopOld, screenOld) {
     for (const windowItem of windowsExchange) {
       windowItem.setMaximize(false, false);

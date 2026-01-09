@@ -44,6 +44,7 @@ export function useUI(workspace, config, rootUI) {
       return true;
     }
 
+    windowMoved.tileShadow?.manage(windowMoved);
     return false;
   }
 

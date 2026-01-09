@@ -176,23 +176,9 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
       return;
     }
 
-    const windowsOther = apiWindows
-      .getWindows(
-        state.windowFocused.window,
-        workspace.currentDesktop,
-        workspace.activeScreen,
-      )
-      .filter(
-        (window) => window.tile === tileNew || window.tileShadow === tileNew,
-      );
-
-    if (
-      tileNew !== null &&
-      windowsOther.length !== 0 &&
-      config.windowsOrderMove === true
-    ) {
+    if (tileNew.windows.length > 1 && config.windowsOrderMove === true) {
       apiTiles.exchangeTiles(
-        windowsOther,
+        tileNew.windows.filter((w) => w !== state.windowFocused.window),
         state.windowFocused.tile,
         state.windowFocused.desktop,
         state.windowFocused.screen,
