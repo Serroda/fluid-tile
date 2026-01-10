@@ -62,19 +62,16 @@ export function useWindows(workspace, config) {
 
               if (config.windowsOrderOpen === true) {
                 tilesOrdered[x + 1].manage(windowsOther[x]);
-                windowsOther[x].tileShadow = tilesOrdered[x + 1];
-              } else if (
-                windowsOther[x].tile === null &&
-                windowsOther[x].tileShadow === undefined
-              ) {
+              } else if (windowsOther[x].tile === null) {
                 tilesOrdered[x].manage(windowsOther[x]);
-                windowsOther[x].tileShadow = tilesOrdered[x];
               }
+
+              updateShadows(windowsOther[x]);
             }
 
+            //Set tile for main window
             if (config.windowsOrderOpen === true) {
               tilesOrdered[0].manage(windowMain);
-              windowMain.tileShadow = tilesOrdered[0];
             } else {
               const tileEmpty = tilesOrdered.find(
                 (tile) => tile.windows.length === 0,
@@ -82,9 +79,10 @@ export function useWindows(workspace, config) {
 
               if (tileEmpty !== undefined) {
                 tileEmpty.manage(windowMain);
-                windowMain.tileShadow = tileEmpty;
               }
             }
+
+            updateShadows(windowMain);
 
             if (maximize === true && windowsOther.length === 0) {
               windowMain.setMaximize(true, true);
@@ -112,7 +110,7 @@ export function useWindows(workspace, config) {
             for (let x = 0; x < windowsOther.length; x++) {
               windowsOther[x].setMaximize(false, false);
               tilesOrdered[x].manage(windowsOther[x]);
-              windowsOther[x].tileShadow = tilesOrdered[x];
+              updateShadows(windowsOther[x]);
             }
           }
 
@@ -141,7 +139,7 @@ export function useWindows(workspace, config) {
     for (const window of windows) {
       if (
         window.tile === null ||
-        window.tileShadow === undefined ||
+        window._shadows === undefined ||
         window.minimized === true
       ) {
         continue;
@@ -152,7 +150,7 @@ export function useWindows(workspace, config) {
         .filter(
           (wo) =>
             wo !== window &&
-            (wo.tile !== null || wo.tileShadow !== undefined) &&
+            (wo.tile !== null || wo._shadows !== undefined) &&
             wo.minimized === false,
         )
         .map((wo) => getRealGeometry(wo));
@@ -213,11 +211,11 @@ export function useWindows(workspace, config) {
           (acc, woNew) => {
             const distance = Math.hypot(
               windowGeometry.left +
-                windowGeometry.width / 2 -
-                (woNew.left + woNew.width / 2),
+              windowGeometry.width / 2 -
+              (woNew.left + woNew.width / 2),
               windowGeometry.top +
-                windowGeometry.height / 2 -
-                (woNew.top + woNew.height / 2),
+              windowGeometry.height / 2 -
+              (woNew.top + woNew.height / 2),
             );
 
             return acc.distance === -1 || distance < acc.distance
@@ -254,7 +252,7 @@ export function useWindows(workspace, config) {
 
       if (
         window.minimized === true ||
-        (window.tile === null && window.tileShadow === undefined)
+        (window.tile === null && window._shadows === undefined)
       ) {
         continue;
       }
@@ -270,13 +268,13 @@ export function useWindows(workspace, config) {
       window.tileVirtual ??
       (window.tile !== null
         ? window.tile.absoluteGeometry
-        : window.tileShadow.absoluteGeometry)
+        : window._shadows.tile.absoluteGeometry)
     );
   }
 
   //Set window size and return `virtualTile`
   function setGeometryWindow(window, geometry, panelsSize) {
-    const tileRef = window.tile !== null ? window.tile : window.tileShadow;
+    const tileRef = window.tile !== null ? window.tile : window._shadows.tile;
     const tileRefGeometry = getRealGeometry(window);
 
     const left =
@@ -386,11 +384,21 @@ export function useWindows(workspace, config) {
     }
   }
 
+  //Save references window's tile, desktop, screen
+  function updateShadows(window, tile, desktops, screen) {
+    window._shadows = {
+      tile: tile ?? window.tile,
+      desktops: desktops ?? window.desktops,
+      screen: screen ?? window.output,
+    };
+  }
+
   return {
     setWindowsTiles,
     getWindows,
     extendWindows,
     extendWindowsCurrentDesktop,
     focusWindow,
+    updateShadows,
   };
 }

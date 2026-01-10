@@ -210,20 +210,22 @@ export function useTiles(workspace, config) {
   }
 
   //Exchange windows tiles
-  function exchangeTiles(windowsExchange, tileOld, desktopOld, screenOld) {
+  function exchangeTiles(windowsExchange, tile, desktop, screen) {
     for (const windowItem of windowsExchange) {
       windowItem.setMaximize(false, false);
 
-      if (screenOld !== workspace.activeScreen) {
-        workspace.sendClientToScreen(windowItem, screenOld);
+      if (screen !== workspace.activeScreen) {
+        workspace.sendClientToScreen(windowItem, screen);
       }
 
-      if (desktopOld !== workspace.currentDesktop) {
-        windowItem.desktops = [desktopOld];
+      if (desktop !== workspace.currentDesktop) {
+        windowItem.desktops = [desktop];
       }
 
-      tileOld.manage(windowItem);
-      windowItem.tileShadow = tileOld;
+      tile.manage(windowItem);
+      windowItem._shadows.tile = tile;
+      windowItem._shadows.desktops = windowItem.desktops;
+      windowItem._shadows.screen = windowItem.output;
     }
   }
 
@@ -233,8 +235,8 @@ export function useTiles(workspace, config) {
       return window.tile;
     }
 
-    if (window.tileShadow !== undefined) {
-      return window.tileShadow;
+    if (window._shadows !== undefined) {
+      return window._shadows.tile;
     }
 
     return null;

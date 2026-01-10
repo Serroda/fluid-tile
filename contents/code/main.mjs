@@ -10,7 +10,6 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
   const apiUI = useUI(workspace, config, rootUI);
 
   const state = {
-    windowFocused: {},
     adding: false,
     removing: false,
     exchanged: false,
@@ -56,7 +55,7 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
         tilesOrdered[0].manage(windowNew);
       }
 
-      windowNew.tileShadow = tilesOrdered[0];
+      apiWindows.updateShadows(windowNew);
     }
 
     if (config.windowsExtendOpen === true) {
@@ -121,12 +120,8 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
       });
     }
 
-    if (config.windowsOrderMove === true || config.windowsExtendMove === true) {
-      onUserFocusWindow(windowMain);
-      windowMain.activeChanged.connect(() => {
-        onUserFocusWindow(windowMain);
-      });
-    }
+    windowMain._tileChangedFunction = onTileChanged.bind(null, windowMain);
+    windowMain.tileChanged.connect(windowMain._tileChangedFunction);
 
     windowMain.maximizedAboutToChange.connect((mode) => {
       onMaximizeChange(mode, windowMain);
@@ -139,30 +134,8 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
     }
   }
 
-  //Save tile when user focus a window and add signal
-  function onUserFocusWindow(windowMain) {
-    const tile = apiTiles.getShadowTile(windowMain);
-
-    if (
-      windowMain.active === true &&
-      tile !== null &&
-      windowMain.signalsAdditionalConnected !== true
-    ) {
-      state.windowFocused.tile = tile;
-      state.windowFocused.window = windowMain;
-      state.windowFocused.desktop = workspace.currentDesktop;
-      state.windowFocused.screen = workspace.activeScreen;
-
-      windowMain.signalsAdditionalConnected = true;
-      windowMain.tileChanged.connect(onTileChanged);
-    } else {
-      windowMain.tileChanged.disconnect(onTileChanged);
-      windowMain.signalsAdditionalConnected = false;
-    }
-  }
-
   //When a window tile is changed, exchange windows and extend windows
-  function onTileChanged(tileNew) {
+  function onTileChanged(windowMain, tileNew) {
     //Trigger when a window is maximized but not minimized
     //when a window exchange
     if (
@@ -177,12 +150,24 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
     }
 
     if (tileNew.windows.length > 1 && config.windowsOrderMove === true) {
+      const windowsOther = tileNew.window.filter((w) => w !== windowMain);
+
+      //Disconnect windows target tile
+      for (const windowTile of windowsOther) {
+        windowTile.tileChanged.disconnect(windowTile._tileChangedFunction);
+      }
+
       apiTiles.exchangeTiles(
-        tileNew.windows.filter((w) => w !== state.windowFocused.window),
-        state.windowFocused.tile,
-        state.windowFocused.desktop,
-        state.windowFocused.screen,
+        windowsOther,
+        windowMain._shadows.tile,
+        windowMain._shadows.desktops[0],
+        windowMain._shadows.screen,
       );
+
+      //Connect again windows target tile
+      for (const windowTile of windowsOther) {
+        windowTile.tileChanged.connect(windowTile._tileChangedFunction);
+      }
 
       state.exchanged = true;
     } else {
@@ -191,31 +176,28 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
 
     if (config.windowsExtendMove === true) {
       if (
-        workspace.currentDesktop !== state.windowFocused.desktop &&
-        state.desktopsExtend.includes(state.windowFocused.desktop) === false
+        workspace.currentDesktop !== windowMain._shadows.desktops[0] &&
+        state.desktopsExtend.includes(windowMain._shadows.desktops[0]) === false
       ) {
-        state.desktopsExtend.push(state.windowFocused.desktop);
+        state.desktopsExtend.push(windowMain._shadows.desktops[0]);
       }
 
       //Start delay only when you have to exchange in another screen
-      if (state.windowFocused.screen !== workspace.activeScreen) {
+      if (windowMain._shadows.screen !== workspace.activeScreen) {
         timerExtendDesktop.start();
       } else {
         apiWindows.extendWindowsCurrentDesktop(true);
       }
     }
 
-    state.windowFocused.tile = state.windowFocused.window.tile;
-    state.windowFocused.window.tileShadow = state.windowFocused.window.tile;
-    state.windowFocused.desktop = state.windowFocused.window.desktops[0];
-    state.windowFocused.screen = state.windowFocused.window.output;
+    apiWindows.updateShadows(windowMain);
   }
 
   //When window is not maximized, set a previous tile
   function onMaximizeChange(mode, windowMain) {
-    if (windowMain.tileShadow === undefined && windowMain.tile === null) {
+    if (windowMain.shadow === undefined && windowMain.tile === null) {
       const tilesOrdered = apiTiles.getTilesFromActualDesktop();
-      windowMain.tileShadow = tilesOrdered[0];
+      apiWindows.updateShadows(windowMain, tilesOrdered[0]);
     }
 
     if (mode !== 0) {
