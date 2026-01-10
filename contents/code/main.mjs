@@ -109,16 +109,14 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
       return;
     }
 
-    if (config.UIEnable === true) {
-      windowMain.interactiveMoveResizeStarted.connect(apiUI.onUserMoveStart);
-      windowMain.interactiveMoveResizeStepped.connect(apiUI.onUserMoveStepped);
-      windowMain.interactiveMoveResizeFinished.connect(() => {
-        const windowMoved = apiUI.onUserMoveFinished(windowMain);
-        if (config.windowsExtendResize === true && windowMoved === false) {
-          apiWindows.extendWindowsCurrentDesktop(true);
-        }
-      });
-    }
+    windowMain.interactiveMoveResizeStarted.connect(apiUI.onUserMoveStart);
+    windowMain.interactiveMoveResizeStepped.connect(apiUI.onUserMoveStepped);
+    windowMain.interactiveMoveResizeFinished.connect(() => {
+      const windowMoved = apiUI.onUserMoveFinished(windowMain);
+      if (config.windowsExtendResize === true && windowMoved === false) {
+        apiWindows.extendWindowsCurrentDesktop(true);
+      }
+    });
 
     windowMain._tileChangedFunction = onTileChanged.bind(null, windowMain);
     windowMain.tileChanged.connect(windowMain._tileChangedFunction);
@@ -150,7 +148,7 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
     }
 
     if (tileNew.windows.length > 1 && config.windowsOrderMove === true) {
-      const windowsOther = tileNew.window.filter((w) => w !== windowMain);
+      const windowsOther = tileNew.windows.filter((w) => w !== windowMain);
 
       //Disconnect windows target tile
       for (const windowTile of windowsOther) {

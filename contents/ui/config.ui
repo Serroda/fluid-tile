@@ -303,28 +303,6 @@ This timer avoid crash wayland, beacuse the process try open the window
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="kcfg_UIEnable">
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="statusTip">
-          <string/>
-         </property>
-         <property name="locale">
-          <locale language="English" country="Eswatini"/>
-         </property>
-         <property name="text">
-          <string>Enable UI to set windows on tiles</string>
-         </property>
-         <property name="autoRepeat">
-          <bool>false</bool>
-         </property>
-         <property name="autoExclusive">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QCheckBox" name="kcfg_WindowsExtendMove">
          <property name="toolTip">
           <string>Do not leave empty tiles by extending the window</string>
@@ -356,14 +334,7 @@ If you have not installed the animation plugin,
 leave it at the default setting of 0 to avoid errors</string>
          </property>
          <property name="text">
-          <string>Delay to extend windows after the windows moved between screens</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_11">
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;⚠️ &lt;span style=&quot; font-weight:700; color:#aa0000;&quot;&gt;WARNING&lt;/span&gt;: Do not change the default value before reading the wiki &lt;a href=&quot;https://codeberg.org/Serroda/fluid-tile/wiki/Animations&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#ff5500;&quot;&gt;link&lt;/span&gt;&lt;/a&gt; about animations&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Delay to extend windows after the windows moved between screens&lt;br&gt; ⚠️ &lt;span style=&quot; font-weight:700; color:#aa0000;&quot;&gt;WARNING&lt;/span&gt;: Do not change the default value before reading the wiki &lt;a href=&quot;https://codeberg.org/Serroda/fluid-tile/wiki/Animations&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#ff5500;&quot;&gt;link&lt;/span&gt;&lt;/a&gt; about animations&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -390,7 +361,7 @@ leave it at the default setting of 0 to avoid errors</string>
        <item>
         <widget class="QLabel" name="label_10">
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Recommended for touch screens&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; &quot;&gt;Recommended for touch screens&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>

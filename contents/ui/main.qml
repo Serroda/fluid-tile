@@ -59,7 +59,6 @@ Window {
             desktopRemoveDelay: KWin.readConfig("DesktopRemoveDelay", 300),
             modalsIgnore: KWin.readConfig("ModalsIgnore", true),
             layoutDefault: KWin.readConfig("LayoutDefault", 2),
-            UIEnable: KWin.readConfig("UIEnable", true),
             UIWindowCursor:  KWin.readConfig("UIWindowCursor", false),
         };
 

@@ -50,9 +50,6 @@
         <entry name="ModalsIgnore" type="Bool">
             <default>true</default>
         </entry>
-        <entry name="UIEnable" type="Bool">
-            <default>true</default>
-        </entry>
         <entry name="UIWindowCursor" type="Bool">
             <default>false</default>
         </entry>
