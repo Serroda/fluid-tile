@@ -11,6 +11,7 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
 
   const state = {
     avoidTileChangedCounter: 0,
+    maximized: false,
     desktopsExtend: [],
   };
 
@@ -69,7 +70,7 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
       1,
     );
 
-    console.log("windowRemoved");
+    console.log("windowRemoved", result.counter);
     state.avoidTileChangedCounter = result.counter;
 
     if (result.continueProcess === false) {
@@ -136,31 +137,41 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
       return;
     }
 
-    if (tileNew.windows.length > 1 && config.windowsExchange === true) {
-      const windowsOther = tileNew.windows.filter((w) => w !== windowMain);
+    const windowsOther = apiWindows
+      .getWindows(windowMain, workspace.currentDesktop, workspace.activeScreen)
+      .filter(
+        (w) =>
+          w.minimized === false &&
+          (w.tile === tileNew || w._shadows.tile === tileNew),
+      );
 
+    if (windowsOther.length > 0 && config.windowsExchange === true) {
       state.avoidTileChangedCounter = windowsOther.length;
 
       apiTiles.exchangeTiles(
         windowsOther,
         windowMain._shadows.tile,
-        windowMain._shadows.desktops[0],
+        windowMain._shadows.desktop,
         windowMain._shadows.screen,
       );
     }
 
     if (
-      workspace.currentDesktop !== windowMain._shadows.desktops[0] &&
-      state.desktopsExtend.includes(windowMain._shadows.desktops[0]) === false
+      workspace.currentDesktop !== windowMain._shadows.desktop &&
+      state.desktopsExtend.includes(windowMain._shadows.desktop) === false
     ) {
-      state.desktopsExtend.push(windowMain._shadows.desktops[0]);
+      state.desktopsExtend.push(windowMain._shadows.desktop);
     }
 
     //Start delay only when you have to exchange in another screen
     if (windowMain._shadows.screen !== workspace.activeScreen) {
       timerExtendDesktop.start();
-    } else {
+    } else if (
+      apiTiles.getOrderedTiles().length > windowsOther.length + 1 ||
+      state.maximized === true
+    ) {
       apiWindows.extendWindowsCurrentDesktop(true);
+      state.maximized = false;
     }
 
     apiWindows.updateShadows(windowMain);
@@ -182,6 +193,8 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
     if (windowMain.tile !== windowMain._shadows.tile) {
       windowMain._shadows.tile?.manage(windowMain);
     }
+
+    state.maximized = true;
   }
 
   //When a window is minimized, extend windows
@@ -234,16 +247,10 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
     apiWindows.extendWindowsCurrentDesktop(true);
   }
 
-  function onTimerMaximizeFinished() {
-    state.maximizeInfo.tile.manage(state.maximizeInfo.window);
-    state.maximizeInfo = {};
-  }
-
   // Focus window when a current desktop is changed
   function onCurrentDesktopChanged() {
     apiUI.resetLayout();
     apiWindows.focusWindow();
-
     if (state.desktopsExtend.includes(workspace.currentDesktop) === true) {
       apiWindows.extendWindowsCurrentDesktop(true);
       state.desktopsExtend.splice(
@@ -261,6 +268,5 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
     onCurrentDesktopChanged,
     setWindowsSignals,
     setSignalsToWindow,
-    onTimerMaximizeFinished,
   };
 }

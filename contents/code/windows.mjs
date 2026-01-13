@@ -46,21 +46,13 @@ export function useWindows(workspace, config) {
         const windowsOther = getWindows(windowMain, itemDesktop, itemScreen);
         const tilesOrdered = apiTiles.getOrderedTiles(itemDesktop, itemScreen);
 
-        // Avoid extend on tileChanged when a window is opening or closing
-        let counter = 1;
-
         if (tilesOrdered.length === 0) {
           return { continueProcess: true, counter: 0 };
         }
 
-        if (
-          mode === 0 &&
-          windowsOther.length === 1 &&
-          config.maximizeExtend === true
-        ) {
-          //When a window is maximized and other window added
-          counter = 2;
-        }
+        // Error when arrange windows
+        // Avoid extend on tileChanged when a window is opening or closing
+        let counter = 0;
 
         if (mode === 0 && windowsOther.length + 1 <= tilesOrdered.length) {
           //Set tile if the custom mosaic has space
@@ -133,6 +125,16 @@ export function useWindows(workspace, config) {
   //Extend window if empty space is available
   function extendWindows(windows, panelsSize) {
     console.log("extendwindow");
+
+    if (
+      config.maximizeExtend === true &&
+      windows.length === 1 &&
+      windows[0].minimized === false
+    ) {
+      console.log("window maximized");
+      windows[0].setMaximize(true, true);
+      return;
+    }
 
     if (
       config.maximizeExtend === true &&
@@ -395,11 +397,11 @@ export function useWindows(workspace, config) {
   }
 
   //Save references window's tile, desktop, screen
-  function updateShadows(window, tile, desktops, screen) {
+  function updateShadows(window, tile, desktop, screen) {
     console.log("update shadows main", window);
     window._shadows = {
-      tile: tile ?? window.tile,
-      desktops: desktops ?? window.desktops,
+      tile: tile ?? window.tile ?? window._shadows.tile,
+      desktop: desktop ?? window.desktops[0],
       screen: screen ?? window.output,
     };
   }

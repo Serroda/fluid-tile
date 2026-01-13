@@ -135,7 +135,10 @@ export function useTiles(workspace, config) {
   }
 
   //Get tiles from the screen and virtual desktop
-  function getOrderedTiles(desktop, screen) {
+  function getOrderedTiles(
+    desktop = workspace.currentDesktop,
+    screen = workspace.activeScreen,
+  ) {
     const tileRoot = workspace.rootTile(screen, desktop);
 
     if (tileRoot === null) {
@@ -211,6 +214,7 @@ export function useTiles(workspace, config) {
 
   //Exchange windows tiles
   function exchangeTiles(windowsExchange, tile, desktop, screen) {
+    console.log("exchange");
     for (const windowItem of windowsExchange) {
       windowItem.setMaximize(false, false);
 
@@ -225,7 +229,7 @@ export function useTiles(workspace, config) {
       tile.manage(windowItem);
 
       windowItem._shadows.tile = tile;
-      windowItem._shadows.desktops = windowItem.desktops;
+      windowItem._shadows.desktop = windowItem.desktops[0];
       windowItem._shadows.screen = windowItem.output;
     }
   }
