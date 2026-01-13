@@ -38,7 +38,6 @@ export function useUI(workspace, config, rootUI) {
       const tile = rootUI.layoutOrdered[rootUI.tileActived];
       if (tile !== undefined) {
         tile.manage(windowMoved);
-        windowMoved._shadows.tile = tile;
       }
       rootUI.tileActived = -1;
       return true;

@@ -2,10 +2,7 @@
 <kcfg xmlns="http://www.kde.org/standards/kcfg/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
     <kcfgfile name=""/>
     <group name="">
-        <entry name="MaximizeOpen" type="Bool">
-            <default>true</default>
-        </entry>
-        <entry name="MaximizeClose" type="Bool">
+        <entry name="MaximizeExtend" type="Bool">
             <default>true</default>
         </entry>
         <entry name="WindowsOrderOpen" type="Bool">
@@ -14,22 +11,7 @@
         <entry name="WindowsOrderClose" type="Bool">
             <default>false</default>
         </entry>
-        <entry name="WindowsOrderMove" type="Bool">
-            <default>true</default>
-        </entry>
-        <entry name="WindowsExtendOpen" type="Bool">
-            <default>true</default>
-        </entry>
-        <entry name="WindowsExtendClose" type="Bool">
-            <default>true</default>
-        </entry>
-        <entry name="WindowsExtendMove" type="Bool">
-            <default>true</default>
-        </entry>
-        <entry name="WindowsExtendMinimize" type="Bool">
-            <default>true</default>
-        </entry>
-        <entry name="WindowsExtendResize" type="Bool">
+        <entry name="WindowsExchange" type="Bool">
             <default>true</default>
         </entry>
         <entry name="WindowsExtendTileChangedDelay" type="Int">

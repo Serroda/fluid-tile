@@ -44,7 +44,7 @@
       <locale language="English" country="Eswatini"/>
      </property>
      <property name="text">
-      <string>When a window has been ...</string>
+      <string>Window triggers</string>
      </property>
     </widget>
    </item>
@@ -59,7 +59,7 @@
      <property name="minimumSize">
       <size>
        <width>500</width>
-       <height>260</height>
+       <height>210</height>
       </size>
      </property>
      <property name="layoutDirection">
@@ -85,16 +85,6 @@
        <string>Opened</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QCheckBox" name="kcfg_MaximizeOpen">
-         <property name="locale">
-          <locale language="English" country="Eswatini"/>
-         </property>
-         <property name="text">
-          <string>Maximize if you have only one window</string>
-         </property>
-        </widget>
-       </item>
        <item>
         <widget class="QCheckBox" name="kcfg_DesktopAdd">
          <property name="locale">
@@ -128,28 +118,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="kcfg_WindowsExtendOpen">
-         <property name="toolTip">
-          <string>Do not leave empty tiles by extending the window</string>
-         </property>
-         <property name="statusTip">
-          <string/>
-         </property>
-         <property name="locale">
-          <locale language="English" country="Eswatini"/>
-         </property>
-         <property name="text">
-          <string>Extend windows</string>
-         </property>
-         <property name="autoRepeat">
-          <bool>false</bool>
-         </property>
-         <property name="autoExclusive">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QCheckBox" name="kcfg_WindowsOrderOpen">
          <property name="text">
           <string>Rearrange windows</string>
@@ -163,38 +131,6 @@
        <string>Closed</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_9">
-       <item>
-        <widget class="QCheckBox" name="kcfg_WindowsExtendClose">
-         <property name="toolTip">
-          <string>Do not leave empty tiles by extending the window</string>
-         </property>
-         <property name="statusTip">
-          <string/>
-         </property>
-         <property name="locale">
-          <locale language="English" country="Eswatini"/>
-         </property>
-         <property name="text">
-          <string>Extend windows</string>
-         </property>
-         <property name="autoRepeat">
-          <bool>false</bool>
-         </property>
-         <property name="autoExclusive">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="kcfg_MaximizeClose">
-         <property name="locale">
-          <locale language="English" country="Eswatini"/>
-         </property>
-         <property name="text">
-          <string>Maximize the last window</string>
-         </property>
-        </widget>
-       </item>
        <item>
         <widget class="QCheckBox" name="kcfg_DesktopRemove">
          <property name="locale">
@@ -281,7 +217,7 @@ This timer avoid crash wayland, beacuse the process try open the window
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
-        <widget class="QCheckBox" name="kcfg_WindowsOrderMove">
+        <widget class="QCheckBox" name="kcfg_WindowsExchange">
          <property name="toolTip">
           <string/>
          </property>
@@ -293,28 +229,6 @@ This timer avoid crash wayland, beacuse the process try open the window
          </property>
          <property name="text">
           <string>If the target tile has windows, move to the origin tile</string>
-         </property>
-         <property name="autoRepeat">
-          <bool>false</bool>
-         </property>
-         <property name="autoExclusive">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="kcfg_WindowsExtendMove">
-         <property name="toolTip">
-          <string>Do not leave empty tiles by extending the window</string>
-         </property>
-         <property name="statusTip">
-          <string/>
-         </property>
-         <property name="locale">
-          <locale language="English" country="Eswatini"/>
-         </property>
-         <property name="text">
-          <string>Extend windows</string>
          </property>
          <property name="autoRepeat">
           <bool>false</bool>
@@ -379,59 +293,15 @@ The position it takes is the center of the top edge of the window</string>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="minimized">
+     <widget class="QWidget" name="all_cases">
       <attribute name="title">
-       <string>Minimized</string>
+       <string>All cases</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_7">
        <item>
-        <widget class="QCheckBox" name="kcfg_WindowsExtendMinimize">
-         <property name="toolTip">
-          <string>Do not leave empty tiles by extending the window</string>
-         </property>
-         <property name="statusTip">
-          <string/>
-         </property>
-         <property name="locale">
-          <locale language="English" country="Eswatini"/>
-         </property>
+        <widget class="QCheckBox" name="kcfg_MaximizeExtend">
          <property name="text">
-          <string>Extend windows</string>
-         </property>
-         <property name="autoRepeat">
-          <bool>false</bool>
-         </property>
-         <property name="autoExclusive">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="resized">
-      <attribute name="title">
-       <string>Resized</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_8">
-       <item>
-        <widget class="QCheckBox" name="kcfg_WindowsExtendResize">
-         <property name="toolTip">
-          <string>Do not leave empty tiles by extending the window</string>
-         </property>
-         <property name="statusTip">
-          <string/>
-         </property>
-         <property name="locale">
-          <locale language="English" country="Eswatini"/>
-         </property>
-         <property name="text">
-          <string>Extend windows</string>
-         </property>
-         <property name="autoRepeat">
-          <bool>false</bool>
-         </property>
-         <property name="autoExclusive">
-          <bool>false</bool>
+          <string>Maximize the last window on the screen</string>
          </property>
         </widget>
        </item>

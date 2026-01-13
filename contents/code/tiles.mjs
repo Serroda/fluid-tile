@@ -223,6 +223,7 @@ export function useTiles(workspace, config) {
       }
 
       tile.manage(windowItem);
+
       windowItem._shadows.tile = tile;
       windowItem._shadows.desktops = windowItem.desktops;
       windowItem._shadows.screen = windowItem.output;

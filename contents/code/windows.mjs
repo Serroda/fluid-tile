@@ -28,7 +28,7 @@ export function useWindows(workspace, config) {
   // Set window tiles
   // mode: 0 => addWindow
   // mode: 1 => removeWindow
-  function setWindowsTiles(windowMain, desktops, screens, maximize, mode) {
+  function setWindowsTiles(windowMain, desktops, screens, mode) {
     const indexStartDesktop = desktops.findIndex(
       (d) => d === workspace.currentDesktop,
     );
@@ -46,82 +46,80 @@ export function useWindows(workspace, config) {
         const windowsOther = getWindows(windowMain, itemDesktop, itemScreen);
         const tilesOrdered = apiTiles.getOrderedTiles(itemDesktop, itemScreen);
 
+        // Avoid extend on tileChanged when a window is opening or closing
+        let counter = 1;
+
         if (tilesOrdered.length === 0) {
-          return true;
+          return { continueProcess: true, counter: 0 };
         }
 
-        if (mode === 0) {
+        if (
+          mode === 0 &&
+          windowsOther.length === 1 &&
+          config.maximizeExtend === true
+        ) {
+          //When a window is maximized and other window added
+          counter = 2;
+        }
+
+        if (mode === 0 && windowsOther.length + 1 <= tilesOrdered.length) {
           //Set tile if the custom mosaic has space
-          if (windowsOther.length + 1 <= tilesOrdered.length) {
-            workspace.currentDesktop = itemDesktop;
-            windowMain.desktops = [itemDesktop];
 
-            for (let x = 0; x < windowsOther.length; x++) {
-              windowsOther[x].desktops = [itemDesktop];
-              windowsOther[x].setMaximize(false, false);
+          workspace.currentDesktop = itemDesktop;
+          windowMain.desktops = [itemDesktop];
 
-              if (config.windowsOrderOpen === true) {
-                tilesOrdered[x + 1].manage(windowsOther[x]);
-              } else if (windowsOther[x].tile === null) {
-                tilesOrdered[x].manage(windowsOther[x]);
-              }
+          for (let x = 0; x < windowsOther.length; x++) {
+            windowsOther[x].desktops = [itemDesktop];
+            windowsOther[x].setMaximize(false, false);
 
-              updateShadows(windowsOther[x]);
-            }
-
-            //Set tile for main window
             if (config.windowsOrderOpen === true) {
-              tilesOrdered[0].manage(windowMain);
-            } else {
-              const tileEmpty = tilesOrdered.find(
-                (tile) => tile.windows.length === 0,
-              );
-
-              if (tileEmpty !== undefined) {
-                tileEmpty.manage(windowMain);
-              }
+              tilesOrdered[x + 1].manage(windowsOther[x]);
+              counter += 1;
+            } else if (windowsOther[x].tile === null) {
+              tilesOrdered[x].manage(windowsOther[x]);
+              counter += 1;
             }
 
-            updateShadows(windowMain);
-
-            if (maximize === true && windowsOther.length === 0) {
-              windowMain.setMaximize(true, true);
-            } else {
-              windowMain.setMaximize(false, false);
-
-              if (config.windowsExtendOpen === true) {
-                extendWindows(
-                  [windowMain, ...windowsOther],
-                  apiWorkarea.getPanelsSize(itemScreen, itemDesktop),
-                );
-              }
-            }
-
-            return false;
+            updateShadows(windowsOther[x]);
           }
+
+          //Set tile for main window
+          if (config.windowsOrderOpen === true) {
+            tilesOrdered[0].manage(windowMain);
+          } else {
+            const tileEmpty = tilesOrdered.find(
+              (tile) => tile.windows.length === 0,
+            );
+
+            if (tileEmpty !== undefined) {
+              tileEmpty.manage(windowMain);
+            }
+          }
+
+          updateShadows(windowMain);
+
+          extendWindows(
+            [windowMain, ...windowsOther],
+            apiWorkarea.getPanelsSize(itemScreen, itemDesktop),
+          );
+
+          return { continueProcess: false, counter };
         } else if (mode === 1 && windowsOther.length !== 0) {
-          if (
-            maximize === true &&
-            windowsOther.length === 1 &&
-            windowsOther[0].minimized === false
-          ) {
-            windowsOther[0].setMaximize(true, true);
-          } else if (config.windowsOrderClose === true) {
+          if (config.windowsOrderClose === true) {
             for (let x = 0; x < windowsOther.length; x++) {
               windowsOther[x].setMaximize(false, false);
               tilesOrdered[x].manage(windowsOther[x]);
               updateShadows(windowsOther[x]);
+              counter += 1;
             }
           }
 
-          if (config.windowsExtendClose === true && windowsOther.length > 1) {
-            extendWindows(
-              windowsOther,
-              apiWorkarea.getPanelsSize(itemScreen, itemDesktop),
-            );
-          }
+          extendWindows(
+            windowsOther,
+            apiWorkarea.getPanelsSize(itemScreen, itemDesktop),
+          );
 
-          return false;
+          return { continueProcess: false, counter };
         }
 
         indexScreen = (indexScreen + 1) % screens.length;
@@ -129,11 +127,23 @@ export function useWindows(workspace, config) {
       indexDesktop = (indexDesktop + 1) % desktops.length;
     } while (indexDesktop !== indexStartDesktop);
 
-    return true;
+    return { continueProcess: true, counter: 0 };
   }
 
   //Extend window if empty space is available
   function extendWindows(windows, panelsSize) {
+    console.log("extendwindow");
+
+    if (
+      config.maximizeExtend === true &&
+      windows.length === 1 &&
+      windows[0].minimized === false
+    ) {
+      console.log("window maximized");
+      windows[0].setMaximize(true, true);
+      return;
+    }
+
     resetWindowGeometry(windows, panelsSize);
 
     for (const window of windows) {
@@ -386,6 +396,7 @@ export function useWindows(workspace, config) {
 
   //Save references window's tile, desktop, screen
   function updateShadows(window, tile, desktops, screen) {
+    console.log("update shadows main", window);
     window._shadows = {
       tile: tile ?? window.tile,
       desktops: desktops ?? window.desktops,
