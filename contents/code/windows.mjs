@@ -7,12 +7,6 @@ export function useWindows(workspace, config) {
   const apiBlocklist = useBlocklist(config.appsBlocklist, config.modalsIgnore);
   const apiWorkarea = useWorkarea(workspace);
 
-  function disconnectTileChange(windows) {
-    for (const window of windows) {
-      window.tileChanged.disconnect(window._tileChangedFunction);
-    }
-  }
-
   // Get all windows from the virtual desktop except the given window
   function getWindows(windowMain, desktop, screen) {
     const windows = [];
@@ -56,12 +50,8 @@ export function useWindows(workspace, config) {
           return { continueProcess: true, windows: [], counter: 0 };
         }
 
-        const windowsChanged = [];
-
         if (mode === 0 && windowsOther.length + 1 <= tilesOrdered.length) {
           //Set tile if the custom mosaic has space
-
-          disconnectTileChange([windowMain, ...windowsOther]);
 
           workspace.currentDesktop = itemDesktop;
           windowMain.desktops = [itemDesktop];
@@ -69,26 +59,32 @@ export function useWindows(workspace, config) {
           for (let x = 0; x < windowsOther.length; x++) {
             windowsOther[x].desktops = [itemDesktop];
             windowsOther[x].setMaximize(false, false);
+            windowsOther[x]._avoidTileChangedTrigger = true;
 
             if (config.windowsOrderOpen === true) {
-              windowsChanged.push(tilesOrdered[x + 1].manage(windowsOther[x]));
+              tilesOrdered[x + 1].manage(windowsOther[x]);
             } else if (windowsOther[x].tile === null) {
-              windowsChanged.push(tilesOrdered[x].manage(windowsOther[x]));
+              tilesOrdered[x].manage(windowsOther[x]);
             }
 
             updateShadows(windowsOther[x]);
           }
 
+          windowMain._avoidTileChangedTrigger = true;
+          windowMain._avoidMaximizeTrigger =
+            windowsOther.length === 0 ||
+            (windowsOther.length === 1 && config.maximizeExtend === true);
+
           //Set tile for main window
           if (config.windowsOrderOpen === true) {
-            windowsChanged.push(tilesOrdered[0].manage(windowMain));
+            tilesOrdered[0].manage(windowMain);
           } else {
             const tileEmpty = tilesOrdered.find(
               (tile) => tile.windows.length === 0,
             );
 
             if (tileEmpty !== undefined) {
-              windowsChanged.push(tileEmpty.manage(windowMain));
+              tileEmpty.manage(windowMain);
             }
           }
 
@@ -99,36 +95,15 @@ export function useWindows(workspace, config) {
             apiWorkarea.getPanelsSize(itemScreen, itemDesktop),
           );
 
-          let offsetWindows = 0;
-
-          // Avoid extend on tileChanged when a window is opening or closing
-          // When a window is maximized, +1 window, because change `tile = null` to `tile =  tileNew`
-          // Set 0 if only 1 window
-
-          if (
-            config.windowsOrderOpen === false &&
-            config.maximizeExtend === true &&
-            windowsOther.length === 1
-          ) {
-            windowsChanged.push(true);
-          } else if (windowsOther.length === 0) {
-            offsetWindows = 1;
-          }
-
-          // TODO: Error when arrange windows
           return {
             continueProcess: false,
-            windows: [windowMain, ...windowsOther],
-            counter:
-              windowsChanged.filter((w) => w === true).length - offsetWindows,
           };
         } else if (mode === 1 && windowsOther.length !== 0) {
-          disconnectTileChange(windowsOther);
-
           if (config.windowsOrderClose === true) {
             for (let x = 0; x < windowsOther.length; x++) {
+              windowsOther[x]._avoidTileChangedTrigger = true;
               windowsOther[x].setMaximize(false, false);
-              windowsChanged.push(tilesOrdered[x].manage(windowsOther[x]));
+              tilesOrdered[x].manage(windowsOther[x]);
               updateShadows(windowsOther[x]);
             }
           }
@@ -140,8 +115,6 @@ export function useWindows(workspace, config) {
 
           return {
             continueProcess: false,
-            windows: windowsOther,
-            counter: windowsChanged.filter((w) => w === true).length,
           };
         }
 
@@ -150,7 +123,7 @@ export function useWindows(workspace, config) {
       indexDesktop = (indexDesktop + 1) % desktops.length;
     } while (indexDesktop !== indexStartDesktop);
 
-    return { continueProcess: true, windows: [], counter: 0 };
+    return { continueProcess: true };
   }
 
   //Extend window if empty space is available
@@ -160,9 +133,12 @@ export function useWindows(workspace, config) {
     if (
       config.maximizeExtend === true &&
       windows.length === 1 &&
-      windows[0].minimized === false
+      windows[0].minimized === false &&
+      windows[0]._avoidMaximizeExtend !== true
     ) {
       console.log("window maximized");
+      windows[0]._avoidMaximizeTrigger = true;
+      windows[0]._avoidMaximizeExtend = false;
       windows[0].setMaximize(true, true);
       return;
     }
@@ -170,6 +146,8 @@ export function useWindows(workspace, config) {
     resetWindowGeometry(windows, panelsSize);
 
     for (const window of windows) {
+      window._maximizedByExtend = undefined;
+
       if (
         window.tile === null ||
         window._shadows === undefined ||
@@ -236,6 +214,7 @@ export function useWindows(workspace, config) {
       for (const key in windowsConflict) {
         const item = windowsConflict[key];
 
+        console.log(key, item.length);
         if (item.length === 0) {
           continue;
         }
@@ -427,7 +406,7 @@ export function useWindows(workspace, config) {
       window._shadows?.tile,
     );
     window._shadows = {
-      tile: tile ?? window.tile ?? window._shadows.tile,
+      tile: tile ?? window.tile ?? window._shadows?.tile,
       desktop: desktop ?? window.desktops[0],
       screen: screen ?? window.output,
     };

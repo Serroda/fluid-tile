@@ -37,16 +37,6 @@ Window {
         }
     }
     
-    Timer {
-        id: timerReconnectTileChangedSignal
-        interval: 0
-        repeat: false
-        running: false
-        onTriggered: {
-            root.engine.onTimerReconnectTileChangedSignalFinished();
-        }
-    }
-    
     // Load user config
     function loadConfig() {
         config = {
@@ -83,12 +73,10 @@ Window {
         function onWindowAdded(client) {
             root.engine.setSignalsToWindow(client);
             root.engine.onWindowAdded(client);
-            timerReconnectTileChangedSignal.start();
         }
 
         function onWindowRemoved(client) {
             const deleteDesktop = root.engine.onWindowRemoved(client);
-            timerReconnectTileChangedSignal.start();
             if (deleteDesktop === false) {
                 return;
             }
@@ -105,6 +93,7 @@ Window {
     Component.onCompleted: {
         loadConfig();
         engine.setWindowsSignals();
+        engine.setTilesSignals();
     }
 
     //Tile layout

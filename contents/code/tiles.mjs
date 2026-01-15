@@ -134,6 +134,14 @@ export function useTiles(workspace, config) {
     item.ref.relativeGeometry.y = item.y;
   }
 
+  //Get root tile
+  function getRootTile(
+    desktop = workspace.currentDesktop,
+    screen = workspace.activeScreen,
+  ) {
+    return workspace.rootTile(screen, desktop);
+  }
+
   //Get tiles from the screen and virtual desktop
   function getOrderedTiles(
     desktop = workspace.currentDesktop,
@@ -226,11 +234,12 @@ export function useTiles(workspace, config) {
         windowItem.desktops = [desktop];
       }
 
-      tile.manage(windowItem);
-
+      windowItem._avoidTileChangedTrigger = true;
       windowItem._shadows.tile = tile;
       windowItem._shadows.desktop = windowItem.desktops[0];
       windowItem._shadows.screen = windowItem.output;
+
+      tile.manage(windowItem);
     }
   }
 
@@ -250,6 +259,7 @@ export function useTiles(workspace, config) {
   return {
     getTilesFromActualDesktop,
     getOrderedTiles,
+    getRootTile,
     getDefaultLayouts,
     exchangeTiles,
     setLayout,

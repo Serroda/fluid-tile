@@ -37,6 +37,7 @@ export function useUI(workspace, config, rootUI) {
       rootUI.visible = false;
       const tile = rootUI.layoutOrdered[rootUI.tileActived];
       if (tile !== undefined) {
+        windowMoved._avoidTileChangedTrigger = false;
         tile.manage(windowMoved);
       }
       rootUI.tileActived = -1;
@@ -44,6 +45,7 @@ export function useUI(workspace, config, rootUI) {
     }
 
     windowMoved._shadows?.tile?.manage(windowMoved);
+    windowMoved._avoidTileChangedTrigger = true;
     return false;
   }
 
