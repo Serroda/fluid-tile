@@ -19,14 +19,9 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
       return;
     }
 
-    const result = apiWindows.setWindowsTiles(
-      windowNew,
-      workspace.desktops,
-      workspace.screens,
-      0,
-    );
+    const continueProcess = apiWindows.setWindowsTilesAdded(windowNew);
 
-    if (config.desktopAdd === true && result.continueProcess === true) {
+    if (config.desktopAdd === true && continueProcess === true) {
       workspace.createDesktop(workspace.desktops.length, "");
       workspace.currentDesktop =
         workspace.desktops[workspace.desktops.length - 1];
@@ -59,19 +54,14 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
       return false;
     }
 
-    const result = apiWindows.setWindowsTiles(
-      windowClosed,
-      windowClosed.desktops,
-      [windowClosed.output],
-      1,
-    );
+    const continueProcess = apiWindows.setWindowsTilesRemoved(windowClosed);
 
-    if (result.continueProcess === false) {
+    if (continueProcess === false) {
       apiWindows.focusWindow();
     }
 
     return (
-      result.continueProcess === true &&
+      continueProcess === true &&
       config.desktopRemove === true &&
       workspace.desktops.length > 1 &&
       workspace.desktops.length > config.desktopRemoveMin
@@ -121,7 +111,7 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
     );
 
     if (
-      rootUI.tileActived !== -1 ||
+      rootUI.visible === true ||
       windowMain._avoidTileChangedTrigger === true ||
       windowMain._shadows === undefined
     ) {
@@ -132,6 +122,7 @@ export function useTriggers(workspace, config, rootUI, timerExtendDesktop) {
 
       console.log(
         "avoid",
+        rootUI.tileActived,
         windowMain._avoidTileChangedTrigger,
         windowMain._shadows,
       );

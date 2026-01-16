@@ -1,6 +1,9 @@
 export function useWorkarea(workspace) {
   //Get panel sizes in the workspace
-  function getPanelsSize(screen, desktop) {
+  function getPanelsSize(
+    screen = workspace.activeScreen,
+    desktop = workspace.currentDesktop,
+  ) {
     const workArea = workspace.clientArea(
       workspace.MaximizeArea,
       screen,

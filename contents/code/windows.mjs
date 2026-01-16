@@ -25,105 +25,116 @@ export function useWindows(workspace, config) {
     return windows;
   }
 
-  // Set window tiles
-  // mode: 0 => addWindow
-  // mode: 1 => removeWindow
-  function setWindowsTiles(windowMain, desktops, screens, mode) {
-    const indexStartDesktop = desktops.findIndex(
+  // Set window tiles on add window
+  function setWindowsTilesAdded(windowMain) {
+    const indexStartDesktop = workspace.desktops.findIndex(
       (d) => d === workspace.currentDesktop,
     );
-    const indexStartScreen = screens.findIndex(
+    const indexStartScreen = workspace.screens.findIndex(
       (s) => s === workspace.activeScreen,
     );
+
+    if (indexStartDesktop === -1 || indexStartScreen === -1) {
+      return false;
+    }
 
     let indexDesktop = indexStartDesktop;
     let indexScreen = indexStartScreen;
 
     do {
-      const itemDesktop = desktops[indexDesktop];
+      const itemDesktop = workspace.desktops[indexDesktop];
       do {
-        const itemScreen = screens[indexScreen];
+        const itemScreen = workspace.screens[indexScreen];
         const windowsOther = getWindows(windowMain, itemDesktop, itemScreen);
         const tilesOrdered = apiTiles.getOrderedTiles(itemDesktop, itemScreen);
 
-        if (tilesOrdered.length === 0) {
-          return { continueProcess: true, windows: [], counter: 0 };
+        if (
+          tilesOrdered.length === 0 ||
+          windowsOther.length + 1 > tilesOrdered.length
+        ) {
+          indexScreen = (indexScreen + 1) % screens.length;
+          continue;
         }
 
-        if (mode === 0 && windowsOther.length + 1 <= tilesOrdered.length) {
-          //Set tile if the custom mosaic has space
+        workspace.currentDesktop = itemDesktop;
+        windowMain.desktops = [itemDesktop];
 
-          workspace.currentDesktop = itemDesktop;
-          windowMain.desktops = [itemDesktop];
+        for (let x = 0; x < windowsOther.length; x++) {
+          windowsOther[x].desktops = [itemDesktop];
+          windowsOther[x]._avoidMaximizeTrigger = true;
+          windowsOther[x]._avoidTileChangedTrigger = true;
+          windowsOther[x].setMaximize(false, false);
 
-          for (let x = 0; x < windowsOther.length; x++) {
-            windowsOther[x].desktops = [itemDesktop];
-            windowsOther[x].setMaximize(false, false);
-            windowsOther[x]._avoidTileChangedTrigger = true;
-
-            if (config.windowsOrderOpen === true) {
-              tilesOrdered[x + 1].manage(windowsOther[x]);
-            } else if (windowsOther[x].tile === null) {
-              tilesOrdered[x].manage(windowsOther[x]);
-            }
-
-            updateShadows(windowsOther[x]);
-          }
-
-          windowMain._avoidTileChangedTrigger = true;
-          windowMain._avoidMaximizeTrigger =
-            windowsOther.length === 0 ||
-            (windowsOther.length === 1 && config.maximizeExtend === true);
-
-          //Set tile for main window
           if (config.windowsOrderOpen === true) {
-            tilesOrdered[0].manage(windowMain);
-          } else {
-            const tileEmpty = tilesOrdered.find(
-              (tile) => tile.windows.length === 0,
-            );
-
-            if (tileEmpty !== undefined) {
-              tileEmpty.manage(windowMain);
-            }
+            tilesOrdered[x + 1].manage(windowsOther[x]);
+          } else if (windowsOther[x].tile === null) {
+            tilesOrdered[x].manage(windowsOther[x]);
           }
 
-          updateShadows(windowMain);
-
-          extendWindows(
-            [windowMain, ...windowsOther],
-            apiWorkarea.getPanelsSize(itemScreen, itemDesktop),
-          );
-
-          return {
-            continueProcess: false,
-          };
-        } else if (mode === 1 && windowsOther.length !== 0) {
-          if (config.windowsOrderClose === true) {
-            for (let x = 0; x < windowsOther.length; x++) {
-              windowsOther[x]._avoidTileChangedTrigger = true;
-              windowsOther[x].setMaximize(false, false);
-              tilesOrdered[x].manage(windowsOther[x]);
-              updateShadows(windowsOther[x]);
-            }
-          }
-
-          extendWindows(
-            windowsOther,
-            apiWorkarea.getPanelsSize(itemScreen, itemDesktop),
-          );
-
-          return {
-            continueProcess: false,
-          };
+          updateShadows(windowsOther[x]);
         }
 
-        indexScreen = (indexScreen + 1) % screens.length;
+        windowMain._avoidTileChangedTrigger = true;
+        windowMain._avoidMaximizeTrigger = windowsOther.length === 0;
+
+        if (config.windowsOrderOpen === true) {
+          tilesOrdered[0].manage(windowMain);
+        } else {
+          const tileEmpty = tilesOrdered.find(
+            (tile) => tile.windows.length === 0,
+          );
+
+          tileEmpty?.manage(windowMain);
+        }
+
+        updateShadows(windowMain);
+
+        console.log("extend set tile");
+        extendWindows(
+          [windowMain, ...windowsOther],
+          apiWorkarea.getPanelsSize(itemScreen, itemDesktop),
+        );
+
+        return false;
       } while (indexScreen !== indexStartScreen);
       indexDesktop = (indexDesktop + 1) % desktops.length;
     } while (indexDesktop !== indexStartDesktop);
 
-    return { continueProcess: true };
+    return true;
+  }
+
+  // Set window tiles on remove window
+  function setWindowsTilesRemoved(windowMain) {
+    const windowsOther = getWindows(
+      windowMain,
+      workspace.currentDesktop,
+      workspace.activeScreen,
+    );
+
+    const tilesOrdered = apiTiles.getOrderedTiles(
+      workspace.currentDesktop,
+      workspace.activeScreen,
+    );
+
+    if (tilesOrdered.length === 0 || windowsOther.length === 0) {
+      return true;
+    }
+
+    for (let x = 0; x < windowsOther.length; x++) {
+      windowsOther[x]._avoidMaximizeExtend = false;
+
+      if (config.windowsOrderClose === true) {
+        windowsOther[x]._avoidTileChangedTrigger = true;
+        windowsOther[x]._avoidMaximizeTrigger = true;
+        windowsOther[x].setMaximize(false, false);
+        tilesOrdered[x].manage(windowsOther[x]);
+        updateShadows(windowsOther[x]);
+      }
+    }
+
+    extendWindows(windowsOther, apiWorkarea.getPanelsSize());
+
+    return false;
   }
 
   //Extend window if empty space is available
@@ -223,11 +234,11 @@ export function useWindows(workspace, config) {
           (acc, woNew) => {
             const distance = Math.hypot(
               windowGeometry.left +
-                windowGeometry.width / 2 -
-                (woNew.left + woNew.width / 2),
+              windowGeometry.width / 2 -
+              (woNew.left + woNew.width / 2),
               windowGeometry.top +
-                windowGeometry.height / 2 -
-                (woNew.top + woNew.height / 2),
+              windowGeometry.height / 2 -
+              (woNew.top + woNew.height / 2),
             );
 
             return acc.distance === -1 || distance < acc.distance
@@ -389,10 +400,7 @@ export function useWindows(workspace, config) {
         continue;
       }
 
-      extendWindows(
-        windows,
-        apiWorkarea.getPanelsSize(screen, workspace.currentDesktop),
-      );
+      extendWindows(windows, apiWorkarea.getPanelsSize(screen));
     }
   }
 
@@ -413,7 +421,8 @@ export function useWindows(workspace, config) {
   }
 
   return {
-    setWindowsTiles,
+    setWindowsTilesAdded,
+    setWindowsTilesRemoved,
     getWindows,
     extendWindows,
     extendWindowsCurrentDesktop,
