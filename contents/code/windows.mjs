@@ -1,22 +1,26 @@
-import { useBlocklist } from "./blocklist.mjs";
-import { useWorkarea } from "./workarea.mjs";
-import { useTiles } from "./tiles.mjs";
-
-export function useWindows(workspace, config) {
-  const apiTiles = useTiles(workspace, config);
-  const apiBlocklist = useBlocklist(config.appsBlocklist, config.modalsIgnore);
-  const apiWorkarea = useWorkarea(workspace);
+export class Windows {
+  constructor(workspace, config, { blocklist, tiles, userspace }) {
+    this.workspace = workspace;
+    this.config = config;
+    this.blocklist = blocklist;
+    this.tiles = tiles;
+    this.userspace = userspace;
+  }
 
   // Get all windows from the virtual desktop except the given window
-  function getWindows(windowMain, desktop, screen) {
+  getWindows(
+    windowIgnore,
+    desktop = this.workspace.currentDesktop,
+    screen = this.workspace.activeScreen,
+  ) {
     const windows = [];
 
-    for (const windowItem of workspace.stackingOrder) {
+    for (const windowItem of this.workspace.stackingOrder) {
       if (
-        windowItem !== windowMain &&
+        windowItem !== windowIgnore &&
         windowItem.output === screen &&
         windowItem.desktops.includes(desktop) === true &&
-        apiBlocklist.checkBlocklist(windowItem) === false
+        this.blocklist.check(windowItem) === false
       ) {
         windows.push(windowItem);
       }
@@ -26,12 +30,12 @@ export function useWindows(workspace, config) {
   }
 
   // Set window tiles on add window
-  function setWindowsTilesAdded(windowMain) {
-    const indexStartDesktop = workspace.desktops.findIndex(
-      (d) => d === workspace.currentDesktop,
+  setWindowsTilesAdded(windowMain) {
+    const indexStartDesktop = this.workspace.desktops.findIndex(
+      (d) => d === this.workspace.currentDesktop,
     );
-    const indexStartScreen = workspace.screens.findIndex(
-      (s) => s === workspace.activeScreen,
+    const indexStartScreen = this.workspace.screens.findIndex(
+      (s) => s === this.workspace.activeScreen,
     );
 
     if (indexStartDesktop === -1 || indexStartScreen === -1) {
@@ -42,11 +46,14 @@ export function useWindows(workspace, config) {
     let indexScreen = indexStartScreen;
 
     do {
-      const itemDesktop = workspace.desktops[indexDesktop];
+      const itemDesktop = this.workspace.desktops[indexDesktop];
       do {
-        const itemScreen = workspace.screens[indexScreen];
+        const itemScreen = this.workspace.screens[indexScreen];
         const windowsOther = getWindows(windowMain, itemDesktop, itemScreen);
-        const tilesOrdered = apiTiles.getOrderedTiles(itemDesktop, itemScreen);
+        const tilesOrdered = this.tiles.getOrderedTiles(
+          itemDesktop,
+          itemScreen,
+        );
 
         if (
           tilesOrdered.length === 0 ||
@@ -56,7 +63,7 @@ export function useWindows(workspace, config) {
           continue;
         }
 
-        workspace.currentDesktop = itemDesktop;
+        this.workspace.currentDesktop = itemDesktop;
         windowMain.desktops = [itemDesktop];
 
         for (let x = 0; x < windowsOther.length; x++) {
@@ -65,7 +72,7 @@ export function useWindows(workspace, config) {
           windowsOther[x]._avoidTileChangedTrigger = true;
           windowsOther[x].setMaximize(false, false);
 
-          if (config.windowsOrderOpen === true) {
+          if (this.config.windowsOrderOpen === true) {
             tilesOrdered[x + 1].manage(windowsOther[x]);
           } else if (windowsOther[x].tile === null) {
             tilesOrdered[x].manage(windowsOther[x]);
@@ -77,7 +84,7 @@ export function useWindows(workspace, config) {
         windowMain._avoidTileChangedTrigger = true;
         windowMain._avoidMaximizeTrigger = windowsOther.length === 0;
 
-        if (config.windowsOrderOpen === true) {
+        if (this.config.windowsOrderOpen === true) {
           tilesOrdered[0].manage(windowMain);
         } else {
           const tileEmpty = tilesOrdered.find(
@@ -92,7 +99,7 @@ export function useWindows(workspace, config) {
         console.log("extend set tile");
         extendWindows(
           [windowMain, ...windowsOther],
-          apiWorkarea.getPanelsSize(itemScreen, itemDesktop),
+          this.userspace.getPanelsSize(itemDesktop, itemScreen),
         );
 
         return false;
@@ -104,17 +111,10 @@ export function useWindows(workspace, config) {
   }
 
   // Set window tiles on remove window
-  function setWindowsTilesRemoved(windowMain) {
-    const windowsOther = getWindows(
-      windowMain,
-      workspace.currentDesktop,
-      workspace.activeScreen,
-    );
+  setWindowsTilesRemoved(windowMain) {
+    const windowsOther = getWindows(windowMain);
 
-    const tilesOrdered = apiTiles.getOrderedTiles(
-      workspace.currentDesktop,
-      workspace.activeScreen,
-    );
+    const tilesOrdered = this.tiles.getTilesFromActualDesktop();
 
     if (tilesOrdered.length === 0 || windowsOther.length === 0) {
       return true;
@@ -123,7 +123,7 @@ export function useWindows(workspace, config) {
     for (let x = 0; x < windowsOther.length; x++) {
       windowsOther[x]._avoidMaximizeExtend = false;
 
-      if (config.windowsOrderClose === true) {
+      if (this.config.windowsOrderClose === true) {
         windowsOther[x]._avoidTileChangedTrigger = true;
         windowsOther[x]._avoidMaximizeTrigger = true;
         windowsOther[x].setMaximize(false, false);
@@ -132,17 +132,17 @@ export function useWindows(workspace, config) {
       }
     }
 
-    extendWindows(windowsOther, apiWorkarea.getPanelsSize());
+    extendWindows(windowsOther, this.userspace.getPanelsSize());
 
     return false;
   }
 
   //Extend window if empty space is available
-  function extendWindows(windows, panelsSize) {
+  extendWindows(windows, panelsSize) {
     console.log("extendwindow");
 
     if (
-      config.maximizeExtend === true &&
+      this.config.maximizeExtend === true &&
       windows.length === 1 &&
       windows[0].minimized === false &&
       windows[0]._avoidMaximizeExtend !== true
@@ -269,7 +269,7 @@ export function useWindows(workspace, config) {
   }
 
   //Set default tile size
-  function resetWindowGeometry(windows, panelsSize) {
+  resetWindowGeometry(windows, panelsSize) {
     for (const window of windows) {
       window._tileVirtual = undefined;
 
@@ -286,7 +286,7 @@ export function useWindows(workspace, config) {
   }
 
   //Get geometry from tiles
-  function getRealGeometry(window) {
+  getRealGeometry(window) {
     return (
       window._tileVirtual ??
       (window.tile !== null
@@ -296,7 +296,7 @@ export function useWindows(workspace, config) {
   }
 
   //Set window size and return `virtualTile`
-  function setGeometryWindow(window, geometry, panelsSize) {
+  setGeometryWindow(window, geometry, panelsSize) {
     const tileRef = window.tile !== null ? window.tile : window._shadows.tile;
     const tileRefGeometry = getRealGeometry(window);
 
@@ -350,13 +350,9 @@ export function useWindows(workspace, config) {
   }
 
   //Focus window in the workspace
-  function focusWindow(window) {
+  focusWindow(window) {
     if (window === undefined) {
-      const windows = getWindows(
-        undefined,
-        workspace.currentDesktop,
-        workspace.activeScreen,
-      );
+      const windows = getWindows();
 
       if (windows.length === 0) {
         return null;
@@ -366,17 +362,17 @@ export function useWindows(workspace, config) {
         return null;
       }
 
-      workspace.activeWindow = windows[0];
+      this.workspace.activeWindow = windows[0];
 
       return windows[0];
     } else {
-      workspace.activeWindow = window;
+      this.workspace.activeWindow = window;
       return window;
     }
   }
 
   //Check if the tile is in the same column
-  function checkSameColumn(windowGeometry, windowGeometryOther) {
+  checkSameColumn(windowGeometry, windowGeometryOther) {
     return (
       (windowGeometry.left >= windowGeometryOther.left &&
         windowGeometry.left < windowGeometryOther.right) ||
@@ -386,26 +382,26 @@ export function useWindows(workspace, config) {
   }
 
   //Extend all windows in the current desktop
-  function extendWindowsCurrentDesktop(screenAll = false) {
-    let screens = [workspace.activeScreen];
+  extendWindowsCurrentDesktop(screenAll = false) {
+    let screens = [this.workspace.activeScreen];
 
     if (screenAll === true) {
-      screens = workspace.screens;
+      screens = this.workspace.screens;
     }
 
     for (const screen of screens) {
-      const windows = getWindows(undefined, workspace.currentDesktop, screen);
+      const windows = getWindows(undefined, undefined, screen);
 
       if (windows.length === 0) {
         continue;
       }
 
-      extendWindows(windows, apiWorkarea.getPanelsSize(screen));
+      extendWindows(windows, this.userspace.getPanelsSize(undefined, screen));
     }
   }
 
   //Save references window's tile, desktop, screen
-  function updateShadows(window, tile, desktop, screen) {
+  updateShadows(window, tile, desktop, screen) {
     console.log(
       "update shadows main",
       window,
@@ -419,14 +415,4 @@ export function useWindows(workspace, config) {
       screen: screen ?? window.output,
     };
   }
-
-  return {
-    setWindowsTilesAdded,
-    setWindowsTilesRemoved,
-    getWindows,
-    extendWindows,
-    extendWindowsCurrentDesktop,
-    focusWindow,
-    updateShadows,
-  };
 }

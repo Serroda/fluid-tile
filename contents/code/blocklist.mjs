@@ -1,16 +1,32 @@
-export function useBlocklist(appsBlocklist, modalsIgnore) {
-  // Check if the app is in the blocklist
-  function checkBlocklist(windowItem) {
-    return (
-      windowItem.normalWindow === false ||
-      windowItem.resizeable === false ||
-      windowItem.maximizable === false ||
-      (modalsIgnore === true ? windowItem.transient === true : false) ||
-      appsBlocklist
-        .toLowerCase()
-        .includes(windowItem.resourceClass.toLowerCase()) === true
-    );
+export class Blocklist {
+  constructor(config) {
+    this.config = config;
+    this.appsBlockByShortcut = "";
   }
 
-  return { checkBlocklist };
+  //Add new blocked apps
+  addWindow(window) {
+    this.appsBlockByShortcut += window.resourceClass;
+  }
+
+  //Remove blocked apps
+  removeWindow(window) {
+    this.appsBlockByShortcut.replace(window.resourceClass, "");
+  }
+
+  // Check if the app is in the blocklist or not valid
+  check(window) {
+    return (
+      window.normalWindow === false ||
+      window.resizeable === false ||
+      window.maximizable === false ||
+      (this.config.modalsIgnore === true ? window.transient === true : false) ||
+      this.config.appsBlocklist
+        .toLowerCase()
+        .includes(window.resourceClass.toLowerCase()) === true ||
+      this.appsBlockByShortcut
+        .toLowerCase()
+        .includes(window.resourceClass.toLowerCase()) === true
+    );
+  }
 }

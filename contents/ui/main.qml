@@ -13,7 +13,6 @@ Window {
 
     property var config: ({})
     property var engine: ({})
-    property var removeDesktopInfo: ({})
     property var layoutOrdered: []
     property int tileActived: -1
 
@@ -38,7 +37,7 @@ Window {
     }
     
     // Load user config
-    function loadConfig() {
+    function startEngine() {
         config = {
             appsBlocklist: KWin.readConfig("AppsBlocklist", "wl-paste,wl-copy,org.kde.kded6,qt-sudo,org.kde.polkit-kde-authentication-agent-1,org.kde.spectacle,kcm_kwinrules,org.freedesktop.impl.portal.desktop.kde,krunner,plasmashell,org.kde.plasmashell,kwin_wayland,ksmserver-logout-greeter"),
             tilesPriority: KWin.readConfig("TilesPriority", "Width,Height,Top,Left,Right,Bottom").split(","),
@@ -63,7 +62,8 @@ Window {
             console.log("LayoutCustom variable error: " + error);
         }
 
-        engine = Engine.useTriggers(Workspace, config, root, timerExtendDesktop);
+        engine = new Engine(Workspace, config, root, {timerExtendDesktop, timerRemoveDesktop});
+        console.log(engine)
     }
 
 
@@ -76,13 +76,7 @@ Window {
         }
 
         function onWindowRemoved(client) {
-            const deleteDesktop = root.engine.onWindowRemoved(client);
-            if (deleteDesktop === false) {
-                return;
-            }
-            root.removeDesktopInfo.desktopsId = client.desktops.map(d => d.id);
-            root.removeDesktopInfo.windowClosed = client;
-            timerRemoveDesktop.start();
+            root.engine.onWindowRemoved(client);
         }
 
         function onCurrentDesktopChanged() {
@@ -91,7 +85,7 @@ Window {
     }
 
     Component.onCompleted: {
-        loadConfig();
+        startEngine();
         engine.setWindowsSignals();
         engine.setTilesSignals();
     }

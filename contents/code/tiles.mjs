@@ -1,5 +1,11 @@
-export function useTiles(workspace, config) {
-  function getDefaultLayouts(index) {
+export class Tiles {
+  constructor(workspace, config) {
+    this.workspace = workspace;
+    this.config = config;
+  }
+
+  //Premade layouts
+  getDefaultLayouts(index) {
     return [
       [{ x: 0, y: 0 }],
       [
@@ -56,21 +62,21 @@ export function useTiles(workspace, config) {
     ][index];
   }
 
-  //Prepare for set tile layout
-  function setLayout(desktop, layout) {
-    for (const screen of workspace.screens) {
-      const tileRoot = workspace.rootTile(screen, desktop);
+  //Delete actual layout and set new layout
+  setLayout(desktop, layout) {
+    for (const screen of this.workspace.screens) {
+      const tileRoot = this.workspace.rootTile(screen, desktop);
       deleteTiles(tileRoot.tiles);
       const result = setTiles(tileRoot.tiles[0] ?? tileRoot, layout);
 
       if (result === false) {
-        console.log("Error on setLayout");
+        console.log("Error on set tiles layout, splitMode === null");
       }
     }
   }
 
   //Set tile layout
-  function setTiles(tileParent, layout) {
+  setTiles(tileParent, layout) {
     if (layout.length === 1) {
       return true;
     }
@@ -115,7 +121,7 @@ export function useTiles(workspace, config) {
   }
 
   // Set tile size and position
-  function setGeometryTile(item) {
+  setGeometryTile(item) {
     if (item.width !== undefined) {
       const delta =
         item.width * item.ref.parent.absoluteGeometry.width -
@@ -135,19 +141,19 @@ export function useTiles(workspace, config) {
   }
 
   //Get root tile
-  function getRootTile(
-    desktop = workspace.currentDesktop,
-    screen = workspace.activeScreen,
+  getRootTile(
+    desktop = this.workspace.currentDesktop,
+    screen = this.workspace.activeScreen,
   ) {
-    return workspace.rootTile(screen, desktop);
+    return this.workspace.rootTile(screen, desktop);
   }
 
   //Get tiles from the screen and virtual desktop
-  function getOrderedTiles(
-    desktop = workspace.currentDesktop,
-    screen = workspace.activeScreen,
+  getOrderedTiles(
+    desktop = this.workspace.currentDesktop,
+    screen = this.workspace.activeScreen,
   ) {
-    const tileRoot = workspace.rootTile(screen, desktop);
+    const tileRoot = this.workspace.rootTile(screen, desktop);
 
     if (tileRoot === null) {
       return [];
@@ -155,26 +161,23 @@ export function useTiles(workspace, config) {
 
     return orderTiles(
       tileRoot.tiles.length !== 0 ? tileRoot.tiles : [tileRoot],
-      config.tilesPriority,
     );
   }
 
   //Get tiles, ordered by tilesPriority
-  function orderTiles(tiles, tilesPriority) {
+  orderTiles(tiles) {
     let tilesOrdered = [];
 
     for (let tile of tiles) {
       if (tile.tiles.length !== 0) {
-        tilesOrdered = tilesOrdered.concat(
-          orderTiles(tile.tiles, tilesPriority),
-        );
+        tilesOrdered = tilesOrdered.concat(orderTiles(tile.tiles));
       } else {
         tilesOrdered.push(tile);
       }
     }
 
     return tilesOrdered.sort((a, b) => {
-      for (const priority of tilesPriority) {
+      for (const priority of this.config.tilesPriority) {
         let comparison = 0;
         switch (priority) {
           case "Width":
@@ -205,46 +208,47 @@ export function useTiles(workspace, config) {
   }
 
   //Delete reverse tile layout
-  function deleteTiles(tiles) {
+  deleteTiles(tiles) {
     for (let index = tiles.length; index > 0; index--) {
       tiles[index - 1].remove();
     }
   }
 
   //Get all tiles from the actual desktop with all screens
-  function getTilesFromActualDesktop() {
+  getTilesFromActualDesktop() {
     let tiles = [];
-    for (const screen of workspace.screens) {
-      tiles = tiles.concat(getOrderedTiles(workspace.currentDesktop, screen));
+    for (const screen of this.workspace.screens) {
+      tiles = tiles.concat(getOrderedTiles(undefined, screen));
     }
     return tiles;
   }
 
-  //Exchange windows tiles
-  function exchangeTiles(windowsExchange, tile, desktop, screen) {
+  //Exchange windows between tiles
+  exchangeTiles(windowsExchange, tile, desktop, screen) {
     console.log("exchange");
-    for (const windowItem of windowsExchange) {
-      windowItem.setMaximize(false, false);
 
-      if (screen !== workspace.activeScreen) {
-        workspace.sendClientToScreen(windowItem, screen);
+    for (const window of windowsExchange) {
+      window.setMaximize(false, false);
+
+      if (screen !== this.workspace.activeScreen) {
+        this.workspace.sendClientToScreen(window, screen);
       }
 
-      if (desktop !== workspace.currentDesktop) {
-        windowItem.desktops = [desktop];
+      if (desktop !== this.workspace.currentDesktop) {
+        window.desktops = [desktop];
       }
 
-      windowItem._avoidTileChangedTrigger = true;
-      windowItem._shadows.tile = tile;
-      windowItem._shadows.desktop = windowItem.desktops[0];
-      windowItem._shadows.screen = windowItem.output;
+      window._avoidTileChangedTrigger = true;
+      window._shadows.tile = tile;
+      window._shadows.desktop = window.desktops[0];
+      window._shadows.screen = window.output;
 
-      tile.manage(windowItem);
+      tile.manage(window);
     }
   }
 
   //Return the tile before maximize window
-  function getShadowTile(window) {
+  getShadowTile(window) {
     if (window.tile !== null && window.tile !== undefined) {
       return window.tile;
     }
@@ -255,14 +259,4 @@ export function useTiles(workspace, config) {
 
     return null;
   }
-
-  return {
-    getTilesFromActualDesktop,
-    getOrderedTiles,
-    getRootTile,
-    getDefaultLayouts,
-    exchangeTiles,
-    setLayout,
-    getShadowTile,
-  };
 }

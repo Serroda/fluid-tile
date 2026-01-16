@@ -1,24 +1,27 @@
-import { useTiles } from "./tiles.mjs";
-
-export function useUI(workspace, config, rootUI) {
-  const apiTile = useTiles(workspace, config);
+export class UI {
+  constructor(workspace, config, rootUI, { tiles }) {
+    this.workspace = workspace;
+    this.config = config;
+    this.rootUI = rootUI;
+    this.tiles = tiles;
+  }
 
   //Paint tiles
-  function resetLayout() {
-    rootUI.layoutOrdered = [];
-    rootUI.layoutOrdered = apiTile.getTilesFromActualDesktop();
+  resetLayout() {
+    this.rootUI.layoutOrdered = [];
+    this.rootUI.layoutOrdered = this.tiles.getTilesFromActualDesktop();
   }
 
   // When a window start move with the cursor, reset ui
-  function onUserMoveStart() {
+  onUserMoveStart() {
     resetLayout();
   }
 
   // When a window is moving with the cursor
-  function onUserMoveStepped(windowGeometry) {
-    rootUI.visible = true;
+  onUserMoveStepped(windowGeometry) {
+    this.rootUI.visible = true;
     const cursor = getPosition(windowGeometry);
-    rootUI.tileActived = rootUI.layoutOrdered.findIndex((tile) => {
+    this.rootUI.tileActived = this.rootUI.layoutOrdered.findIndex((tile) => {
       const limitX = tile.absoluteGeometry.x + tile.absoluteGeometry.width;
       const limitY = tile.absoluteGeometry.y + tile.absoluteGeometry.height;
       return (
@@ -31,40 +34,33 @@ export function useUI(workspace, config, rootUI) {
   }
 
   //When the user release the window
-  // and return if the UI was enable
-  function onUserMoveFinished(windowMoved) {
-    if (rootUI.visible === true) {
-      rootUI.visible = false;
-      const tile = rootUI.layoutOrdered[rootUI.tileActived];
+  //and return if the UI was enable
+  onUserMoveFinished(window) {
+    if (this.rootUI.visible === true) {
+      this.rootUI.visible = false;
+      const tile = this.rootUI.layoutOrdered[this.rootUI.tileActived];
       if (tile !== undefined) {
-        windowMoved._avoidTileChangedTrigger = false;
-        tile.manage(windowMoved);
+        window._avoidTileChangedTrigger = false;
+        tile.manage(window);
       }
-      rootUI.tileActived = -1;
+      this.rootUI.tileActived = -1;
       return true;
     }
 
-    windowMoved._shadows?.tile?.manage(windowMoved);
-    windowMoved._avoidTileChangedTrigger = true;
+    window._avoidTileChangedTrigger = true;
+    window._shadows?.tile?.manage(window);
     return false;
   }
 
   //Get cursor position or window position
-  function getPosition(windowGeometry) {
-    if (config.UIWindowCursor === true) {
+  getPosition(windowGeometry) {
+    if (this.config.UIWindowCursor === true) {
       return {
         x: (windowGeometry.x + windowGeometry.right) / 2,
         y: windowGeometry.y,
       };
     }
 
-    return { x: workspace.cursorPos.x, y: workspace.cursorPos.y };
+    return { x: this.workspace.cursorPos.x, y: this.workspace.cursorPos.y };
   }
-
-  return {
-    onUserMoveFinished,
-    onUserMoveStepped,
-    onUserMoveStart,
-    resetLayout,
-  };
 }
