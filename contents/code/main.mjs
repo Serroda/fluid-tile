@@ -1,4 +1,5 @@
 import { Blocklist } from "./blocklist.mjs";
+import { Shortcuts } from "./shortcuts.mjs";
 import { Tiles } from "./tiles.mjs";
 import { UI } from "./ui.mjs";
 import { Userspace } from "./userspace.mjs";
@@ -20,9 +21,9 @@ export class Engine {
       userspace: new Userspace(workspace),
       tiles: new Tiles(workspace, config),
     };
+    this.classes.shortcuts = new Shortcuts(workspace, root, this.classes);
     this.classes.ui = new UI(workspace, config, root, this.classes);
     this.classes.windows = new Windows(workspace, config, this.classes);
-
     this.state = {
       desktopsExtend: [],
       removeDesktopInfo: {},
@@ -118,9 +119,9 @@ export class Engine {
     window.interactiveMoveResizeStarted.connect(() => {
       this.classes.ui.onUserMoveStart(window);
     });
-    window.interactiveMoveResizeStepped.connect(
-      this.classes.ui.onUserMoveStepped.bind(this.classes.ui),
-    );
+    window.interactiveMoveResizeStepped.connect((windowGeometry) => {
+      this.classes.ui.onUserMoveStepped(windowGeometry, window);
+    });
     window.interactiveMoveResizeFinished.connect(() => {
       const windowMoved = this.classes.ui.onUserMoveFinished(window);
       if (windowMoved === false) {
@@ -186,7 +187,7 @@ export class Engine {
       this.timerExtendDesktop.start();
     } else if (
       this.classes.tiles.getTilesFromActualDesktop().length >
-      windowsOther.length + 1 ||
+        windowsOther.length + 1 ||
       window._maximized === false
     ) {
       //Start timer without delay, if you dont execute `extendWindows` inside
@@ -239,7 +240,7 @@ export class Engine {
     if (
       window.desktops.includes(this.workspace.currentDesktop) === false &&
       this.state.desktopsExtend.includes(this.workspace.currentDesktop) ===
-      false
+        false
     ) {
       this.state.desktopsExtend.push(this.workspace.currentDesktop);
       return;

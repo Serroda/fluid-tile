@@ -14,6 +14,7 @@ Window {
     property var config: ({})
     property var engine: ({})
     property var layoutOrdered: []
+    property var shortcuts: []
     property int tileActived: -1
 
     Timer {
@@ -61,7 +62,8 @@ Window {
             console.log("LayoutCustom variable error: " + error);
         }
 
-        engine = new Logic.Engine(Workspace, config, {root,timerExtendDesktop, timerRemoveDesktop});
+        console.log(KWin.registerShortcut)
+        engine = new Logic.Engine(Workspace, config, {root, timerExtendDesktop, timerRemoveDesktop});
     }
 
 
@@ -101,4 +103,16 @@ Window {
             active: index === root.tileActived
         }
     }
+
+    //Shortcuts
+    Repeater {
+        model: root.shortcuts
+        delegate: Shortcut {
+            title: modelData.title
+            text: modelData.text
+            keys: modelData.keys
+            trigger: modelData.callback
+        }
+    }
+    
 }

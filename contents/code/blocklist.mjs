@@ -14,6 +14,15 @@ export class Blocklist {
     const index = this.appsBlockByShortcut.findIndex((abs) => abs === window);
     if (index !== -1) {
       this.appsBlockByShortcut.splice(index, 1);
+      return true;
+    }
+    return false;
+  }
+
+  toggleWindow(window) {
+    const isDeleted = this.removeWindow(window);
+    if (isDeleted === false) {
+      this.addWindow(window);
     }
   }
 

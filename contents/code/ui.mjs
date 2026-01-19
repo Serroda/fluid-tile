@@ -1,9 +1,10 @@
 export class UI {
-  constructor(workspace, config, rootUI, { tiles }) {
+  constructor(workspace, config, rootUI, { tiles, blocklist }) {
     this.workspace = workspace;
     this.config = config;
     this.rootUI = rootUI;
     this.tiles = tiles;
+    this.blocklist = blocklist;
   }
 
   //Paint tiles
@@ -14,12 +15,19 @@ export class UI {
 
   // When a window start move with the cursor, reset ui
   onUserMoveStart(window) {
+    if (this.blocklist.check(window) === true) {
+      return;
+    }
+
     this.resetLayout();
     window._avoidMaximizeTrigger = true;
   }
 
   // When a window is moving with the cursor
-  onUserMoveStepped(windowGeometry) {
+  onUserMoveStepped(windowGeometry, window) {
+    if (this.blocklist.check(window) === true) {
+      return;
+    }
     this.rootUI.visible = true;
     const cursor = this.getPosition(windowGeometry);
     this.rootUI.tileActived = this.rootUI.layoutOrdered.findIndex((tile) => {
@@ -37,6 +45,10 @@ export class UI {
   //When the user release the window
   //and return if the UI was enable
   onUserMoveFinished(window) {
+    if (this.blocklist.check(window) === true) {
+      return false;
+    }
+
     if (this.rootUI.visible === true) {
       this.rootUI.visible = false;
       const tile = this.rootUI.layoutOrdered[this.rootUI.tileActived];
