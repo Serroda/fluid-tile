@@ -66,8 +66,8 @@ export class Tiles {
   setLayout(desktop, layout) {
     for (const screen of this.workspace.screens) {
       const tileRoot = this.workspace.rootTile(screen, desktop);
-      deleteTiles(tileRoot.tiles);
-      const result = setTiles(tileRoot.tiles[0] ?? tileRoot, layout);
+      this.deleteTiles(tileRoot.tiles);
+      const result = this.setTiles(tileRoot.tiles[0] ?? tileRoot, layout);
 
       if (result === false) {
         console.log("Error on set tiles layout, splitMode === null");
@@ -108,12 +108,12 @@ export class Tiles {
         layout[index].ref = tileParent.tiles[index];
       }
 
-      setGeometryTile(layout[index]);
+      this.setGeometryTile(layout[index]);
     }
 
     for (let x = 0; x < layout.length; x++) {
       if (layout[x].tiles !== undefined) {
-        setTiles(layout[x].ref, layout[x].tiles);
+        this.setTiles(layout[x].ref, layout[x].tiles);
       }
     }
 
@@ -159,7 +159,7 @@ export class Tiles {
       return [];
     }
 
-    return orderTiles(
+    return this.orderTiles(
       tileRoot.tiles.length !== 0 ? tileRoot.tiles : [tileRoot],
     );
   }
@@ -170,7 +170,7 @@ export class Tiles {
 
     for (let tile of tiles) {
       if (tile.tiles.length !== 0) {
-        tilesOrdered = tilesOrdered.concat(orderTiles(tile.tiles));
+        tilesOrdered = tilesOrdered.concat(this.orderTiles(tile.tiles));
       } else {
         tilesOrdered.push(tile);
       }
@@ -218,7 +218,7 @@ export class Tiles {
   getTilesFromActualDesktop() {
     let tiles = [];
     for (const screen of this.workspace.screens) {
-      tiles = tiles.concat(getOrderedTiles(undefined, screen));
+      tiles = tiles.concat(this.getOrderedTiles(undefined, screen));
     }
     return tiles;
   }
@@ -228,9 +228,11 @@ export class Tiles {
     console.log("exchange");
 
     for (const window of windowsExchange) {
+      window._avoidMaximizeTrigger = true;
       window.setMaximize(false, false);
 
-      if (screen !== this.workspace.activeScreen) {
+      console.log(screen, window.output);
+      if (screen !== window.output) {
         this.workspace.sendClientToScreen(window, screen);
       }
 
@@ -239,9 +241,10 @@ export class Tiles {
       }
 
       window._avoidTileChangedTrigger = true;
+
       window._shadows.tile = tile;
-      window._shadows.desktop = window.desktops[0];
-      window._shadows.screen = window.output;
+      window._shadows.desktop = desktop;
+      window._shadows.screen = screen;
 
       tile.manage(window);
     }

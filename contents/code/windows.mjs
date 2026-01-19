@@ -49,7 +49,11 @@ export class Windows {
       const itemDesktop = this.workspace.desktops[indexDesktop];
       do {
         const itemScreen = this.workspace.screens[indexScreen];
-        const windowsOther = getWindows(windowMain, itemDesktop, itemScreen);
+        const windowsOther = this.getWindows(
+          windowMain,
+          itemDesktop,
+          itemScreen,
+        );
         const tilesOrdered = this.tiles.getOrderedTiles(
           itemDesktop,
           itemScreen,
@@ -59,7 +63,7 @@ export class Windows {
           tilesOrdered.length === 0 ||
           windowsOther.length + 1 > tilesOrdered.length
         ) {
-          indexScreen = (indexScreen + 1) % screens.length;
+          indexScreen = (indexScreen + 1) % this.workspace.screens.length;
           continue;
         }
 
@@ -78,7 +82,7 @@ export class Windows {
             tilesOrdered[x].manage(windowsOther[x]);
           }
 
-          updateShadows(windowsOther[x]);
+          this.updateShadows(windowsOther[x]);
         }
 
         windowMain._avoidTileChangedTrigger = true;
@@ -94,17 +98,17 @@ export class Windows {
           tileEmpty?.manage(windowMain);
         }
 
-        updateShadows(windowMain);
+        this.updateShadows(windowMain);
 
         console.log("extend set tile");
-        extendWindows(
+        this.extendWindows(
           [windowMain, ...windowsOther],
           this.userspace.getPanelsSize(itemDesktop, itemScreen),
         );
 
         return false;
       } while (indexScreen !== indexStartScreen);
-      indexDesktop = (indexDesktop + 1) % desktops.length;
+      indexDesktop = (indexDesktop + 1) % this.workspace.desktops.length;
     } while (indexDesktop !== indexStartDesktop);
 
     return true;
@@ -112,8 +116,7 @@ export class Windows {
 
   // Set window tiles on remove window
   setWindowsTilesRemoved(windowMain) {
-    const windowsOther = getWindows(windowMain);
-
+    const windowsOther = this.getWindows(windowMain);
     const tilesOrdered = this.tiles.getTilesFromActualDesktop();
 
     if (tilesOrdered.length === 0 || windowsOther.length === 0) {
@@ -128,12 +131,11 @@ export class Windows {
         windowsOther[x]._avoidMaximizeTrigger = true;
         windowsOther[x].setMaximize(false, false);
         tilesOrdered[x].manage(windowsOther[x]);
-        updateShadows(windowsOther[x]);
+        this.updateShadows(windowsOther[x]);
       }
     }
 
-    extendWindows(windowsOther, this.userspace.getPanelsSize());
-
+    this.extendWindows(windowsOther, this.userspace.getPanelsSize());
     return false;
   }
 
@@ -154,7 +156,7 @@ export class Windows {
       return;
     }
 
-    resetWindowGeometry(windows, panelsSize);
+    this.resetWindowGeometry(windows, panelsSize);
 
     for (const window of windows) {
       window._maximizedByExtend = undefined;
@@ -167,7 +169,7 @@ export class Windows {
         continue;
       }
 
-      const windowGeometry = getRealGeometry(window);
+      const windowGeometry = this.getRealGeometry(window);
       const windowsOther = windows
         .filter(
           (wo) =>
@@ -175,7 +177,7 @@ export class Windows {
             (wo.tile !== null || wo._shadows !== undefined) &&
             wo.minimized === false,
         )
-        .map((wo) => getRealGeometry(wo));
+        .map((wo) => this.getRealGeometry(wo));
 
       const newGeometry = {
         top: panelsSize.workarea.top,
@@ -207,7 +209,7 @@ export class Windows {
           windowsConflict.right.push(windowItem);
         }
 
-        const sameColumn = checkSameColumn(windowGeometry, windowItem);
+        const sameColumn = this.checkSameColumn(windowGeometry, windowItem);
 
         if (sameColumn === false) {
           continue;
@@ -225,7 +227,6 @@ export class Windows {
       for (const key in windowsConflict) {
         const item = windowsConflict[key];
 
-        console.log(key, item.length);
         if (item.length === 0) {
           continue;
         }
@@ -263,7 +264,11 @@ export class Windows {
             break;
         }
       }
-      const tileVirtual = setGeometryWindow(window, newGeometry, panelsSize);
+      const tileVirtual = this.setGeometryWindow(
+        window,
+        newGeometry,
+        panelsSize,
+      );
       window._tileVirtual = tileVirtual;
     }
   }
@@ -281,7 +286,7 @@ export class Windows {
       }
 
       window.setMaximize(false, false);
-      setGeometryWindow(window, {}, panelsSize);
+      this.setGeometryWindow(window, {}, panelsSize);
     }
   }
 
@@ -298,7 +303,7 @@ export class Windows {
   //Set window size and return `virtualTile`
   setGeometryWindow(window, geometry, panelsSize) {
     const tileRef = window.tile !== null ? window.tile : window._shadows.tile;
-    const tileRefGeometry = getRealGeometry(window);
+    const tileRefGeometry = this.getRealGeometry(window);
 
     const left =
       geometry.left !== undefined ? geometry.left : tileRefGeometry.left;
@@ -352,7 +357,7 @@ export class Windows {
   //Focus window in the workspace
   focusWindow(window) {
     if (window === undefined) {
-      const windows = getWindows();
+      const windows = this.getWindows();
 
       if (windows.length === 0) {
         return null;
@@ -390,13 +395,16 @@ export class Windows {
     }
 
     for (const screen of screens) {
-      const windows = getWindows(undefined, undefined, screen);
+      const windows = this.getWindows(undefined, undefined, screen);
 
       if (windows.length === 0) {
         continue;
       }
 
-      extendWindows(windows, this.userspace.getPanelsSize(undefined, screen));
+      this.extendWindows(
+        windows,
+        this.userspace.getPanelsSize(undefined, screen),
+      );
     }
   }
 

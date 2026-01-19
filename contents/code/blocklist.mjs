@@ -1,17 +1,20 @@
 export class Blocklist {
   constructor(config) {
     this.config = config;
-    this.appsBlockByShortcut = "";
+    this.appsBlockByShortcut = [];
   }
 
   //Add new blocked apps
   addWindow(window) {
-    this.appsBlockByShortcut += window.resourceClass;
+    this.appsBlockByShortcut.push(window);
   }
 
   //Remove blocked apps
   removeWindow(window) {
-    this.appsBlockByShortcut.replace(window.resourceClass, "");
+    const index = this.appsBlockByShortcut.findIndex((abs) => abs === window);
+    if (index !== -1) {
+      this.appsBlockByShortcut.splice(index, 1);
+    }
   }
 
   // Check if the app is in the blocklist or not valid
@@ -24,9 +27,7 @@ export class Blocklist {
       this.config.appsBlocklist
         .toLowerCase()
         .includes(window.resourceClass.toLowerCase()) === true ||
-      this.appsBlockByShortcut
-        .toLowerCase()
-        .includes(window.resourceClass.toLowerCase()) === true
+      this.appsBlockByShortcut.includes(window) === true
     );
   }
 }

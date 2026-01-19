@@ -11,13 +11,13 @@
     <x>0</x>
     <y>0</y>
     <width>605</width>
-    <height>775</height>
+    <height>700</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>605</width>
-    <height>775</height>
+    <height>700</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -59,7 +59,7 @@
      <property name="minimumSize">
       <size>
        <width>500</width>
-       <height>210</height>
+       <height>170</height>
       </size>
      </property>
      <property name="layoutDirection">
@@ -130,18 +130,8 @@
       <attribute name="title">
        <string>Closed</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_9">
-       <item>
-        <widget class="QCheckBox" name="kcfg_DesktopRemove">
-         <property name="locale">
-          <locale language="English" country="Eswatini"/>
-         </property>
-         <property name="text">
-          <string>Delete virtual desktop if it is empty</string>
-         </property>
-        </widget>
-       </item>
-       <item>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="1" column="1">
         <widget class="QCheckBox" name="kcfg_WindowsOrderClose">
          <property name="locale">
           <locale language="English" country="Eswatini"/>
@@ -151,20 +141,7 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QLabel" name="label_delay">
-         <property name="toolTip">
-          <string>Case: Applications that open a window and, when an action is performed,
-close the window and open another window (Chrome profile selector).
-This timer avoid crash wayland, beacuse the process try open the window
- in the deleted virtual desktop</string>
-         </property>
-         <property name="text">
-          <string>Delay to remove virtual desktop</string>
-         </property>
-        </widget>
-       </item>
-       <item>
+       <item row="1" column="0">
         <widget class="QSpinBox" name="kcfg_DesktopRemoveDelay">
          <property name="toolTip">
           <string>Case: Applications that open a window and, when an action is performed,
@@ -183,17 +160,7 @@ This timer avoid crash wayland, beacuse the process try open the window
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QLabel" name="label_DesktopMin">
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>Minimum number of virtual desktops </string>
-         </property>
-        </widget>
-       </item>
-       <item>
+       <item row="4" column="0">
         <widget class="QSpinBox" name="kcfg_DesktopRemoveMin">
          <property name="toolTip">
           <string/>
@@ -209,6 +176,39 @@ This timer avoid crash wayland, beacuse the process try open the window
          </property>
         </widget>
        </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_DesktopMin">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Minimum number of virtual desktops </string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_delay">
+         <property name="toolTip">
+          <string>Case: Applications that open a window and, when an action is performed,
+close the window and open another window (Chrome profile selector).
+This timer avoid crash wayland, beacuse the process try open the window
+ in the deleted virtual desktop</string>
+         </property>
+         <property name="text">
+          <string>Delay to remove virtual desktop</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="kcfg_DesktopRemove">
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>Delete virtual desktop if it is empty</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="moved">
@@ -216,28 +216,6 @@ This timer avoid crash wayland, beacuse the process try open the window
        <string>Moved</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
-       <item>
-        <widget class="QCheckBox" name="kcfg_WindowsExchange">
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="statusTip">
-          <string/>
-         </property>
-         <property name="locale">
-          <locale language="English" country="Eswatini"/>
-         </property>
-         <property name="text">
-          <string>If the target tile has windows, move to the origin tile</string>
-         </property>
-         <property name="autoRepeat">
-          <bool>false</bool>
-         </property>
-         <property name="autoExclusive">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
        <item>
         <widget class="QLabel" name="label_7">
          <property name="toolTip">

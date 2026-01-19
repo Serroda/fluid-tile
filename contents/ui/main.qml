@@ -1,7 +1,7 @@
 import QtQuick
 import org.kde.kwin
 import "./components"
-import "../code/main.mjs" as Engine
+import "../code/main.mjs" as Logic
 
 Window {
     id: root
@@ -44,7 +44,6 @@ Window {
             maximizeExtend: KWin.readConfig("MaximizeExtend", true),
             windowsOrderOpen: KWin.readConfig("WindowsOrderOpen", false),
             windowsOrderClose: KWin.readConfig("WindowsOrderClose", false),
-            windowsExchange: KWin.readConfig("WindowsExchange", true),
             windowsExtendTileChangedDelay: KWin.readConfig("WindowsExtendTileChangedDelay", 0),
             desktopAdd: KWin.readConfig("DesktopAdd", true),
             desktopRemove: KWin.readConfig("DesktopRemove", false),
@@ -62,8 +61,7 @@ Window {
             console.log("LayoutCustom variable error: " + error);
         }
 
-        engine = new Engine(Workspace, config, root, {timerExtendDesktop, timerRemoveDesktop});
-        console.log(engine)
+        engine = new Logic.Engine(Workspace, config, {root,timerExtendDesktop, timerRemoveDesktop});
     }
 
 

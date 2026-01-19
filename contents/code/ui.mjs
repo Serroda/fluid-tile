@@ -13,14 +13,15 @@ export class UI {
   }
 
   // When a window start move with the cursor, reset ui
-  onUserMoveStart() {
-    resetLayout();
+  onUserMoveStart(window) {
+    this.resetLayout();
+    window._avoidMaximizeTrigger = true;
   }
 
   // When a window is moving with the cursor
   onUserMoveStepped(windowGeometry) {
     this.rootUI.visible = true;
-    const cursor = getPosition(windowGeometry);
+    const cursor = this.getPosition(windowGeometry);
     this.rootUI.tileActived = this.rootUI.layoutOrdered.findIndex((tile) => {
       const limitX = tile.absoluteGeometry.x + tile.absoluteGeometry.width;
       const limitY = tile.absoluteGeometry.y + tile.absoluteGeometry.height;
