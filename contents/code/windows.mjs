@@ -1,7 +1,15 @@
 export class Windows {
-  constructor(workspace, config, { blocklist, tiles, userspace }) {
+  constructor(
+    workspace,
+    config,
+    rootUI,
+    state,
+    { blocklist, tiles, userspace },
+  ) {
     this.workspace = workspace;
     this.config = config;
+    this.rootUI = rootUI;
+    this.state = state;
     this.blocklist = blocklist;
     this.tiles = tiles;
     this.userspace = userspace;
@@ -82,7 +90,7 @@ export class Windows {
             tilesOrdered[x].manage(windowsOther[x]);
           }
 
-          this.updateShadows(windowsOther[x]);
+          windowsOther[x]._tileShadow = windowsOther[x].tile;
         }
 
         windowMain._avoidTileChangedTrigger = true;
@@ -98,9 +106,8 @@ export class Windows {
           tileEmpty?.manage(windowMain);
         }
 
-        this.updateShadows(windowMain);
+        windowMain._tileShadow = windowMain.tile;
 
-        console.log("extend set tile");
         this.extendWindows(
           [windowMain, ...windowsOther],
           this.userspace.getPanelsSize(itemDesktop, itemScreen),
@@ -131,7 +138,7 @@ export class Windows {
         windowsOther[x]._avoidMaximizeTrigger = true;
         windowsOther[x].setMaximize(false, false);
         tilesOrdered[x].manage(windowsOther[x]);
-        this.updateShadows(windowsOther[x]);
+        windowsOther[x]._tileShadow = tilesOrdered[x];
       }
     }
 
@@ -141,7 +148,13 @@ export class Windows {
 
   //Extend window if empty space is available
   extendWindows(windows, panelsSize) {
-    console.log("extendwindow");
+    console.log(
+      "extendwindow",
+      this.config.maximizeExtend === true,
+      windows.length === 1,
+      windows[0].minimized === false,
+      windows[0]._avoidMaximizeExtend !== true,
+    );
 
     if (
       this.config.maximizeExtend === true &&
@@ -149,7 +162,7 @@ export class Windows {
       windows[0].minimized === false &&
       windows[0]._avoidMaximizeExtend !== true
     ) {
-      console.log("window maximized");
+      console.log("extendwindow maximized");
       windows[0]._avoidMaximizeTrigger = true;
       windows[0]._avoidMaximizeExtend = false;
       windows[0].setMaximize(true, true);
@@ -159,11 +172,11 @@ export class Windows {
     this.resetWindowGeometry(windows, panelsSize);
 
     for (const window of windows) {
-      window._maximizedByExtend = undefined;
+      window._avoidMaximizeExtend = false;
 
       if (
         window.tile === null ||
-        window._shadows === undefined ||
+        window._tileShadow === undefined ||
         window.minimized === true
       ) {
         continue;
@@ -174,7 +187,7 @@ export class Windows {
         .filter(
           (wo) =>
             wo !== window &&
-            (wo.tile !== null || wo._shadows !== undefined) &&
+            (wo.tile !== null || wo._tileShadow !== undefined) &&
             wo.minimized === false,
         )
         .map((wo) => this.getRealGeometry(wo));
@@ -235,11 +248,11 @@ export class Windows {
           (acc, woNew) => {
             const distance = Math.hypot(
               windowGeometry.left +
-              windowGeometry.width / 2 -
-              (woNew.left + woNew.width / 2),
+                windowGeometry.width / 2 -
+                (woNew.left + woNew.width / 2),
               windowGeometry.top +
-              windowGeometry.height / 2 -
-              (woNew.top + woNew.height / 2),
+                windowGeometry.height / 2 -
+                (woNew.top + woNew.height / 2),
             );
 
             return acc.distance === -1 || distance < acc.distance
@@ -280,7 +293,7 @@ export class Windows {
 
       if (
         window.minimized === true ||
-        (window.tile === null && window._shadows === undefined)
+        (window.tile === null && window._tileShadow === undefined)
       ) {
         continue;
       }
@@ -296,13 +309,13 @@ export class Windows {
       window._tileVirtual ??
       (window.tile !== null
         ? window.tile.absoluteGeometry
-        : window._shadows.tile.absoluteGeometry)
+        : window._tileShadow.absoluteGeometry)
     );
   }
 
   //Set window size and return `virtualTile`
   setGeometryWindow(window, geometry, panelsSize) {
-    const tileRef = window.tile !== null ? window.tile : window._shadows.tile;
+    const tileRef = window.tile !== null ? window.tile : window._tileShadow;
     const tileRefGeometry = this.getRealGeometry(window);
 
     const left =
@@ -354,6 +367,7 @@ export class Windows {
     };
   }
 
+  //TODO: Try with timer
   //Focus window in the workspace
   focusWindow(window) {
     if (window === undefined) {
@@ -368,11 +382,8 @@ export class Windows {
       }
 
       this.workspace.activeWindow = windows[0];
-
-      return windows[0];
     } else {
       this.workspace.activeWindow = window;
-      return window;
     }
   }
 
@@ -408,19 +419,65 @@ export class Windows {
     }
   }
 
-  //Save references window's tile, desktop, screen
-  updateShadows(window, tile, desktop, screen) {
-    console.log(
-      "update shadows main",
-      window,
-      tile,
-      window.tile,
-      window._shadows?.tile,
+  //Transfer a window to another desktop with shortcuts
+  adaptWindowCurrentDesktop(window = this.workspace.activeWindow) {
+    if (window === null) {
+      return false;
+    }
+
+    console.log("adapt");
+
+    if (
+      this.rootUI.visible === true ||
+      this.blocklist.check(window) === true ||
+      window._tileShadow === undefined ||
+      window._tileShadow?._desktop === this.workspace.currentDesktop
+    ) {
+      console.log(
+        "avoid",
+        window._tileShadow?._desktop?.name,
+        this.workspace.currentDesktop.name,
+      );
+      return false;
+    }
+
+    const windowsOther = this.getWindows(window);
+    const tiles = this.tiles.getTilesFromActualDesktop();
+
+    const tileEmpty = tiles.find(
+      (t) => !windowsOther.some((w) => w.tile === t || w._tileShadow === t),
     );
-    window._shadows = {
-      tile: tile ?? window.tile ?? window._shadows?.tile,
-      desktop: desktop ?? window.desktops[0],
-      screen: screen ?? window.output,
-    };
+
+    if (tileEmpty === undefined) {
+      return false;
+    }
+
+    if (
+      this.state.desktopsExtend.includes(window._tileShadow._desktop) === false
+    ) {
+      this.state.desktopsExtend.push(window._tileShadow._desktop);
+    }
+
+    if (this.state.desktopsExtend.includes(tileEmpty._desktop) === true) {
+      this.state.desktopsExtend.splice(
+        this.state.desktopsExtend.indexOf(tileEmpty._desktop),
+        1,
+      );
+    }
+
+    window.desktops = [tileEmpty._desktop];
+
+    if (tileEmpty._screen !== window._tileShadow._screen) {
+      this.workspace.sendClientToScreen(window, tileEmpty._screen);
+    }
+
+    window._avoidMaximizeTrigger = true;
+    window._avoidTileChangedTrigger = true;
+
+    window._tileShadow = tileEmpty;
+    tileEmpty.manage(window);
+
+    this.extendWindowsCurrentDesktop();
+    return true;
   }
 }

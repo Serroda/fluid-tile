@@ -9,13 +9,20 @@ export class Engine {
   constructor(
     workspace,
     config,
-    { root, timerExtendDesktop, timerRemoveDesktop },
+    { root, timerExtendDesktop, timerRemoveDesktop, timerFocusWindow },
   ) {
+    this.state = {
+      desktopsExtend: [],
+      removeDesktopInfo: {},
+    };
     this.workspace = workspace;
     this.config = config;
     this.rootUI = root;
-    this.timerExtendDesktop = timerExtendDesktop;
-    this.timerRemoveDesktop = timerRemoveDesktop;
+    this.timers = {
+      extendDesktop: timerExtendDesktop,
+      removeDesktop: timerRemoveDesktop,
+      focusWindow: timerFocusWindow,
+    };
     this.classes = {
       blocklist: new Blocklist(config),
       userspace: new Userspace(workspace),
@@ -23,11 +30,13 @@ export class Engine {
     };
     this.classes.shortcuts = new Shortcuts(workspace, root, this.classes);
     this.classes.ui = new UI(workspace, config, root, this.classes);
-    this.classes.windows = new Windows(workspace, config, this.classes);
-    this.state = {
-      desktopsExtend: [],
-      removeDesktopInfo: {},
-    };
+    this.classes.windows = new Windows(
+      workspace,
+      config,
+      root,
+      this.state,
+      this.classes,
+    );
   }
 
   //Trigger when a window is added to the desktop
@@ -63,7 +72,7 @@ export class Engine {
         tilesOrdered[0].manage(window);
       }
 
-      this.classes.windows.updateShadows(window, tilesOrdered[0]);
+      window._tileShadow = tilesOrdered[0];
     }
   }
 
@@ -91,7 +100,7 @@ export class Engine {
         window: window,
       };
 
-      this.timerRemoveDesktop.start();
+      this.timers.removeDesktop.start();
     }
   }
 
@@ -123,6 +132,10 @@ export class Engine {
       this.classes.ui.onUserMoveStepped(windowGeometry, window);
     });
     window.interactiveMoveResizeFinished.connect(() => {
+      if (this.classes.blocklist.check(window) === true) {
+        return;
+      }
+
       const windowMoved = this.classes.ui.onUserMoveFinished(window);
       if (windowMoved === false) {
         this.classes.windows.extendWindowsCurrentDesktop(true);
@@ -134,17 +147,12 @@ export class Engine {
   onWindowAddedToTile(tile, window) {
     //Trigger when a window is maximized but not minimized
     //when a window exchange
-    console.log(
-      "window added to tile",
-      window._avoidTileChangedTrigger,
-      window,
-      tile,
-    );
+    console.log("window added to tile", window._avoidTileChangedTrigger);
 
     if (
       this.rootUI.visible === true ||
       window._avoidTileChangedTrigger === true ||
-      window._shadows === undefined
+      window._tileShadow === undefined
     ) {
       window._avoidTileChangedTrigger =
         window._avoidTileChangedTrigger === true
@@ -160,31 +168,25 @@ export class Engine {
       .getWindows(window)
       .filter(
         (w) =>
-          w.minimized === false &&
-          (w.tile === tile || w._shadows?.tile === tile),
+          w.minimized === false && (w.tile === tile || w._tileShadow === tile),
       );
 
     if (windowsOther.length > 0) {
-      this.classes.tiles.exchangeTiles(
-        windowsOther,
-        window._shadows.tile,
-        window._shadows.desktop,
-        window._shadows.screen,
-      );
+      this.classes.tiles.exchangeTiles(windowsOther, window._tileShadow);
     }
 
     if (
-      this.workspace.currentDesktop !== window._shadows.desktop &&
-      this.state.desktopsExtend.includes(window._shadows.desktop) === false
+      this.workspace.currentDesktop !== window._tileShadow._desktop &&
+      this.state.desktopsExtend.includes(window._tileShadow._desktop) === false
     ) {
-      this.state.desktopsExtend.push(window._shadows.desktop);
+      this.state.desktopsExtend.push(window._tileShadow._desktop);
     }
 
     //Start delay only when you have to exchange in another screen
-    if (window._shadows.screen !== this.workspace.activeScreen) {
-      this.timerExtendDesktop.interval =
+    if (window._tileShadow._screen !== this.workspace.activeScreen) {
+      this.timers.extendDesktop.interval =
         this.config.windowsExtendTileChangedDelay;
-      this.timerExtendDesktop.start();
+      this.timers.extendDesktop.start();
     } else if (
       this.classes.tiles.getTilesFromActualDesktop().length >
         windowsOther.length + 1 ||
@@ -192,16 +194,11 @@ export class Engine {
     ) {
       //Start timer without delay, if you dont execute `extendWindows` inside
       //QTimer, `extendWindows` doesnt get the correct position of the windows
-      this.timerExtendDesktop.interval = 0;
-      this.timerExtendDesktop.start();
+      this.timers.extendDesktop.interval = 0;
+      this.timers.extendDesktop.start();
     }
 
-    console.log("update shadow tile changed");
-    // Set `tileNew` to `_shadows.tile` when window is maximized for avoid
-    // `windowMain.tile === null` and `windowMain._shadows.tile === oldCopyTile`
-    // setting `tileNew` we get now `windowMain._shadows.tile === tileNew`
-
-    this.classes.windows.updateShadows(window, tile);
+    window._tileShadow = tile;
   }
 
   //When window is not maximized, set a previous tile
@@ -209,13 +206,13 @@ export class Engine {
     window._maximized = mode === 3;
 
     //When a window is maximized window.tile is always null
-    console.log("maximize change", window, mode, window._avoidMaximizeTrigger);
+    console.log("maximize change");
 
     if (
       this.rootUI.visible === true ||
       window._maximized === true ||
       window._avoidMaximizeTrigger === true ||
-      window._shadows === undefined ||
+      window._tileShadow === undefined ||
       window.tile !== null
     ) {
       window._avoidMaximizeTrigger =
@@ -227,11 +224,11 @@ export class Engine {
     }
 
     //If not fullscreen
-    if (window.tile !== window._shadows.tile) {
+    if (window.tile !== window._tileShadow) {
       console.log("maximize manage");
       window._avoidTileChangedTrigger = false;
       window._avoidMaximizeExtend = true;
-      window._shadows.tile?.manage(window);
+      window._tileShadow.manage(window);
     }
   }
 
@@ -287,12 +284,22 @@ export class Engine {
     this.classes.windows.extendWindowsCurrentDesktop(true);
   }
 
+  //Focus window when timer finish
+  onTimerFocusWindowFinished() {
+    this.classes.windows.focusWindow();
+  }
+
   // Focus window when a current desktop is changed
   onCurrentDesktopChanged() {
     console.log("desktop changed");
     this.classes.ui.resetLayout();
     this.setTilesSignals();
-    this.classes.windows.focusWindow();
+
+    const adapted = this.classes.windows.adaptWindowCurrentDesktop();
+
+    if (adapted === false) {
+      this.timers.focusWindow.start();
+    }
 
     if (
       this.state.desktopsExtend.includes(this.workspace.currentDesktop) === true
@@ -336,7 +343,6 @@ export class Engine {
         };
       }
 
-      console.log("signal added", tile);
       tile.childTilesChanged.connect(tile._signalsFunctions.childTiles);
       tile.windowAdded.connect(tile._signalsFunctions.windowAdded);
     }

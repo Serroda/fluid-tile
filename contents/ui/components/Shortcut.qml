@@ -3,17 +3,17 @@ import org.kde.kwin
 
 Item {
     id: shortcut
-    property string title: ""
+    property string name: ""
     property string text: ""
-    property string keys: ""
-    property var trigger: ({}) 
+    property string sequence: ""
+    property var callback: ({}) 
     
   ShortcutHandler {
-    name: shortcut.title
+    name: shortcut.name
     text: shortcut.text
-    sequence: shortcut.keys
+    sequence: shortcut.sequence
     onActivated: {
-      shortcut.trigger()
+      shortcut.callback()
     }
   }
 }

@@ -159,9 +159,16 @@ export class Tiles {
       return [];
     }
 
-    return this.orderTiles(
+    const tiles = this.orderTiles(
       tileRoot.tiles.length !== 0 ? tileRoot.tiles : [tileRoot],
     );
+
+    for (const tile of tiles) {
+      tile._screen = screen;
+      tile._desktop = desktop;
+    }
+
+    return tiles;
   }
 
   //Get tiles, ordered by tilesPriority
@@ -224,27 +231,23 @@ export class Tiles {
   }
 
   //Exchange windows between tiles
-  exchangeTiles(windowsExchange, tile, desktop, screen) {
+  exchangeTiles(windowsExchange, tile) {
     console.log("exchange");
 
     for (const window of windowsExchange) {
       window._avoidMaximizeTrigger = true;
       window.setMaximize(false, false);
 
-      console.log(screen, window.output);
-      if (screen !== window.output) {
-        this.workspace.sendClientToScreen(window, screen);
+      if (tile._screen !== window.output) {
+        this.workspace.sendClientToScreen(window, tile._screen);
       }
 
-      if (desktop !== this.workspace.currentDesktop) {
-        window.desktops = [desktop];
+      if (tile._desktop !== this.workspace.currentDesktop) {
+        window.desktops = [tile._desktop];
       }
 
       window._avoidTileChangedTrigger = true;
-
-      window._shadows.tile = tile;
-      window._shadows.desktop = desktop;
-      window._shadows.screen = screen;
+      window._tileShadow = tile;
 
       tile.manage(window);
     }
@@ -256,8 +259,8 @@ export class Tiles {
       return window.tile;
     }
 
-    if (window._shadows !== undefined) {
-      return window._shadows.tile;
+    if (window._tileShadow !== undefined) {
+      return window._tileShadow;
     }
 
     return null;

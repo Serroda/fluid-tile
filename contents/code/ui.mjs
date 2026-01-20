@@ -28,6 +28,7 @@ export class UI {
     if (this.blocklist.check(window) === true) {
       return;
     }
+
     this.rootUI.visible = true;
     const cursor = this.getPosition(windowGeometry);
     this.rootUI.tileActived = this.rootUI.layoutOrdered.findIndex((tile) => {
@@ -45,10 +46,6 @@ export class UI {
   //When the user release the window
   //and return if the UI was enable
   onUserMoveFinished(window) {
-    if (this.blocklist.check(window) === true) {
-      return false;
-    }
-
     if (this.rootUI.visible === true) {
       this.rootUI.visible = false;
       const tile = this.rootUI.layoutOrdered[this.rootUI.tileActived];
@@ -61,7 +58,7 @@ export class UI {
     }
 
     window._avoidTileChangedTrigger = true;
-    window._shadows?.tile?.manage(window);
+    window._tileShadow?.manage(window);
     return false;
   }
 

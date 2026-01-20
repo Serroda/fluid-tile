@@ -37,6 +37,16 @@ Window {
         }
     }
     
+    Timer {
+        id: timerFocusWindow
+        interval: 0
+        repeat: false
+        running: false
+        onTriggered: {
+            root.engine.onTimerFocusWindowFinished();
+        }
+    }
+    
     // Load user config
     function startEngine() {
         config = {
@@ -62,8 +72,7 @@ Window {
             console.log("LayoutCustom variable error: " + error);
         }
 
-        console.log(KWin.registerShortcut)
-        engine = new Logic.Engine(Workspace, config, {root, timerExtendDesktop, timerRemoveDesktop});
+        engine = new Logic.Engine(Workspace, config, {root, timerExtendDesktop, timerRemoveDesktop, timerFocusWindow});
     }
 
 
@@ -108,10 +117,10 @@ Window {
     Repeater {
         model: root.shortcuts
         delegate: Shortcut {
-            title: modelData.title
+            name: modelData.name
             text: modelData.text
-            keys: modelData.keys
-            trigger: modelData.callback
+            sequence: modelData.sequence
+            callback: modelData.callback
         }
     }
     
