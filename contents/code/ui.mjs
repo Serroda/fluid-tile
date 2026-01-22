@@ -10,7 +10,7 @@ export class UI {
   //Paint tiles
   resetLayout() {
     this.rootUI.layoutOrdered = [];
-    this.rootUI.layoutOrdered = this.tiles.getTilesFromActualDesktop();
+    this.rootUI.layoutOrdered = this.tiles.getTilesCurrentDesktop();
   }
 
   // When a window start move with the cursor, reset ui
@@ -24,7 +24,7 @@ export class UI {
   }
 
   // When a window is moving with the cursor
-  onUserMoveStepped(windowGeometry, window) {
+  onUserMoveStepped(window, windowGeometry) {
     if (this.blocklist.check(window) === true) {
       return;
     }
@@ -46,6 +46,10 @@ export class UI {
   //When the user release the window
   //and return if the UI was enable
   onUserMoveFinished(window) {
+    if (this.blocklist.check(window) === true) {
+      return;
+    }
+
     if (this.rootUI.visible === true) {
       this.rootUI.visible = false;
       const tile = this.rootUI.layoutOrdered[this.rootUI.tileActived];
@@ -54,12 +58,10 @@ export class UI {
         tile.manage(window);
       }
       this.rootUI.tileActived = -1;
-      return true;
+      return;
     }
 
-    window._avoidTileChangedTrigger = true;
     window._tileShadow?.manage(window);
-    return false;
   }
 
   //Get cursor position or window position

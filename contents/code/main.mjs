@@ -10,7 +10,13 @@ export class Engine {
   constructor(
     workspace,
     config,
-    { root, timerExtendDesktop, timerRemoveDesktop, timerDesktopChanged },
+    {
+      root,
+      timerExtendDesktop,
+      timerRemoveDesktop,
+      timerDesktopChanged,
+      timerResetAll,
+    },
   ) {
     this.state = {
       desktopsExtend: new Queue(),
@@ -23,20 +29,27 @@ export class Engine {
       extendDesktop: timerExtendDesktop,
       removeDesktop: timerRemoveDesktop,
       desktopChanged: timerDesktopChanged,
+      resetAll: timerResetAll,
     };
     this.classes = {
       blocklist: new Blocklist(config),
       userspace: new Userspace(workspace),
       tiles: new Tiles(workspace, config),
     };
-    this.classes.shortcuts = new Shortcuts(workspace, root, this.classes);
-    this.classes.ui = new UI(workspace, config, root, this.classes);
     this.classes.windows = new Windows(
       workspace,
       config,
       root,
       this.state,
       this.classes,
+    );
+    this.classes.ui = new UI(workspace, config, root, this.classes);
+    this.classes.shortcuts = new Shortcuts(
+      workspace,
+      config,
+      root,
+      this.classes,
+      timerResetAll,
     );
   }
 
@@ -46,7 +59,7 @@ export class Engine {
       return;
     }
 
-    const continueProcess = this.classes.windows.setWindowsTilesAdded(window);
+    const continueProcess = this.classes.windows.setTilesOnAdd(window);
 
     if (this.config.desktopAdd === true && continueProcess === true) {
       this.workspace.createDesktop(this.workspace.desktops.length, "");
@@ -83,10 +96,10 @@ export class Engine {
       return false;
     }
 
-    const continueProcess = this.classes.windows.setWindowsTilesRemoved(window);
+    const continueProcess = this.classes.windows.setTilesOnRemove(window);
 
     if (continueProcess === false) {
-      this.classes.windows.focusWindow();
+      this.classes.windows.focus();
       return;
     }
 
@@ -118,30 +131,51 @@ export class Engine {
       return;
     }
 
-    window.maximizedAboutToChange.connect((mode) => {
-      this.onMaximizeChanged(mode, window);
-    });
+    window._signals = {
+      maximizedAboutToChange: this.onMaximizeChanged.bind(this, window),
+      minimizedChanged: this.onMinimizedChanged.bind(this, window),
+      interactiveMoveResizeStarted: this.classes.ui.onUserMoveStart.bind(
+        this.classes.ui,
+        window,
+      ),
+      interactiveMoveResizeStepped: this.classes.ui.onUserMoveStepped.bind(
+        this.classes.ui,
+        window,
+      ),
+      interactiveMoveResizeFinished: this.classes.ui.onUserMoveFinished.bind(
+        this.classes.ui,
+        window,
+      ),
+    };
 
-    window.minimizedChanged.connect(() => {
-      this.onMinimizedChanged(window);
-    });
+    for (const key in window._signals) {
+      window[key].connect(window._signals[key]);
+    }
 
-    window.interactiveMoveResizeStarted.connect(() => {
-      this.classes.ui.onUserMoveStart(window);
-    });
-    window.interactiveMoveResizeStepped.connect((windowGeometry) => {
-      this.classes.ui.onUserMoveStepped(windowGeometry, window);
-    });
-    window.interactiveMoveResizeFinished.connect(() => {
-      if (this.classes.blocklist.check(window) === true) {
-        return;
-      }
-
-      const windowMoved = this.classes.ui.onUserMoveFinished(window);
-      if (windowMoved === false) {
-        this.classes.windows.extendWindowsCurrentDesktop(true);
-      }
-    });
+    // window.maximizedAboutToChange.connect((mode) => {
+    //   this.onMaximizeChanged(mode, window);
+    // });
+    //
+    // window.minimizedChanged.connect(() => {
+    //   this.onMinimizedChanged(window);
+    // });
+    //
+    // window.interactiveMoveResizeStarted.connect(() => {
+    //   this.classes.ui.onUserMoveStart(window);
+    // });
+    // window.interactiveMoveResizeStepped.connect((windowGeometry) => {
+    //   this.classes.ui.onUserMoveStepped(windowGeometry, window);
+    // });
+    // window.interactiveMoveResizeFinished.connect(() => {
+    //   if (this.classes.blocklist.check(window) === true) {
+    //     return;
+    //   }
+    //
+    //   const windowMoved = this.classes.ui.onUserMoveFinished(window);
+    //   if (windowMoved === false) {
+    //     this.classes.windows.extendCurrentDesktop(true);
+    //   }
+    // });
   }
 
   //When a window tile is changed, exchange windows and extend windows
@@ -166,7 +200,7 @@ export class Engine {
     }
 
     const windowsOther = this.classes.windows
-      .getWindows(window)
+      .getAll(window)
       .filter(
         (w) =>
           w.minimized === false && (w.tile === tile || w._tileShadow === tile),
@@ -200,7 +234,7 @@ export class Engine {
   }
 
   //When window is not maximized, set a previous tile
-  onMaximizeChanged(mode, window) {
+  onMaximizeChanged(window, mode) {
     window._maximized = mode === 3;
 
     //When a window is maximized window.tile is always null
@@ -239,7 +273,7 @@ export class Engine {
 
     window._avoidMaximizeTrigger = true;
     window.setMaximize(false, false);
-    this.classes.windows.extendWindowsCurrentDesktop(true);
+    this.classes.windows.extendCurrentDesktop(true);
   }
 
   onTimerRemoveDesktopFinished() {
@@ -252,7 +286,7 @@ export class Engine {
       this.state.removeDesktopInfo.desktopsId.includes(d.id),
     )) {
       for (const screenItem of this.workspace.screens) {
-        const windowsOtherSpecialCases = this.classes.windows.getWindows(
+        const windowsOtherSpecialCases = this.classes.windows.getAll(
           this.state.removeDesktopInfo.window,
           desktopItem,
           screenItem,
@@ -271,28 +305,35 @@ export class Engine {
     }
 
     this.state.removeDesktopInfo = {};
-    this.classes.windows.extendWindowsCurrentDesktop();
+    this.classes.windows.extendCurrentDesktop();
   }
 
   //Extend windows when timer finish
   onTimerExtendDesktopFinished() {
-    this.classes.windows.extendWindowsCurrentDesktop(true);
+    this.classes.windows.extendCurrentDesktop(true);
   }
 
   //Focus window when timer finish
   onTimerDesktopChangedFinished() {
-    const adapted = this.classes.windows.adaptWindowCurrentDesktop();
+    const moved = this.classes.windows.movedToAnotherDesktopShortcut();
 
-    if (adapted === false) {
-      this.classes.windows.focusWindow();
+    if (moved === false) {
+      this.classes.windows.focus();
     }
 
     if (
       this.state.desktopsExtend.exists(this.workspace.currentDesktop) === true
     ) {
-      this.classes.windows.extendWindowsCurrentDesktop(true);
+      this.classes.windows.extendCurrentDesktop(true);
       this.state.desktopsExtend.remove(this.workspace.currentDesktop);
     }
+  }
+
+  //Extend windows when timer finish
+  onTimerResetAllFinished() {
+    this.classes.windows.resetAll();
+    this.classes.windows.reconnectSignals();
+    this.classes.tiles.reconnectSignals();
   }
 
   // Focus window when a current desktop is changed
@@ -300,7 +341,6 @@ export class Engine {
     console.log("desktop changed");
     this.classes.ui.resetLayout();
     this.setTilesSignals();
-
     this.timers.desktopChanged.start();
   }
 
@@ -312,32 +352,38 @@ export class Engine {
       return;
     }
 
-    if (rootTile._signalsAdded !== true) {
-      rootTile._signalsAdded = true;
-      rootTile.childTilesChanged.connect(this.onChildTilesChanged.bind(this));
-      rootTile.windowAdded.connect(
-        this.onWindowAddedToTile.bind(this, rootTile),
-      );
+    if (rootTile._signals === undefined) {
+      rootTile._signals = {
+        childTilesChanged: this.onChildTilesChanged.bind(this),
+        windowAdded: this.onWindowAddedToTile.bind(this, rootTile),
+      };
+
+      for (const key in rootTile._signals) {
+        rootTile[key].connect(rootTile._signals[key]);
+      }
     }
 
     const tiles = this.classes.tiles.getTilesCurrentDesktop();
 
     for (const tile of tiles) {
-      if (tile._signalsAdded === true) {
+      if (tile._signals !== undefined) {
         continue;
       }
 
-      tile._signalsAdded = true;
-      tile.childTilesChanged.connect(this.onChildTilesChanged.bind(this));
-      tile.windowAdded.connect(this.onWindowAddedToTile.bind(this, tile));
+      tile._signals = {
+        childTilesChanged: this.onChildTilesChanged.bind(this),
+        windowAdded: this.onWindowAddedToTile.bind(this, tile),
+      };
+
+      for (const key in tile._signals) {
+        tile[key].connect(tile._signals[key]);
+      }
     }
   }
 
-  //TODO: Error when tiles changed by shortcut
-  //execute extend one
-
   onChildTilesChanged() {
+    console.log("child changed");
     this.setTilesSignals();
-    this.classes.windows.extendWindowsCurrentDesktop();
+    this.classes.windows.extendCurrentDesktop();
   }
 }

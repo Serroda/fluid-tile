@@ -16,7 +16,7 @@ export class Windows {
   }
 
   // Get all windows from the virtual desktop except the given window
-  getWindows(
+  getAll(
     windowIgnore,
     desktop = this.workspace.currentDesktop,
     screen = this.workspace.activeScreen,
@@ -38,7 +38,7 @@ export class Windows {
   }
 
   // Set window tiles on add window
-  setWindowsTilesAdded(windowMain) {
+  setTilesOnAdd(windowMain) {
     const indexStartDesktop = this.workspace.desktops.indexOf(
       this.workspace.currentDesktop,
     );
@@ -57,11 +57,7 @@ export class Windows {
       const itemDesktop = this.workspace.desktops[indexDesktop];
       do {
         const itemScreen = this.workspace.screens[indexScreen];
-        const windowsOther = this.getWindows(
-          windowMain,
-          itemDesktop,
-          itemScreen,
-        );
+        const windowsOther = this.getAll(windowMain, itemDesktop, itemScreen);
         const tilesOrdered = this.tiles.getOrderedTiles(
           itemDesktop,
           itemScreen,
@@ -108,7 +104,7 @@ export class Windows {
 
         windowMain._tileShadow = windowMain.tile;
 
-        this.extendWindows(
+        this.extend(
           [windowMain, ...windowsOther],
           this.userspace.getPanelsSize(itemDesktop, itemScreen),
         );
@@ -122,9 +118,9 @@ export class Windows {
   }
 
   // Set window tiles on remove window
-  setWindowsTilesRemoved(windowMain) {
-    const windowsOther = this.getWindows(windowMain);
-    const tilesOrdered = this.tiles.getTilesFromActualDesktop();
+  setTilesOnRemove(windowMain) {
+    const windowsOther = this.getAll(windowMain);
+    const tilesOrdered = this.tiles.getTilesCurrentDesktop();
 
     if (tilesOrdered.length === 0 || windowsOther.length === 0) {
       return true;
@@ -142,12 +138,12 @@ export class Windows {
       }
     }
 
-    this.extendWindows(windowsOther, this.userspace.getPanelsSize());
+    this.extend(windowsOther, this.userspace.getPanelsSize());
     return false;
   }
 
   //Extend window if empty space is available
-  extendWindows(windows, panelsSize) {
+  extend(windows, panelsSize) {
     console.log(
       "extendwindow",
       this.config.maximizeExtend === true,
@@ -169,7 +165,7 @@ export class Windows {
       return;
     }
 
-    this.resetWindowGeometry(windows, panelsSize);
+    this.resetGeometry(windows, panelsSize);
 
     for (const window of windows) {
       window._avoidMaximizeExtend = false;
@@ -277,17 +273,13 @@ export class Windows {
             break;
         }
       }
-      const tileVirtual = this.setGeometryWindow(
-        window,
-        newGeometry,
-        panelsSize,
-      );
+      const tileVirtual = this.setGeometry(window, newGeometry, panelsSize);
       window._tileVirtual = tileVirtual;
     }
   }
 
   //Set default tile size
-  resetWindowGeometry(windows, panelsSize) {
+  resetGeometry(windows, panelsSize) {
     for (const window of windows) {
       window._tileVirtual = undefined;
 
@@ -299,7 +291,7 @@ export class Windows {
       }
 
       window.setMaximize(false, false);
-      this.setGeometryWindow(window, {}, panelsSize);
+      this.setGeometry(window, {}, panelsSize);
     }
   }
 
@@ -314,7 +306,7 @@ export class Windows {
   }
 
   //Set window size and return `virtualTile`
-  setGeometryWindow(window, geometry, panelsSize) {
+  setGeometry(window, geometry, panelsSize) {
     const tileRef = window.tile !== null ? window.tile : window._tileShadow;
     const tileRefGeometry = this.getRealGeometry(window);
 
@@ -368,9 +360,9 @@ export class Windows {
   }
 
   //Focus window in the workspace
-  focusWindow(window) {
+  focus(window) {
     if (window === undefined || window === null) {
-      const windows = this.getWindows();
+      const windows = this.getAll();
 
       if (windows.length === 0) {
         return null;
@@ -397,7 +389,7 @@ export class Windows {
   }
 
   //Extend all windows in the current desktop
-  extendWindowsCurrentDesktop(screenAll = false) {
+  extendCurrentDesktop(screenAll = false) {
     let screens = [this.workspace.activeScreen];
 
     if (screenAll === true) {
@@ -405,26 +397,23 @@ export class Windows {
     }
 
     for (const screen of screens) {
-      const windows = this.getWindows(undefined, undefined, screen);
+      const windows = this.getAll(undefined, undefined, screen);
 
       if (windows.length === 0) {
         continue;
       }
 
-      this.extendWindows(
-        windows,
-        this.userspace.getPanelsSize(undefined, screen),
-      );
+      this.extend(windows, this.userspace.getPanelsSize(undefined, screen));
     }
   }
 
   //Transfer a window to another desktop with shortcuts
-  adaptWindowCurrentDesktop(window = this.workspace.activeWindow) {
+  movedToAnotherDesktopShortcut(window = this.workspace.activeWindow) {
     if (window === null) {
       return false;
     }
 
-    console.log("adapt");
+    console.log("moved to another desktop");
 
     if (
       this.rootUI.visible === true ||
@@ -440,14 +429,15 @@ export class Windows {
       return false;
     }
 
-    const windowsOther = this.getWindows(window);
-    const tiles = this.tiles.getTilesFromActualDesktop();
+    const windowsOther = this.getAll(window);
+    const tiles = this.tiles.getTilesCurrentDesktop();
 
     const tileEmpty = tiles.find(
       (t) => !windowsOther.some((w) => w.tile === t || w._tileShadow === t),
     );
 
     if (tileEmpty === undefined) {
+      window._tileShadow = tiles[0];
       return false;
     }
 
@@ -472,8 +462,51 @@ export class Windows {
     tileEmpty.manage(window);
     window._tileShadow = tileEmpty;
 
-    this.extendWindowsCurrentDesktop();
+    this.extendCurrentDesktop();
 
     return true;
+  }
+
+  //Reset all windows
+  resetAll() {
+    const tilesOrdered = this.tiles.getTilesCurrentDesktop();
+
+    for (const screen of this.workspace.screens) {
+      const windows = this.getAll(undefined, undefined, screen);
+      for (let i = 0; i < windows.length; i++) {
+        if (tilesOrdered[i] === undefined) {
+          tilesOrdered[tilesOrdered.length - 1].manage(windows[i]);
+          continue;
+        }
+
+        if (windows[i].output !== screen) {
+          this.workspace.sendClientToScreen(windows[i], screen);
+        }
+
+        tilesOrdered[i].manage(windows[i]);
+      }
+    }
+
+    this.extendCurrentDesktop(true);
+  }
+
+  //Disconnect all signals
+  disconnectSignals() {
+    for (const screen of this.workspace.screens) {
+      const windows = this.getAll(undefined, undefined, screen);
+      for (const key in windows._signals) {
+        windows[key].disconnect(windows._signals[key]);
+      }
+    }
+  }
+
+  //Connect all signals
+  reconnectSignals() {
+    for (const screen of this.workspace.screens) {
+      const windows = this.getAll(undefined, undefined, screen);
+      for (const key in windows._signals) {
+        windows[key].connect(windows._signals[key]);
+      }
+    }
   }
 }

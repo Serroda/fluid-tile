@@ -47,6 +47,15 @@ Window {
         }
     }
     
+    Timer {
+        id: timerResetAll
+        interval: 0
+        repeat: false
+        running: false
+        onTriggered: {
+            root.engine.onTimerResetAllFinished();
+        }
+    }
     // Load user config
     function startEngine() {
         config = {
@@ -72,7 +81,7 @@ Window {
             console.log("LayoutCustom variable error: " + error);
         }
 
-        engine = new Logic.Engine(Workspace, config, {root, timerExtendDesktop, timerRemoveDesktop, timerDesktopChanged});
+        engine = new Logic.Engine(Workspace, config, {root, timerExtendDesktop, timerRemoveDesktop, timerDesktopChanged, timerResetAll});
     }
 
 

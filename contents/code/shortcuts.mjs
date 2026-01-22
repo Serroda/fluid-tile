@@ -1,6 +1,12 @@
 export class Shortcuts {
-  constructor(workspace, root, { blocklist, tiles }) {
-    this.layoutIndex = 0;
+  constructor(
+    workspace,
+    config,
+    root,
+    { blocklist, windows, tiles },
+    timerResetAll,
+  ) {
+    this.layoutIndex = config.layoutDefault - 1;
     root.shortcuts = [
       {
         name: "FluidtileToggleWindowBlocklist",
@@ -15,12 +21,16 @@ export class Shortcuts {
         text: "Fluid tile | Change tile layout",
         sequence: "Meta+Alt+F",
         callback: () => {
-          const layouts = tiles.getDefaultLayouts();
+          tiles.disconnectSignals();
+          windows.disconnectSignals();
 
+          const layouts = tiles.getDefaultLayouts();
           tiles.setLayout(workspace.currentDesktop, layouts[this.layoutIndex]);
 
           this.layoutIndex =
             this.layoutIndex >= layouts.length - 1 ? 0 : this.layoutIndex + 1;
+
+          timerResetAll.start();
         },
       },
     ];

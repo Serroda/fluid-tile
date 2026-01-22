@@ -72,7 +72,8 @@ export class Tiles {
   setLayout(desktop, layout) {
     for (const screen of this.workspace.screens) {
       const tileRoot = this.workspace.rootTile(screen, desktop);
-      this.deleteTiles(tileRoot.tiles);
+      console.log(tileRoot);
+      this.deleteTiles(tileRoot.tiles, tileRoot);
       const result = this.setTiles(tileRoot.tiles[0] ?? tileRoot, layout);
 
       if (result === false) {
@@ -221,8 +222,12 @@ export class Tiles {
   }
 
   //Delete reverse tile layout
-  deleteTiles(tiles) {
+  deleteTiles(tiles, tileRoot) {
     for (let index = tiles.length; index > 0; index--) {
+      tileRoot._avoidExtendChildTilesChanged = true;
+      if (tiles[index - 1].parent !== null) {
+        tiles[index - 1].parent._avoidExtendChildTilesChanged = true;
+      }
       tiles[index - 1].remove();
     }
   }
@@ -270,5 +275,37 @@ export class Tiles {
     }
 
     return null;
+  }
+
+  //Disconect all signals
+  disconnectSignals() {
+    const rootTile = this.getRootTile();
+
+    for (const key in rootTile._signals) {
+      rootTile[key].disconnect(rootTile._signals[key]);
+    }
+
+    const tiles = this.getTilesCurrentDesktop();
+    for (const tile of tiles) {
+      for (const key in tile._signals) {
+        tile[key].disconnect(tile._signals[key]);
+      }
+    }
+  }
+
+  //Reconnect all signals
+  reconnectSignals() {
+    const rootTile = this.getRootTile();
+
+    for (const key in rootTile._signals) {
+      rootTile[key].connect(rootTile._signals[key]);
+    }
+
+    const tiles = this.getTilesCurrentDesktop();
+    for (const tile of tiles) {
+      for (const key in tile._signals) {
+        tile[key].connect(tile._signals[key]);
+      }
+    }
   }
 }
