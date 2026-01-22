@@ -63,7 +63,7 @@ export class Engine {
       }
 
       this.classes.tiles.setLayout(this.workspace.currentDesktop, layout);
-      const tilesOrdered = this.classes.tiles.getTilesFromActualDesktop();
+      const tilesOrdered = this.classes.tiles.getTilesCurrentDesktop();
 
       if (this.config.maximizeExtend === true) {
         window.setMaximize(true, true);
@@ -186,7 +186,7 @@ export class Engine {
         this.config.windowsExtendTileChangedDelay;
       this.timers.extendDesktop.start();
     } else if (
-      this.classes.tiles.getTilesFromActualDesktop().length >
+      this.classes.tiles.getTilesCurrentDesktop().length >
       windowsOther.length + 1 ||
       window._maximized === false
     ) {
@@ -320,7 +320,7 @@ export class Engine {
       );
     }
 
-    const tiles = this.classes.tiles.getTilesFromActualDesktop();
+    const tiles = this.classes.tiles.getTilesCurrentDesktop();
 
     for (const tile of tiles) {
       if (tile._signalsAdded === true) {

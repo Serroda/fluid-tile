@@ -228,7 +228,7 @@ export class Tiles {
   }
 
   //Get all tiles from the actual desktop with all screens
-  getTilesFromActualDesktop() {
+  getTilesCurrentDesktop() {
     let tiles = [];
     for (const screen of this.workspace.screens) {
       tiles = tiles.concat(this.getOrderedTiles(undefined, screen));
