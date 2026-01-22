@@ -21,8 +21,8 @@ export class Shortcuts {
         text: "Fluid tile | Change tile layout",
         sequence: "Meta+Alt+F",
         callback: () => {
-          tiles.disconnectSignals();
           windows.disconnectSignals();
+          tiles.disconnectSignals();
 
           const layouts = tiles.getDefaultLayouts();
           tiles.setLayout(workspace.currentDesktop, layouts[this.layoutIndex]);

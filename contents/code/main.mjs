@@ -132,7 +132,7 @@ export class Engine {
     }
 
     window._signals = {
-      maximizedAboutToChange: this.onMaximizeChanged.bind(this, window),
+      maximizedAboutToChange: this.onMaximizeAboutToChanged.bind(this, window),
       minimizedChanged: this.onMinimizedChanged.bind(this, window),
       interactiveMoveResizeStarted: this.classes.ui.onUserMoveStart.bind(
         this.classes.ui,
@@ -151,31 +151,6 @@ export class Engine {
     for (const key in window._signals) {
       window[key].connect(window._signals[key]);
     }
-
-    // window.maximizedAboutToChange.connect((mode) => {
-    //   this.onMaximizeChanged(mode, window);
-    // });
-    //
-    // window.minimizedChanged.connect(() => {
-    //   this.onMinimizedChanged(window);
-    // });
-    //
-    // window.interactiveMoveResizeStarted.connect(() => {
-    //   this.classes.ui.onUserMoveStart(window);
-    // });
-    // window.interactiveMoveResizeStepped.connect((windowGeometry) => {
-    //   this.classes.ui.onUserMoveStepped(windowGeometry, window);
-    // });
-    // window.interactiveMoveResizeFinished.connect(() => {
-    //   if (this.classes.blocklist.check(window) === true) {
-    //     return;
-    //   }
-    //
-    //   const windowMoved = this.classes.ui.onUserMoveFinished(window);
-    //   if (windowMoved === false) {
-    //     this.classes.windows.extendCurrentDesktop(true);
-    //   }
-    // });
   }
 
   //When a window tile is changed, exchange windows and extend windows
@@ -234,11 +209,11 @@ export class Engine {
   }
 
   //When window is not maximized, set a previous tile
-  onMaximizeChanged(window, mode) {
+  onMaximizeAboutToChanged(window, mode) {
     window._maximized = mode === 3;
 
     //When a window is maximized window.tile is always null
-    console.log("maximize change");
+    console.log("maximize change", mode, window);
 
     if (
       this.rootUI.visible === true ||
@@ -256,11 +231,16 @@ export class Engine {
     }
 
     //If not fullscreen
-    if (window.tile !== window._tileShadow) {
-      console.log("maximize manage");
+    if (
+      window.tile !== window._tileShadow &&
+      window._avoidManageTileMaximize !== true
+    ) {
       window._avoidTileChangedTrigger = false;
       window._avoidMaximizeExtend = true;
+      window._avoidManageTileMaximize = true;
       window._tileShadow.manage(window);
+    } else {
+      window._avoidManageTileMaximize = false;
     }
   }
 
@@ -332,8 +312,8 @@ export class Engine {
   //Extend windows when timer finish
   onTimerResetAllFinished() {
     this.classes.windows.resetAll();
+    this.setTilesSignals();
     this.classes.windows.reconnectSignals();
-    this.classes.tiles.reconnectSignals();
   }
 
   // Focus window when a current desktop is changed

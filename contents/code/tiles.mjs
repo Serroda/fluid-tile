@@ -292,20 +292,4 @@ export class Tiles {
       }
     }
   }
-
-  //Reconnect all signals
-  reconnectSignals() {
-    const rootTile = this.getRootTile();
-
-    for (const key in rootTile._signals) {
-      rootTile[key].connect(rootTile._signals[key]);
-    }
-
-    const tiles = this.getTilesCurrentDesktop();
-    for (const tile of tiles) {
-      for (const key in tile._signals) {
-        tile[key].connect(tile._signals[key]);
-      }
-    }
-  }
 }

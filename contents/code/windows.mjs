@@ -474,6 +474,8 @@ export class Windows {
     for (const screen of this.workspace.screens) {
       const windows = this.getAll(undefined, undefined, screen);
       for (let i = 0; i < windows.length; i++) {
+        windows[i]._avoidMaximizeTrigger = true;
+
         if (tilesOrdered[i] === undefined) {
           windows[i]._tileShadow = tilesOrdered[tilesOrdered.length - 1];
           tilesOrdered[tilesOrdered.length - 1].manage(windows[i]);
