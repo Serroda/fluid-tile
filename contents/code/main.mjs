@@ -233,10 +233,11 @@ export class Engine {
   //When a window is minimized, extend windows
   onMinimizedChanged(window) {
     if (window.desktops.includes(this.workspace.currentDesktop) === false) {
-      this.state.desktopsExtend.add(this.workspace.currentDesktop);
+      this.state.desktopsExtend.add(window.desktops[0]);
       return;
     }
 
+    window._avoidMaximizeTrigger = true;
     window.setMaximize(false, false);
     this.classes.windows.extendWindowsCurrentDesktop(true);
   }
@@ -331,6 +332,9 @@ export class Engine {
       tile.windowAdded.connect(this.onWindowAddedToTile.bind(this, tile));
     }
   }
+
+  //TODO: Error when tiles changed by shortcut
+  //execute extend one
 
   onChildTilesChanged() {
     this.setTilesSignals();
