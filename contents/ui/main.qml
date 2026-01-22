@@ -38,12 +38,12 @@ Window {
     }
     
     Timer {
-        id: timerFocusWindow
+        id: timerDesktopChanged
         interval: 0
         repeat: false
         running: false
         onTriggered: {
-            root.engine.onTimerFocusWindowFinished();
+            root.engine.onTimerDesktopChangedFinished();
         }
     }
     
@@ -72,7 +72,7 @@ Window {
             console.log("LayoutCustom variable error: " + error);
         }
 
-        engine = new Logic.Engine(Workspace, config, {root, timerExtendDesktop, timerRemoveDesktop, timerFocusWindow});
+        engine = new Logic.Engine(Workspace, config, {root, timerExtendDesktop, timerRemoveDesktop, timerDesktopChanged});
     }
 
 

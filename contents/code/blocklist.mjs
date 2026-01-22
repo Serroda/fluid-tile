@@ -11,7 +11,7 @@ export class Blocklist {
 
   //Remove blocked apps
   removeWindow(window) {
-    const index = this.appsBlockByShortcut.findIndex((abs) => abs === window);
+    const index = this.appsBlockByShortcut.indexOf(window);
     if (index !== -1) {
       this.appsBlockByShortcut.splice(index, 1);
       return true;

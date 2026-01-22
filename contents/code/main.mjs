@@ -1,4 +1,5 @@
 import { Blocklist } from "./blocklist.mjs";
+import { Queue } from "./queue.mjs";
 import { Shortcuts } from "./shortcuts.mjs";
 import { Tiles } from "./tiles.mjs";
 import { UI } from "./ui.mjs";
@@ -9,10 +10,10 @@ export class Engine {
   constructor(
     workspace,
     config,
-    { root, timerExtendDesktop, timerRemoveDesktop, timerFocusWindow },
+    { root, timerExtendDesktop, timerRemoveDesktop, timerDesktopChanged },
   ) {
     this.state = {
-      desktopsExtend: [],
+      desktopsExtend: new Queue(),
       removeDesktopInfo: {},
     };
     this.workspace = workspace;
@@ -21,7 +22,7 @@ export class Engine {
     this.timers = {
       extendDesktop: timerExtendDesktop,
       removeDesktop: timerRemoveDesktop,
-      focusWindow: timerFocusWindow,
+      desktopChanged: timerDesktopChanged,
     };
     this.classes = {
       blocklist: new Blocklist(config),
@@ -175,11 +176,8 @@ export class Engine {
       this.classes.tiles.exchangeTiles(windowsOther, window._tileShadow);
     }
 
-    if (
-      this.workspace.currentDesktop !== window._tileShadow._desktop &&
-      this.state.desktopsExtend.includes(window._tileShadow._desktop) === false
-    ) {
-      this.state.desktopsExtend.push(window._tileShadow._desktop);
+    if (this.workspace.currentDesktop !== window._tileShadow._desktop) {
+      this.state.desktopsExtend.add(window._tileShadow.desktop);
     }
 
     //Start delay only when you have to exchange in another screen
@@ -189,7 +187,7 @@ export class Engine {
       this.timers.extendDesktop.start();
     } else if (
       this.classes.tiles.getTilesFromActualDesktop().length >
-        windowsOther.length + 1 ||
+      windowsOther.length + 1 ||
       window._maximized === false
     ) {
       //Start timer without delay, if you dont execute `extendWindows` inside
@@ -234,12 +232,8 @@ export class Engine {
 
   //When a window is minimized, extend windows
   onMinimizedChanged(window) {
-    if (
-      window.desktops.includes(this.workspace.currentDesktop) === false &&
-      this.state.desktopsExtend.includes(this.workspace.currentDesktop) ===
-        false
-    ) {
-      this.state.desktopsExtend.push(this.workspace.currentDesktop);
+    if (window.desktops.includes(this.workspace.currentDesktop) === false) {
+      this.state.desktopsExtend.add(this.workspace.currentDesktop);
       return;
     }
 
@@ -285,8 +279,19 @@ export class Engine {
   }
 
   //Focus window when timer finish
-  onTimerFocusWindowFinished() {
-    this.classes.windows.focusWindow();
+  onTimerDesktopChangedFinished() {
+    const adapted = this.classes.windows.adaptWindowCurrentDesktop();
+
+    if (adapted === false) {
+      this.classes.windows.focusWindow();
+    }
+
+    if (
+      this.state.desktopsExtend.exists(this.workspace.currentDesktop) === true
+    ) {
+      this.classes.windows.extendWindowsCurrentDesktop(true);
+      this.state.desktopsExtend.remove(this.workspace.currentDesktop);
+    }
   }
 
   // Focus window when a current desktop is changed
@@ -295,21 +300,7 @@ export class Engine {
     this.classes.ui.resetLayout();
     this.setTilesSignals();
 
-    const adapted = this.classes.windows.adaptWindowCurrentDesktop();
-
-    if (adapted === false) {
-      this.timers.focusWindow.start();
-    }
-
-    if (
-      this.state.desktopsExtend.includes(this.workspace.currentDesktop) === true
-    ) {
-      this.classes.windows.extendWindowsCurrentDesktop(true);
-      this.state.desktopsExtend.splice(
-        this.state.desktopsExtend.indexOf(this.workspace.currentDesktop),
-        1,
-      );
-    }
+    this.timers.desktopChanged.start();
   }
 
   //Set signal to tiles
@@ -320,31 +311,24 @@ export class Engine {
       return;
     }
 
-    if (rootTile._childTilesSignalFunction !== undefined) {
-      rootTile.childTilesChanged.disconnect(rootTile._childTilesSignalFunction);
-    } else {
-      rootTile._childTilesSignalFunction = this.onChildTilesChanged.bind(this);
+    if (rootTile._signalsAdded !== true) {
+      rootTile._signalsAdded = true;
+      rootTile.childTilesChanged.connect(this.onChildTilesChanged.bind(this));
+      rootTile.windowAdded.connect(
+        this.onWindowAddedToTile.bind(this, rootTile),
+      );
     }
-
-    rootTile.childTilesChanged.connect(
-      rootTile._childTilesSignalFunction.bind(this),
-    );
 
     const tiles = this.classes.tiles.getTilesFromActualDesktop();
 
     for (const tile of tiles) {
-      if (tile._signalsFunctions !== undefined) {
-        tile.childTilesChanged.disconnect(tile._signalsFunctions.childTiles);
-        tile.windowAdded.disconnect(tile._signalsFunctions.windowAdded);
-      } else {
-        tile._signalsFunctions = {
-          childTiles: this.onChildTilesChanged.bind(this),
-          windowAdded: this.onWindowAddedToTile.bind(this, tile),
-        };
+      if (tile._signalsAdded === true) {
+        continue;
       }
 
-      tile.childTilesChanged.connect(tile._signalsFunctions.childTiles);
-      tile.windowAdded.connect(tile._signalsFunctions.windowAdded);
+      tile._signalsAdded = true;
+      tile.childTilesChanged.connect(this.onChildTilesChanged.bind(this));
+      tile.windowAdded.connect(this.onWindowAddedToTile.bind(this, tile));
     }
   }
 

@@ -39,11 +39,11 @@ export class Windows {
 
   // Set window tiles on add window
   setWindowsTilesAdded(windowMain) {
-    const indexStartDesktop = this.workspace.desktops.findIndex(
-      (d) => d === this.workspace.currentDesktop,
+    const indexStartDesktop = this.workspace.desktops.indexOf(
+      this.workspace.currentDesktop,
     );
-    const indexStartScreen = this.workspace.screens.findIndex(
-      (s) => s === this.workspace.activeScreen,
+    const indexStartScreen = this.workspace.screens.indexOf(
+      this.workspace.activeScreen,
     );
 
     if (indexStartDesktop === -1 || indexStartScreen === -1) {
@@ -248,11 +248,11 @@ export class Windows {
           (acc, woNew) => {
             const distance = Math.hypot(
               windowGeometry.left +
-                windowGeometry.width / 2 -
-                (woNew.left + woNew.width / 2),
+              windowGeometry.width / 2 -
+              (woNew.left + woNew.width / 2),
               windowGeometry.top +
-                windowGeometry.height / 2 -
-                (woNew.top + woNew.height / 2),
+              windowGeometry.height / 2 -
+              (woNew.top + woNew.height / 2),
             );
 
             return acc.distance === -1 || distance < acc.distance
@@ -367,21 +367,20 @@ export class Windows {
     };
   }
 
-  //TODO: Try with timer
   //Focus window in the workspace
   focusWindow(window) {
-    if (window === undefined) {
+    if (window === undefined || window === null) {
       const windows = this.getWindows();
 
       if (windows.length === 0) {
         return null;
       }
 
-      if (windows[0].minimized === true) {
+      if (windows[windows.length - 1].minimized === true) {
         return null;
       }
 
-      this.workspace.activeWindow = windows[0];
+      this.workspace.activeWindow = windows[windows.length - 1];
     } else {
       this.workspace.activeWindow = window;
     }
@@ -452,18 +451,8 @@ export class Windows {
       return false;
     }
 
-    if (
-      this.state.desktopsExtend.includes(window._tileShadow._desktop) === false
-    ) {
-      this.state.desktopsExtend.push(window._tileShadow._desktop);
-    }
-
-    if (this.state.desktopsExtend.includes(tileEmpty._desktop) === true) {
-      this.state.desktopsExtend.splice(
-        this.state.desktopsExtend.indexOf(tileEmpty._desktop),
-        1,
-      );
-    }
+    this.state.desktopsExtend.add(window._tileShadow._desktop);
+    this.state.desktopsExtend.remove(tileEmpty._desktop);
 
     window.desktops = [tileEmpty._desktop];
 
@@ -474,10 +463,17 @@ export class Windows {
     window._avoidMaximizeTrigger = true;
     window._avoidTileChangedTrigger = true;
 
-    window._tileShadow = tileEmpty;
+    for (const windowOther of windowsOther) {
+      if (windowOther._maximized === true) {
+        window._avoidMaximizeTrigger = true;
+      }
+    }
+
     tileEmpty.manage(window);
+    window._tileShadow = tileEmpty;
 
     this.extendWindowsCurrentDesktop();
+
     return true;
   }
 }
