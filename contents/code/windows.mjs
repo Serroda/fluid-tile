@@ -475,6 +475,7 @@ export class Windows {
       const windows = this.getAll(undefined, undefined, screen);
       for (let i = 0; i < windows.length; i++) {
         if (tilesOrdered[i] === undefined) {
+          windows[i]._tileShadow = tilesOrdered[tilesOrdered.length - 1];
           tilesOrdered[tilesOrdered.length - 1].manage(windows[i]);
           continue;
         }
@@ -483,6 +484,7 @@ export class Windows {
           this.workspace.sendClientToScreen(windows[i], screen);
         }
 
+        windows[i]._tileShadow = tilesOrdered[i];
         tilesOrdered[i].manage(windows[i]);
       }
     }
