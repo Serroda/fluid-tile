@@ -6,7 +6,7 @@ export class Tiles {
 
   //Premade layouts
   getDefaultLayouts(index) {
-    return [
+    const layouts = [
       [{ x: 0, y: 0 }],
       [
         { x: 0, y: 0 },
@@ -59,7 +59,13 @@ export class Tiles {
           ],
         },
       ],
-    ][index];
+    ];
+
+    if (index === undefined) {
+      return layouts;
+    }
+
+    return layouts[index];
   }
 
   //Delete actual layout and set new layout
