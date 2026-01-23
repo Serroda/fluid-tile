@@ -158,8 +158,6 @@ export class Engine {
   onWindowAddedToTile(tile, window) {
     //Trigger when a window is maximized but not minimized
     //when a window exchange
-    console.log("window added to tile", window._avoidTileChangedTrigger);
-
     if (
       this.classes.blocklist.check(window) === true ||
       this.rootUI.visible === true ||
@@ -170,8 +168,6 @@ export class Engine {
         window._avoidTileChangedTrigger === true
           ? false
           : window._avoidTileChangedTrigger;
-
-      console.log("avoid", window._avoidTileChangedTrigger);
 
       return;
     }
@@ -215,8 +211,6 @@ export class Engine {
     window._maximized = mode === 3;
 
     //When a window is maximized window.tile is always null
-    console.log("maximize change", mode, window);
-
     if (
       this.classes.blocklist.check(window) === true ||
       this.rootUI.visible === true ||
@@ -229,7 +223,6 @@ export class Engine {
         window._avoidMaximizeTrigger === true
           ? false
           : window._avoidMaximizeTrigger;
-      console.log("avoid", window._avoidMaximizeTrigger);
       return;
     }
 
@@ -325,7 +318,6 @@ export class Engine {
 
   // Focus window when a current desktop is changed
   onCurrentDesktopChanged() {
-    console.log("desktop changed");
     this.classes.ui.resetLayout();
     this.setTilesSignals();
     this.timers.desktopChanged.start();
@@ -333,13 +325,19 @@ export class Engine {
 
   //Set signal to tiles
   setTilesSignals() {
-    const rootTile = this.classes.tiles.getRootTile();
+    for (const screen of this.workspace.screens) {
+      const rootTile = this.classes.tiles.getRootTile(undefined, screen);
 
-    if (rootTile === null) {
-      return;
-    }
+      if (rootTile === null) {
+        return;
+      }
 
-    if (rootTile._signals === undefined) {
+      if (rootTile._signals !== undefined) {
+        for (const key in rootTile._signals) {
+          rootTile[key].disconnect(rootTile._signals[key]);
+        }
+      }
+
       rootTile._signals = {
         childTilesChanged: this.onChildTilesChanged.bind(this),
         windowAdded: this.onWindowAddedToTile.bind(this, rootTile),
@@ -354,7 +352,9 @@ export class Engine {
 
     for (const tile of tiles) {
       if (tile._signals !== undefined) {
-        continue;
+        for (const key in tile._signals) {
+          tile[key].disconnect(tile._signals[key]);
+        }
       }
 
       tile._signals = {
@@ -369,7 +369,6 @@ export class Engine {
   }
 
   onChildTilesChanged() {
-    console.log("child changed");
     this.setTilesSignals();
     this.classes.windows.extendCurrentDesktop();
   }

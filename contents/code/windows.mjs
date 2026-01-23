@@ -144,21 +144,12 @@ export class Windows {
 
   //Extend window if empty space is available
   extend(windows, panelsSize) {
-    console.log(
-      "extendwindow",
-      this.config.maximizeExtend === true,
-      windows.length === 1,
-      windows[0].minimized === false,
-      windows[0]._avoidMaximizeExtend !== true,
-    );
-
     if (
       this.config.maximizeExtend === true &&
       windows.length === 1 &&
       windows[0].minimized === false &&
       windows[0]._avoidMaximizeExtend !== true
     ) {
-      console.log("extendwindow maximized");
       windows[0]._avoidMaximizeTrigger = true;
       windows[0]._avoidMaximizeExtend = false;
       windows[0].setMaximize(true, true);
@@ -413,19 +404,12 @@ export class Windows {
       return false;
     }
 
-    console.log("moved to another desktop");
-
     if (
       this.rootUI.visible === true ||
       this.blocklist.check(window) === true ||
       window._tileShadow === undefined ||
       window._tileShadow?._desktop === this.workspace.currentDesktop
     ) {
-      console.log(
-        "avoid",
-        window._tileShadow?._desktop?.name,
-        this.workspace.currentDesktop.name,
-      );
       return false;
     }
 
@@ -472,10 +456,10 @@ export class Windows {
 
   //Reset all windows
   resetAll() {
-    const tilesOrdered = this.tiles.getTilesCurrentDesktop();
-
     for (const screen of this.workspace.screens) {
       const windows = this.getAll(undefined, undefined, screen);
+      const tilesOrdered = this.tiles.getOrderedTiles(undefined, screen);
+
       for (let i = 0; i < windows.length; i++) {
         windows[i]._avoidMaximizeTrigger = true;
 
@@ -483,10 +467,6 @@ export class Windows {
           windows[i]._tileShadow = tilesOrdered[tilesOrdered.length - 1];
           tilesOrdered[tilesOrdered.length - 1].manage(windows[i]);
           continue;
-        }
-
-        if (windows[i].output !== screen) {
-          this.workspace.sendClientToScreen(windows[i], screen);
         }
 
         windows[i]._tileShadow = tilesOrdered[i];

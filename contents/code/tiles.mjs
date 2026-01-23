@@ -72,7 +72,6 @@ export class Tiles {
   setLayout(desktop, layout) {
     for (const screen of this.workspace.screens) {
       const tileRoot = this.workspace.rootTile(screen, desktop);
-      console.log(tileRoot);
       this.deleteTiles(tileRoot.tiles, tileRoot);
       const result = this.setTiles(tileRoot.tiles[0] ?? tileRoot, layout);
 
@@ -243,8 +242,6 @@ export class Tiles {
 
   //Exchange windows between tiles
   exchangeTiles(windowsExchange, tile) {
-    console.log("exchange");
-
     for (const window of windowsExchange) {
       window._avoidMaximizeTrigger = true;
       window.setMaximize(false, false);
@@ -279,10 +276,13 @@ export class Tiles {
 
   //Disconect all signals
   disconnectSignals() {
-    const rootTile = this.getRootTile();
+    for (const screen of this.workspace.screens) {
+      const rootTile = this.getRootTile(undefined, screen);
 
-    for (const key in rootTile._signals) {
-      rootTile[key].disconnect(rootTile._signals[key]);
+      for (const key in rootTile._signals) {
+        rootTile[key].disconnect(rootTile._signals[key]);
+      }
+      rootTile._signals = undefined;
     }
 
     const tiles = this.getTilesCurrentDesktop();
@@ -290,6 +290,7 @@ export class Tiles {
       for (const key in tile._signals) {
         tile[key].disconnect(tile._signals[key]);
       }
+      tile._signals = undefined;
     }
   }
 }

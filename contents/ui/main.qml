@@ -19,7 +19,7 @@ Window {
 
     Timer {
         id: timerRemoveDesktop
-        interval: root.config.desktopRemoveDelay
+        interval: root.config.desktopRemoveDelay 
         repeat: false
         running: false
         onTriggered: {
@@ -29,7 +29,7 @@ Window {
     
     Timer {
         id: timerExtendDesktop
-        interval: root.config.windowsExtendTileChangedDelay
+        interval: root.config.windowsExtendTileChangedDelay 
         repeat: false
         running: false
         onTriggered: {
@@ -56,6 +56,7 @@ Window {
             root.engine.onTimerResetAllFinished();
         }
     }
+    
     // Load user config
     function startEngine() {
         config = {
