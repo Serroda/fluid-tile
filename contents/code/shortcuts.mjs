@@ -13,7 +13,12 @@ export class Shortcuts {
         text: "Fluid tile | Toggle window to blocklist",
         sequence: "Meta+F",
         callback: () => {
-          blocklist.toggleWindow(workspace.activeWindow);
+          const added = blocklist.toggleWindow(workspace.activeWindow);
+          if (added === false) {
+            windows.setEmptyTile(workspace.activeWindow);
+          } else {
+            windows.extendCurrentDesktop();
+          }
         },
       },
       {

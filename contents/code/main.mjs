@@ -98,6 +98,7 @@ export class Engine {
 
     const continueProcess = this.classes.windows.setTilesOnRemove(window);
 
+    this.classes.blocklist.removeWindow(window);
     if (continueProcess === false) {
       this.classes.windows.focus();
       return;
@@ -160,6 +161,7 @@ export class Engine {
     console.log("window added to tile", window._avoidTileChangedTrigger);
 
     if (
+      this.classes.blocklist.check(window) === true ||
       this.rootUI.visible === true ||
       window._avoidTileChangedTrigger === true ||
       window._tileShadow === undefined
@@ -196,7 +198,7 @@ export class Engine {
       this.timers.extendDesktop.start();
     } else if (
       this.classes.tiles.getTilesCurrentDesktop().length >
-      windowsOther.length + 1 ||
+        windowsOther.length + 1 ||
       window._maximized === false
     ) {
       //Start timer without delay, if you dont execute `extendWindows` inside
@@ -216,6 +218,7 @@ export class Engine {
     console.log("maximize change", mode, window);
 
     if (
+      this.classes.blocklist.check(window) === true ||
       this.rootUI.visible === true ||
       window._maximized === true ||
       window._avoidMaximizeTrigger === true ||
@@ -246,6 +249,10 @@ export class Engine {
 
   //When a window is minimized, extend windows
   onMinimizedChanged(window) {
+    if (this.classes.blocklist.check(window) === true) {
+      return;
+    }
+
     if (window.desktops.includes(this.workspace.currentDesktop) === false) {
       this.state.desktopsExtend.add(window.desktops[0]);
       return;

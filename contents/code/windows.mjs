@@ -244,11 +244,11 @@ export class Windows {
           (acc, woNew) => {
             const distance = Math.hypot(
               windowGeometry.left +
-              windowGeometry.width / 2 -
-              (woNew.left + woNew.width / 2),
+                windowGeometry.width / 2 -
+                (woNew.left + woNew.width / 2),
               windowGeometry.top +
-              windowGeometry.height / 2 -
-              (woNew.top + woNew.height / 2),
+                windowGeometry.height / 2 -
+                (woNew.top + woNew.height / 2),
             );
 
             return acc.distance === -1 || distance < acc.distance
@@ -429,6 +429,11 @@ export class Windows {
       return false;
     }
 
+    return this.setEmptyTile(window);
+  }
+
+  //Search empty tile and set to the window
+  setEmptyTile(window) {
     const windowsOther = this.getAll(window);
     const tiles = this.tiles.getTilesCurrentDesktop();
 
@@ -454,13 +459,11 @@ export class Windows {
     window._avoidTileChangedTrigger = true;
 
     for (const windowOther of windowsOther) {
-      if (windowOther._maximized === true) {
-        window._avoidMaximizeTrigger = true;
-      }
+      windowOther._avoidTileChangedTrigger = true;
     }
 
-    tileEmpty.manage(window);
     window._tileShadow = tileEmpty;
+    tileEmpty.manage(window);
 
     this.extendCurrentDesktop();
 
