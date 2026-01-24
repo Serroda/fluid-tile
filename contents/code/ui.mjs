@@ -1,10 +1,11 @@
 export class UI {
-  constructor(workspace, config, rootUI, { tiles, blocklist }) {
+  constructor(workspace, config, rootUI, { tiles, windows, blocklist }) {
     this.workspace = workspace;
     this.config = config;
     this.rootUI = rootUI;
     this.tiles = tiles;
     this.blocklist = blocklist;
+    this.windows = windows;
   }
 
   //Paint tiles
@@ -61,7 +62,12 @@ export class UI {
       return;
     }
 
-    window._tileShadow?.manage(window);
+    //If window is resized or layout resized
+    if (window._tileShadow !== undefined && window.tile === null) {
+      window._tileShadow.manage(window);
+    } else if (window.tile !== null) {
+      this.windows.extendCurrentDesktop();
+    }
   }
 
   //Get cursor position or window position
