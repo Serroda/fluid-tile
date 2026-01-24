@@ -42,6 +42,7 @@ export class Engine {
       root,
       this.state,
       this.classes,
+      timerExtendDesktop,
     );
     this.classes.ui = new UI(workspace, config, root, this.classes);
     this.classes.shortcuts = new Shortcuts(
@@ -130,6 +131,12 @@ export class Engine {
   setSignalsToWindow(window) {
     if (this.classes.blocklist.check(window) === true) {
       return;
+    }
+
+    if (window._signals !== undefined) {
+      for (const key in window._signals) {
+        window[key].disconnect(window._signals[key]);
+      }
     }
 
     window._signals = {

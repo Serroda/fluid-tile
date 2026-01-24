@@ -5,6 +5,7 @@ export class Windows {
     rootUI,
     state,
     { blocklist, tiles, userspace },
+    timerExtendDesktop,
   ) {
     this.workspace = workspace;
     this.config = config;
@@ -13,6 +14,7 @@ export class Windows {
     this.blocklist = blocklist;
     this.tiles = tiles;
     this.userspace = userspace;
+    this.timerExtendDesktop = timerExtendDesktop;
   }
 
   // Get all windows from the virtual desktop except the given window
@@ -426,7 +428,10 @@ export class Windows {
     );
 
     if (tileEmpty === undefined) {
+      window._avoidMaximizeTrigger = window._maximized;
+      window._avoidTileChangedTrigger = true;
       window._tileShadow = tiles[0];
+      tiles[0].manage(window);
       return false;
     }
 
@@ -435,11 +440,18 @@ export class Windows {
 
     window.desktops = [tileEmpty._desktop];
 
+    let interval = 0;
+
     if (tileEmpty._screen !== window._tileShadow._screen) {
       this.workspace.sendClientToScreen(window, tileEmpty._screen);
+      interval = this.config.windowsExtendTileChangedDelay;
     }
 
-    window._avoidMaximizeTrigger = true;
+    if (window._maximized === true) {
+      window._avoidMaximizeTrigger = true;
+      window.setMaximize(false, false);
+    }
+
     window._avoidTileChangedTrigger = true;
 
     for (const windowOther of windowsOther) {
@@ -449,7 +461,8 @@ export class Windows {
     window._tileShadow = tileEmpty;
     tileEmpty.manage(window);
 
-    this.extendCurrentDesktop();
+    this.timerExtendDesktop.interval = interval;
+    this.timerExtendDesktop.start();
 
     return true;
   }
