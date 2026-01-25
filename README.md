@@ -28,17 +28,37 @@ If you like the project, you can support me by buying me a coffee or with other 
 - 🤏🏻 Move your windows between tiles with the UI
 - 🕸️ Extend the windows without leaving empty spaces in the layout
 - 🖥️🖥️ Works with multiple screens
+- ✂️ Shortcuts
+
 ## Preview
 
 <a href="https://youtu.be/Dk0h8WTxI20"><img src="https://i.ytimg.com/vi/Dk0h8WTxI20/maxresdefault.jpg" width="450"></a>
 
-## Screenshots
+## Highlights
 
-  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/screenshot1.png" width="200"/>
-  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/screenshot2.png" width="200"/>
-  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/screenshot3.png" width="200"/>
-  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/screenshot4.png" width="200"/>
-  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/screenshot5.png" width="200"/>
+- Window added
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/windowsAdded.webp" width="200"/>
+
+- Window removed
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/windowsRemoved.webp" width="200"/>
+
+- UI
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/UI.webp" width="200"/>
+
+- KWin tile manager
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/tileManager.webp" width="200"/>
+
+- Blocklist
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/blocklist.webp" width="200"/>
+
+- Exchange windows
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/windowsExchange.webp" width="200"/>
+
+- Multiple layouts
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/changeLayout.webp" width="200"/>
+
+- Auto create and delete desktops
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/createDeleteDesktop.webp" width="200"/>
 
 ## Wiki
 
