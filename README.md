@@ -38,35 +38,35 @@ If you like the project, you can support me by buying me a coffee or with other 
 
 - Window added
 
-  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/windowsAdded.webp" width="200"/>
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/windowsAdded.webp" width="450"/>
 
 - Window removed
 
-  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/windowsRemoved.webp" width="200"/>
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/windowsRemoved.webp" width="450"/>
 
 - UI
 
-  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/UI.webp" width="200"/>
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/UI.webp" width="450"/>
 
 - KWin tile manager
 
-  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/tileManager.webp" width="200"/>
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/tileManager.webp" width="450"/>
 
 - Blocklist
 
-  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/blocklist.webp" width="200"/>
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/blocklist.webp" width="450"/>
 
 - Exchange windows
 
-  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/windowsExchange.webp" width="200"/>
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/windowsExchange.webp" width="450"/>
 
 - Multiple layouts
 
-  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/changeLayout.webp" width="200"/>
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/changeLayout.webp" width="450"/>
 
 - Auto create and delete desktops
 
-  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/createDeleteDesktop.webp" width="200"/>
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/createDeleteDesktop.webp" width="450"/>
 
 ## Wiki
 
