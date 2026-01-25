@@ -32,7 +32,7 @@ If you like the project, you can support me by buying me a coffee or with other 
 
 ## Preview
 
-<a href="https://youtu.be/Dk0h8WTxI20"><img src="https://i.ytimg.com/vi/Dk0h8WTxI20/maxresdefault.jpg" width="450"></a>
+<a href="https://youtu.be/SKre99-ud-U"><img src="https://i.ytimg.com/vi/SKre99-ud-U/maxresdefault.jpg" width="450"></a>
 
 ## Highlights
 
