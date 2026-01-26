@@ -1,6 +1,7 @@
 name: Bug Report
-description: Something is not working properly
+about: Something is not working properly
 title: "[Bug]: "
+ref: "main"
 labels:
   - bug
 body:
@@ -10,12 +11,12 @@ body:
         Thanks for taking the time to fill out this bug report! Please be specific
         ### ⚠️ Important
         Before reporting an issue, please make sure that **you have restarted KWin**.
-
+        
         You can restart KWin with these steps:
          1. Disable the script
          2. Run `kwin_wayland --replace &`
          3. Re-enable the script
-
+        
   - type: textarea
     id: description
     attributes:

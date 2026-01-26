@@ -1,6 +1,7 @@
 name: New Feature
-description: Propose new functionalities and features
+about: Propose new functionalities and features
 title: "[Feature]: "
+ref: "main"
 labels:
   - enhancement
 body:
