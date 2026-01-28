@@ -290,12 +290,24 @@ export class Windows {
 
   //Get geometry from tiles
   getRealGeometry(window) {
-    return (
-      window._tileVirtual ??
-      (window.tile !== null
-        ? window.tile.absoluteGeometry
-        : window._tileShadow.absoluteGeometry)
-    );
+    if (window._tileVirtual !== undefined) {
+      return window._tileVirtual;
+    }
+
+    let tileResult = window._tileShadow?.absoluteGeometry;
+
+    if (window.tile !== null) {
+      tileResult = window.tile.absoluteGeometry;
+    }
+
+    return {
+      top: tileResult.y,
+      left: tileResult.x,
+      right: tileResult.x + tileResult.width,
+      bottom: tileResult.y + tileResult.height,
+      height: tileResult.height,
+      width: tileResult.width,
+    };
   }
 
   //Set window size and return `virtualTile`
