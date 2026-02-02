@@ -13,6 +13,8 @@ export class Shortcuts {
         text: "Fluid tile | Toggle window to blocklist",
         sequence: "Meta+F",
         callback: () => {
+          root.visible = false;
+          root.tileActived = -1;
           const added = blocklist.toggleWindow(workspace.activeWindow);
           if (added === false) {
             windows.setEmptyTile(workspace.activeWindow);
