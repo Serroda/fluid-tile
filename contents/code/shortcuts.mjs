@@ -17,7 +17,7 @@ export class Shortcuts {
           root.tileActived = -1;
           const added = blocklist.toggleWindow(workspace.activeWindow);
           if (added === false) {
-            windows.setEmptyTile(workspace.activeWindow);
+            windows.setEmptyTile();
           } else {
             windows.extendCurrentDesktop();
           }

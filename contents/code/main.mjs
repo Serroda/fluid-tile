@@ -44,7 +44,14 @@ export class Engine {
       this.classes,
       timerExtendDesktop,
     );
-    this.classes.ui = new UI(workspace, config, root, this.classes);
+    this.classes.ui = new UI(
+      workspace,
+      config,
+      root,
+      this.state,
+      this.classes,
+      timerRemoveDesktop,
+    );
     this.classes.shortcuts = new Shortcuts(
       workspace,
       config,
@@ -94,23 +101,16 @@ export class Engine {
   //Trigger when a window is remove to the desktop
   onWindowRemoved(window) {
     if (this.classes.blocklist.check(window) === true) {
-      return false;
+      return;
     }
 
     const continueProcess = this.classes.windows.setTilesOnRemove(window);
 
     this.classes.blocklist.removeWindow(window);
+
     if (continueProcess === false) {
       this.classes.windows.focus();
-      return;
-    }
-
-    if (
-      continueProcess === true &&
-      this.config.desktopRemove === true &&
-      this.workspace.desktops.length > 1 &&
-      this.workspace.desktops.length > this.config.desktopRemoveMin
-    ) {
+    } else {
       this.state.removeDesktopInfo = {
         desktopsId: window.desktops.map((d) => d.id),
         window: window,
@@ -191,7 +191,7 @@ export class Engine {
     }
 
     if (this.workspace.currentDesktop !== window._tileShadow._desktop) {
-      this.state.desktopsExtend.add(window._tileShadow.desktop);
+      this.state.desktopsExtend.add(window._tileShadow._desktop);
     }
 
     //Start delay only when you have to exchange in another screen
@@ -264,6 +264,15 @@ export class Engine {
   }
 
   onTimerRemoveDesktopFinished() {
+    if (
+      this.config.desktopRemove === false ||
+      this.workspace.desktops.length <= 1 ||
+      this.workspace.desktops.length <= this.config.desktopRemoveMin
+    ) {
+      this.state.removeDesktopInfo = {};
+      return;
+    }
+
     //Case: Applications that open a window and, when an action is performed,
     //close the window and open another window (Chrome profile selector).
     //This timer avoid crash wayland
@@ -291,8 +300,11 @@ export class Engine {
       this.workspace.removeDesktop(desktop);
     }
 
+    if (this.state.removeDesktopInfo.disableExtend !== true) {
+      this.classes.windows.extendCurrentDesktop(true);
+    }
+
     this.state.removeDesktopInfo = {};
-    this.classes.windows.extendCurrentDesktop();
   }
 
   //Extend windows when timer finish
@@ -302,9 +314,18 @@ export class Engine {
 
   //Focus window when timer finish
   onTimerDesktopChangedFinished() {
-    const moved = this.classes.windows.movedToAnotherDesktopShortcut();
+    const moved = this.classes.windows.checkDesktopChanged();
 
-    if (moved === false) {
+    //Moved by shortcut
+    if (moved === true && this.rootUI.visible === false) {
+      this.state.removeDesktopInfo = {
+        desktopsId: [this.workspace.activeWindow._tileShadow._desktop.id],
+        disableExtend: true,
+      };
+
+      this.timers.removeDesktop.start();
+      this.classes.windows.setEmptyTile();
+    } else {
       this.classes.windows.focus();
     }
 

@@ -412,26 +412,21 @@ export class Windows {
     }
   }
 
-  //Transfer a window to another desktop with shortcuts
-  movedToAnotherDesktopShortcut(window = this.workspace.activeWindow) {
+  //Check if the window has changed its desktop
+  checkDesktopChanged(window = this.workspace.activeWindow) {
     if (window === null) {
       return false;
     }
 
-    if (
-      this.rootUI.visible === true ||
+    return !(
       this.blocklist.check(window) === true ||
       window._tileShadow === undefined ||
       window._tileShadow?._desktop === this.workspace.currentDesktop
-    ) {
-      return false;
-    }
-
-    return this.setEmptyTile(window);
+    );
   }
 
   //Search empty tile and set to the window
-  setEmptyTile(window) {
+  setEmptyTile(window = this.workspace.activeWindow) {
     const windowsOther = this.getAll(window);
     const tiles = this.tiles.getTilesCurrentDesktop();
 

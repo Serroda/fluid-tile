@@ -1,11 +1,20 @@
 export class UI {
-  constructor(workspace, config, rootUI, { tiles, windows, blocklist }) {
+  constructor(
+    workspace,
+    config,
+    rootUI,
+    state,
+    { tiles, windows, blocklist },
+    timerRemoveDesktop,
+  ) {
     this.workspace = workspace;
     this.config = config;
     this.rootUI = rootUI;
     this.tiles = tiles;
     this.blocklist = blocklist;
     this.windows = windows;
+    this.state = state;
+    this.timerRemoveDesktop = timerRemoveDesktop;
   }
 
   //Paint tiles
@@ -53,11 +62,25 @@ export class UI {
 
     if (this.rootUI.visible === true) {
       this.rootUI.visible = false;
+
+      const changed = this.windows.checkDesktopChanged(window);
+
+      if (changed === true) {
+        this.state.removeDesktopInfo = {
+          desktopsId: window._tileShadow._desktop.id,
+          disableExtend: true,
+        };
+
+        this.timerRemoveDesktop.start();
+      }
+
       const tile = this.rootUI.layoutOrdered[this.rootUI.tileActived];
+
       if (tile !== undefined) {
         window._avoidTileChangedTrigger = false;
         tile.manage(window);
       }
+
       this.rootUI.tileActived = -1;
       return;
     }
