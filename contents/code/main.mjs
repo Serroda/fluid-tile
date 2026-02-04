@@ -22,6 +22,7 @@ export class Engine {
       desktopsExtend: new Queue(),
       removeDesktopInfo: {},
       avoidDesktopChanged: false,
+      avoidChildChanged: false,
     };
     this.workspace = workspace;
     this.config = config;
@@ -316,14 +317,17 @@ export class Engine {
 
     //Moved by shortcut
     if (moved === true && this.rootUI.visible === false) {
-      this.state.removeDesktopInfo = {
-        desktopsId: [this.workspace.activeWindow._tileShadow._desktop.id],
-      };
+      if (this.workspace.activeWindow._tileShadow !== undefined) {
+        this.state.removeDesktopInfo = {
+          desktopsId: [this.workspace.activeWindow._tileShadow._desktop.id],
+        };
 
-      this.timers.removeDesktop.start();
-      this.state.desktopsExtend.add(
-        this.workspace.activeWindow._tileShadow._desktop,
-      );
+        this.timers.removeDesktop.start();
+        this.state.desktopsExtend.add(
+          this.workspace.activeWindow._tileShadow._desktop,
+        );
+      }
+
       this.classes.windows.setEmptyTile();
     } else {
       this.classes.windows.focus();
@@ -342,6 +346,7 @@ export class Engine {
     this.classes.windows.resetAll();
     this.setTilesSignals();
     this.classes.windows.reconnectSignals();
+    this.state.avoidChildChanged = false;
   }
 
   // Focus window when a current desktop is changed
@@ -431,8 +436,15 @@ export class Engine {
     }
   }
 
+  //When a tile is added or removed in KWin tile manager by hand
+  //reset windows
   onChildTilesChanged() {
-    this.setTilesSignals();
-    this.classes.windows.extendCurrentDesktop();
+    if (this.state.avoidChildChanged === true) {
+      return;
+    }
+    this.state.avoidChildChanged = true;
+    this.classes.windows.disconnectSignals();
+    this.classes.tiles.disconnectSignals();
+    this.timers.resetAll.start();
   }
 }
