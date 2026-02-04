@@ -21,6 +21,7 @@ export class Engine {
     this.state = {
       desktopsExtend: new Queue(),
       removeDesktopInfo: {},
+      avoidDesktopChanged: false,
     };
     this.workspace = workspace;
     this.config = config;
@@ -70,6 +71,7 @@ export class Engine {
     const continueProcess = this.classes.windows.setTilesOnAdd(window);
 
     if (this.config.desktopAdd === true && continueProcess === true) {
+      this.state.avoidDesktopChanged = true;
       this.workspace.createDesktop(this.workspace.desktops.length, "");
       this.workspace.currentDesktop =
         this.workspace.desktops[this.workspace.desktops.length - 1];
@@ -300,9 +302,9 @@ export class Engine {
       this.workspace.removeDesktop(desktop);
     }
 
-    if (this.state.removeDesktopInfo.disableExtend !== true) {
-      this.classes.windows.extendCurrentDesktop(true);
-    }
+    // if (this.state.removeDesktopInfo.disableExtend !== true) {
+    // this.classes.windows.extendCurrentDesktop(true);
+    // }
 
     this.state.removeDesktopInfo = {};
   }
@@ -320,7 +322,7 @@ export class Engine {
     if (moved === true && this.rootUI.visible === false) {
       this.state.removeDesktopInfo = {
         desktopsId: [this.workspace.activeWindow._tileShadow._desktop.id],
-        disableExtend: true,
+        // disableExtend: true,
       };
 
       this.timers.removeDesktop.start();
@@ -349,6 +351,41 @@ export class Engine {
     this.classes.ui.resetLayout();
     this.setTilesSignals();
     this.timers.desktopChanged.start();
+  }
+
+  //Reextend window when desktop is added or removed
+  onDesktopsChanged() {
+    if (this.state.avoidDesktopChanged === true) {
+      this.state.avoidDesktopChanged = false;
+      return;
+    }
+
+    for (const desktop of this.workspace.desktops) {
+      let extendDesktop = false;
+
+      for (const screen of this.workspace.screens) {
+        const windows = this.classes.windows.getAll(undefined, desktop, screen);
+        const tiles = this.classes.tiles.getOrderedTiles(desktop, screen);
+
+        if (windows.length === tiles.length || windows.length === 0) {
+          continue;
+        }
+
+        extendDesktop = true;
+      }
+
+      if (extendDesktop === false) {
+        continue;
+      }
+
+      if (desktop === this.workspace.currentDesktop) {
+        this.windows.extendCurrentDesktop(true);
+        this.setTilesSignals();
+        continue;
+      }
+
+      this.state.desktopsExtend.add(desktop);
+    }
   }
 
   //Set signal to tiles
