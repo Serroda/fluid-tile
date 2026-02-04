@@ -175,7 +175,7 @@ export class Engine {
         window._avoidTileChangedTrigger === true
           ? false
           : window._avoidTileChangedTrigger;
-
+      window._tileShadow = tile;
       return;
     }
 
