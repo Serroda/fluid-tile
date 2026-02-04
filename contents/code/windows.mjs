@@ -237,11 +237,11 @@ export class Windows {
           (acc, woNew) => {
             const distance = Math.hypot(
               windowGeometry.left +
-                windowGeometry.width / 2 -
-                (woNew.left + woNew.width / 2),
+              windowGeometry.width / 2 -
+              (woNew.left + woNew.width / 2),
               windowGeometry.top +
-                windowGeometry.height / 2 -
-                (woNew.top + woNew.height / 2),
+              windowGeometry.height / 2 -
+              (woNew.top + woNew.height / 2),
             );
 
             return acc.distance === -1 || distance < acc.distance
@@ -442,7 +442,6 @@ export class Windows {
       return false;
     }
 
-    this.state.desktopsExtend.add(window._tileShadow._desktop);
     this.state.desktopsExtend.remove(tileEmpty._desktop);
 
     window.desktops = [tileEmpty._desktop];

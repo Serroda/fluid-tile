@@ -67,8 +67,7 @@ export class UI {
 
       if (changed === true) {
         this.state.removeDesktopInfo = {
-          desktopsId: window._tileShadow._desktop.id,
-          // disableExtend: true,
+          desktopsId: [window._tileShadow._desktop.id],
         };
 
         this.timerRemoveDesktop.start();

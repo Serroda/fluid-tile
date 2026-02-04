@@ -203,7 +203,7 @@ export class Engine {
       this.timers.extendDesktop.start();
     } else if (
       this.classes.tiles.getTilesCurrentDesktop().length >
-        windowsOther.length + 1 ||
+      windowsOther.length + 1 ||
       window._maximized === false
     ) {
       //Start timer without delay, if you dont execute `extendWindows` inside
@@ -302,10 +302,6 @@ export class Engine {
       this.workspace.removeDesktop(desktop);
     }
 
-    // if (this.state.removeDesktopInfo.disableExtend !== true) {
-    // this.classes.windows.extendCurrentDesktop(true);
-    // }
-
     this.state.removeDesktopInfo = {};
   }
 
@@ -322,10 +318,12 @@ export class Engine {
     if (moved === true && this.rootUI.visible === false) {
       this.state.removeDesktopInfo = {
         desktopsId: [this.workspace.activeWindow._tileShadow._desktop.id],
-        // disableExtend: true,
       };
 
       this.timers.removeDesktop.start();
+      this.state.desktopsExtend.add(
+        this.workspace.activeWindow._tileShadow._desktop,
+      );
       this.classes.windows.setEmptyTile();
     } else {
       this.classes.windows.focus();
@@ -379,7 +377,7 @@ export class Engine {
       }
 
       if (desktop === this.workspace.currentDesktop) {
-        this.windows.extendCurrentDesktop(true);
+        this.classes.windows.extendCurrentDesktop(true);
         this.setTilesSignals();
         continue;
       }

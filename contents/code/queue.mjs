@@ -8,7 +8,7 @@ export class Queue {
   }
 
   add(item) {
-    if (this.exists(item) === true) {
+    if (item === undefined || this.exists(item) === true) {
       return false;
     }
 
@@ -16,7 +16,7 @@ export class Queue {
   }
 
   remove(item) {
-    if (this.exists(item) === false) {
+    if (item === undefined || this.exists(item) === false) {
       return false;
     }
 

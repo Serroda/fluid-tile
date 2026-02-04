@@ -102,7 +102,6 @@ Window {
             root.engine.onCurrentDesktopChanged();
         }
         
-        //TODO:  Error - When a virtual desktop is added or removed with Paginator, windows reset geometry
         function onDesktopsChanged() {
             root.engine.onDesktopsChanged();
         }
