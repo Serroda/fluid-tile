@@ -15,6 +15,7 @@ export class UI {
     this.windows = windows;
     this.state = state;
     this.timerRemoveDesktop = timerRemoveDesktop;
+    this.windowGeometryBefore = null;
   }
 
   //Paint tiles
@@ -39,6 +40,18 @@ export class UI {
       return;
     }
 
+    if (this.windowGeometryBefore === null) {
+      this.windowGeometryBefore = windowGeometry;
+      return;
+    }
+
+    if (
+      windowGeometry.height !== this.windowGeometryBefore.height ||
+      windowGeometry.width !== this.windowGeometryBefore.width
+    ) {
+      return;
+    }
+
     this.rootUI.visible = true;
     const cursor = this.getPosition(windowGeometry);
     this.rootUI.tileActived = this.rootUI.layoutOrdered.findIndex((tile) => {
@@ -56,6 +69,8 @@ export class UI {
   //When the user release the window
   //and return if the UI was enable
   onUserMoveFinished(window) {
+    this.windowGeometryBefore = null;
+
     if (this.blocklist.check(window) === true) {
       return;
     }
