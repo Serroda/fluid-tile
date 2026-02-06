@@ -84,8 +84,17 @@
       <attribute name="title">
        <string>Opened</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
+      <layout class="QFormLayout" name="formLayout_3">
+       <property name="labelAlignment">
+        <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+       </property>
+       <property name="horizontalSpacing">
+        <number>6</number>
+       </property>
+       <property name="verticalSpacing">
+        <number>12</number>
+       </property>
+       <item row="0" column="0">
         <widget class="QCheckBox" name="kcfg_DesktopAdd">
          <property name="locale">
           <locale language="English" country="Eswatini"/>
@@ -95,7 +104,7 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="1" column="0">
         <widget class="QCheckBox" name="kcfg_ModalsIgnore">
          <property name="toolTip">
           <string>Only works if the window is transient</string>
@@ -117,7 +126,7 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="2" column="0">
         <widget class="QCheckBox" name="kcfg_WindowsOrderOpen">
          <property name="text">
           <string>Rearrange windows</string>
@@ -127,17 +136,65 @@
       </layout>
      </widget>
      <widget class="QWidget" name="closed">
+      <property name="layoutDirection">
+       <enum>Qt::LayoutDirection::LeftToRight</enum>
+      </property>
       <attribute name="title">
        <string>Closed</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="1" column="1">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_delay">
+         <property name="toolTip">
+          <string>Case: Applications that open a window and, when an action is performed,
+close the window and open another window (Chrome profile selector).
+This timer avoid crash wayland, beacuse the process try open the window
+ in the deleted virtual desktop</string>
+         </property>
+         <property name="text">
+          <string>Delay to remove virtual desktop</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
         <widget class="QCheckBox" name="kcfg_WindowsOrderClose">
+         <property name="layoutDirection">
+          <enum>Qt::LayoutDirection::LeftToRight</enum>
+         </property>
          <property name="locale">
           <locale language="English" country="Eswatini"/>
          </property>
          <property name="text">
           <string>Rearrange windows</string>
+         </property>
+         <property name="tristate">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_DesktopMin">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Minimum number of virtual desktops </string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QSpinBox" name="kcfg_DesktopRemoveMin">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>99</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
          </property>
         </widget>
        </item>
@@ -157,55 +214,6 @@ This timer avoid crash wayland, beacuse the process try open the window
          </property>
          <property name="singleStep">
           <number>100</number>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QSpinBox" name="kcfg_DesktopRemoveMin">
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>99</number>
-         </property>
-         <property name="singleStep">
-          <number>1</number>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_DesktopMin">
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>Minimum number of virtual desktops </string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_delay">
-         <property name="toolTip">
-          <string>Case: Applications that open a window and, when an action is performed,
-close the window and open another window (Chrome profile selector).
-This timer avoid crash wayland, beacuse the process try open the window
- in the deleted virtual desktop</string>
-         </property>
-         <property name="text">
-          <string>Delay to remove virtual desktop</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QCheckBox" name="kcfg_DesktopRemove">
-         <property name="locale">
-          <locale language="English" country="Eswatini"/>
-         </property>
-         <property name="text">
-          <string>Delete virtual desktop if it is empty</string>
          </property>
         </widget>
        </item>
@@ -271,12 +279,38 @@ The position it takes is the center of the top edge of the window</string>
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="closed_moved">
+      <attribute name="title">
+       <string>Closed or Moved</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout_2">
+       <property name="verticalSpacing">
+        <number>12</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="kcfg_DesktopRemove">
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>Delete virtual desktop if it is empty</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="all_cases">
       <attribute name="title">
        <string>All cases</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_7">
-       <item>
+      <layout class="QFormLayout" name="formLayout_4">
+       <property name="horizontalSpacing">
+        <number>6</number>
+       </property>
+       <property name="verticalSpacing">
+        <number>12</number>
+       </property>
+       <item row="0" column="0">
         <widget class="QCheckBox" name="kcfg_MaximizeExtend">
          <property name="text">
           <string>Maximize the last window on the screen</string>
@@ -524,152 +558,24 @@ Preferences for the application “XDG Name” </string>
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <property name="spacing">
-          <number>0</number>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>&lt;html&gt;
+  &lt;head /&gt;
+  &lt;body style=&quot;text-align: center&quot;&gt;
+    &lt;pre&gt;
++-------+   +-------+   +-------+   +-------+   +-------+   +-------+
+|       |   |   |   |   |   1   |   | 1 |   |   |   | 2 |   | 1 | 2 |
+|   1   |   | 1 | 2 |   |-------|   |---+ 3 |   | 1 +---|   |---+---|
+|       |   |   |   |   |   2   |   | 2 |   |   |   | 3 |   | 3 | 4 |
++-------+   +-------+   +-------+   +-------+   +-------+   +-------+
+    1           2           3           4           5           6    
+    &lt;/pre&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</string>
          </property>
-         <property name="sizeConstraint">
-          <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QLabel" name="label_2">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>150</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╔══════════╗&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║          ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║          ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║    1     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║          ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║          ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╚══════════╝&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:10pt;&quot;&gt;1&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>150</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╔═════╦═════╗&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║  1  ║  2  ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╚═════╩═════╝&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:10pt;&quot;&gt;2&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_3">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>150</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╔══════════╗&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║          ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║    1     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╠══════════╣&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║          ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║    2     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╚══════════╝&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:10pt;&quot;&gt;3&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_4">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>150</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╔═════╦═════╗&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║  2  ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╠═════╣  1  ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║  3  ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╚═════╩═════╝&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:10pt;&quot;&gt;4&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_5">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>150</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╔═════╦═════╗&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║  2  ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║  1  ╠═════╣&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║  3  ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╚═════╩═════╝&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:10pt;&quot;&gt;5&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_6">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>150</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╔═════╦═════╗&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║  1  ║  2  ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╠═════╬═════╣&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║     ║     ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;║  3  ║  4  ║&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:8pt;&quot;&gt;╚═════╩═════╝&lt;/span&gt;&lt;/pre&gt;&lt;pre style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'JetBrainsMono Nerd Font Mono'; font-size:10pt;&quot;&gt;6&lt;/span&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        </widget>
        </item>
        <item>
         <widget class="QComboBox" name="kcfg_LayoutDefault">
