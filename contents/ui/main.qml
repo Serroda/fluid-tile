@@ -3,14 +3,15 @@ import org.kde.kwin
 import "./components"
 import "../code/main.mjs" as Logic
 
+
 Window {
     id: root
     width: Workspace.virtualScreenSize.width
     height: Workspace.virtualScreenSize.height
-    color: "#AA000000"
-    flags: Qt.FramelessWindowHint | Qt.WindowTransparentForInput | Qt.WindowStaysOnTopHint | Qt.BypassWindowManagerHint | Qt.Dialog
+    color: theme.windowBackground
+    flags: Qt.FramelessWindowHint | Qt.WindowTransparentForInput | Qt.WindowStaysOnTopHint | Qt.BypassWindowManagerHint
     visible: false
-
+    
     property var config: ({})
     property var engine: ({})
     property var layoutOrdered: []
@@ -113,17 +114,26 @@ Window {
         engine.setTilesSignals();
     }
 
+    Theme {
+        id: theme
+    }
+
     //Tile layout
     Repeater {
         model: root.layoutOrdered
         delegate: Tile {
+            z: 1
             x: modelData.absoluteGeometry.x
             y: modelData.absoluteGeometry.y
             width: modelData.absoluteGeometry.width
             height: modelData.absoluteGeometry.height
-            padding: modelData.padding
             indexLayout: index
             active: index === root.tileActived
+            colorBorder: theme.tileBorder
+            colorFocus: theme.tileFocus
+            colorDefault: theme.tileBackground
+            radius: theme.tileRadius
+            padding: modelData.padding
         }
     }
 

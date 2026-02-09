@@ -1,35 +1,37 @@
 import QtQuick
 
-Rectangle {
+Item {   
     id: tile
-    color: "transparent"
-    property int padding: 0
     property int indexLayout: 0
     property bool active: false
-
+    property color colorFocus: "transparent"
+    property color colorDefault: "transparent"
+    property color colorBorder: "transparent"
+    property int radius: 0
+    property int padding: 0
+    
     Rectangle {
-        anchors.fill: tile
-        anchors.margins: tile.padding
-        color: tile.active ? "#AAFFFFFF" : "#30FFFFFF"
-        radius: 8
-        border.width: 2
-        border.color: tile.active ? "#DDFFFFFF" : "#BBFFFFFF"
-
+        color: tile.active ? tile.colorFocus : tile.colorDefault
+        border.color: tile.colorBorder
+        radius: tile.radius
+        
+        anchors {
+            fill: tile
+            topMargin: tile.y === 0 ? tile.padding : 0
+            leftMargin: tile.x === 0 ? tile.padding : 0
+            rightMargin: tile.padding
+            bottomMargin: tile.padding
+        }
+        
         Behavior on color {
             ColorAnimation {
                 duration: 200
             }
         }
-
-        Behavior on border.color {
-            ColorAnimation {
-                duration: 200
-            }
-        }
-
+        
         Rectangle {
             anchors.centerIn: parent
-            radius: 8
+            radius: tile.radius
             width: 50
             height: 50
             color: "#ffffff"
@@ -37,9 +39,9 @@ Rectangle {
                 anchors.centerIn: parent
                 text: tile.indexLayout + 1
                 color: "#000000"
-                font.pixelSize: 32
+                font.pixelSize: 30
                 font.bold: true
-            }
         }
     }
+}
 }
