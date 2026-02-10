@@ -474,8 +474,14 @@ export class Windows {
   }
 
   //Reset all windows
-  resetAll() {
-    for (const screen of this.workspace.screens) {
+  resetAll(screenAll = false) {
+    let screens = [this.workspace.activeScreen];
+
+    if (screenAll === true) {
+      screens = this.workspace.screens;
+    }
+
+    for (const screen of screens) {
       const windows = this.getAll(undefined, undefined, screen);
       const tilesOrdered = this.tiles.getOrderedTiles(undefined, screen);
 
@@ -493,7 +499,7 @@ export class Windows {
       }
     }
 
-    this.extendCurrentDesktop(true);
+    this.extendCurrentDesktop(screenAll);
   }
 
   //Disconnect all signals

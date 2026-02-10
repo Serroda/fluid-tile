@@ -53,8 +53,9 @@ Window {
         interval: 0
         repeat: false
         running: false
+        property bool screenAll: false
         onTriggered: {
-            root.engine.onTimerResetAllFinished();
+            root.engine.onTimerResetAllFinished(screenAll);
         }
     }
     

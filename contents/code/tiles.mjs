@@ -69,8 +69,14 @@ export class Tiles {
   }
 
   //Delete actual layout and set new layout
-  setLayout(desktop, layout) {
-    for (const screen of this.workspace.screens) {
+  setLayout(desktop, layout, screenAll = true) {
+    let screens = this.workspace.screens;
+
+    if (screenAll === false) {
+      screens = [this.workspace.activeScreen];
+    }
+
+    for (const screen of screens) {
       const tileRoot = this.workspace.rootTile(screen, desktop);
       this.deleteTiles(tileRoot.tiles, tileRoot);
       const result = this.setTiles(tileRoot.tiles[0] ?? tileRoot, layout);

@@ -204,7 +204,7 @@ export class Engine {
       this.timers.extendDesktop.start();
     } else if (
       this.classes.tiles.getTilesCurrentDesktop().length >
-      windowsOther.length + 1 ||
+        windowsOther.length + 1 ||
       window._maximized === false
     ) {
       //Start timer without delay, if you dont execute `extendWindows` inside
@@ -342,8 +342,8 @@ export class Engine {
   }
 
   //Extend windows when timer finish
-  onTimerResetAllFinished() {
-    this.classes.windows.resetAll();
+  onTimerResetAllFinished(screenAll) {
+    this.classes.windows.resetAll(screenAll);
     this.setTilesSignals();
     this.classes.windows.reconnectSignals();
     this.state.avoidChildChanged = false;
@@ -445,6 +445,7 @@ export class Engine {
     this.state.avoidChildChanged = true;
     this.classes.windows.disconnectSignals();
     this.classes.tiles.disconnectSignals();
+    this.timers.resetAll.screenAll = true;
     this.timers.resetAll.start();
   }
 }

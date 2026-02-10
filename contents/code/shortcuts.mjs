@@ -32,11 +32,16 @@ export class Shortcuts {
           tiles.disconnectSignals();
 
           const layouts = tiles.getDefaultLayouts();
-          tiles.setLayout(workspace.currentDesktop, layouts[this.layoutIndex]);
+          tiles.setLayout(
+            workspace.currentDesktop,
+            layouts[this.layoutIndex],
+            false,
+          );
 
           this.layoutIndex =
             this.layoutIndex >= layouts.length - 1 ? 0 : this.layoutIndex + 1;
 
+          timerResetAll.screenAll = false;
           timerResetAll.start();
         },
       },
