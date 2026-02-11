@@ -62,6 +62,9 @@
        <height>170</height>
       </size>
      </property>
+     <property name="toolTip">
+      <string/>
+     </property>
      <property name="layoutDirection">
       <enum>Qt::LayoutDirection::LeftToRight</enum>
      </property>
@@ -100,7 +103,7 @@
           <locale language="English" country="Eswatini"/>
          </property>
          <property name="text">
-          <string>Create new virtual desktop if you dont have more space</string>
+          <string>Create new virtual desktop if you do not have more space</string>
          </property>
         </widget>
        </item>
@@ -304,6 +307,9 @@ The position it takes is the center of the top edge of the window</string>
        <string>All cases</string>
       </attribute>
       <layout class="QFormLayout" name="formLayout_4">
+       <property name="labelAlignment">
+        <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+       </property>
        <property name="horizontalSpacing">
         <number>6</number>
        </property>
@@ -314,6 +320,16 @@ The position it takes is the center of the top edge of the window</string>
         <widget class="QCheckBox" name="kcfg_MaximizeExtend">
          <property name="text">
           <string>Maximize the last window on the screen</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="kcfg_DesktopExtra">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Add an empty desktop if the last desktop has windows</string>
          </property>
         </widget>
        </item>

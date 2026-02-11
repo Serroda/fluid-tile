@@ -23,8 +23,9 @@ Window {
         interval: root.config.desktopRemoveDelay 
         repeat: false
         running: false
+        property var removeInfo: ({})
         onTriggered: {
-            root.engine.onTimerRemoveDesktopFinished();
+            root.engine.onTimerRemoveDesktopFinished(removeInfo);
         }
     }
     
@@ -72,6 +73,7 @@ Window {
             desktopRemove: KWin.readConfig("DesktopRemove", false),
             desktopRemoveMin: KWin.readConfig("DesktopRemoveMin", 1),
             desktopRemoveDelay: KWin.readConfig("DesktopRemoveDelay", 300),
+            desktopExtra: KWin.readConfig("DesktopExtra", true),
             modalsIgnore: KWin.readConfig("ModalsIgnore", true),
             layoutDefault: KWin.readConfig("LayoutDefault", 2),
             UIWindowCursor:  KWin.readConfig("UIWindowCursor", false),

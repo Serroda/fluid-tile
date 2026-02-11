@@ -5,6 +5,7 @@ import { Tiles } from "./tiles.mjs";
 import { UI } from "./ui.mjs";
 import { Userspace } from "./userspace.mjs";
 import { Windows } from "./windows.mjs";
+import { Desktops } from "./desktops.mjs";
 
 export class Engine {
   constructor(
@@ -20,7 +21,6 @@ export class Engine {
   ) {
     this.state = {
       desktopsExtend: new Queue(),
-      removeDesktopInfo: {},
       avoidDesktopChanged: false,
       avoidChildChanged: false,
     };
@@ -46,14 +46,13 @@ export class Engine {
       this.classes,
       timerExtendDesktop,
     );
-    this.classes.ui = new UI(
+    this.classes.desktops = new Desktops(
       workspace,
       config,
-      root,
-      this.state,
       this.classes,
       timerRemoveDesktop,
     );
+    this.classes.ui = new UI(workspace, config, root, this.classes);
     this.classes.shortcuts = new Shortcuts(
       workspace,
       config,
@@ -73,32 +72,22 @@ export class Engine {
 
     if (this.config.desktopAdd === true && continueProcess === true) {
       this.state.avoidDesktopChanged = true;
-      this.workspace.createDesktop(this.workspace.desktops.length, "");
-      this.workspace.currentDesktop =
-        this.workspace.desktops[this.workspace.desktops.length - 1];
-      window.desktops = [this.workspace.currentDesktop];
 
-      let layout = this.classes.tiles.getDefaultLayouts(
-        this.config.layoutDefault - 1,
-      );
+      window.desktops = [this.classes.desktops.create(true)];
 
-      if (this.config.layoutCustom !== undefined) {
-        layout = this.config.layoutCustom;
-      }
-
-      this.classes.tiles.setLayout(this.workspace.currentDesktop, layout);
       const tilesOrdered = this.classes.tiles.getTilesCurrentDesktop();
 
       if (this.config.maximizeExtend === true) {
         window.setMaximize(true, true);
+        window._tileShadow = tilesOrdered[0];
       } else {
         window.setMaximize(false, false);
         window._avoidTileChangedTrigger = false;
         tilesOrdered[0].manage(window);
       }
-
-      window._tileShadow = tilesOrdered[0];
     }
+
+    this.classes.desktops.checkDesktopExtra();
   }
 
   //Trigger when a window is remove to the desktop
@@ -114,12 +103,10 @@ export class Engine {
     if (continueProcess === false) {
       this.classes.windows.focus();
     } else {
-      this.state.removeDesktopInfo = {
+      this.classes.desktops.remove({
         desktopsId: window.desktops.map((d) => d.id),
-        window: window,
-      };
-
-      this.timers.removeDesktop.start();
+        windowIgnore: window,
+      });
     }
   }
 
@@ -204,7 +191,7 @@ export class Engine {
       this.timers.extendDesktop.start();
     } else if (
       this.classes.tiles.getTilesCurrentDesktop().length >
-        windowsOther.length + 1 ||
+      windowsOther.length + 1 ||
       window._maximized === false
     ) {
       //Start timer without delay, if you dont execute `extendWindows` inside
@@ -266,44 +253,9 @@ export class Engine {
     this.classes.windows.extendCurrentDesktop(true);
   }
 
-  onTimerRemoveDesktopFinished() {
-    if (
-      this.config.desktopRemove === false ||
-      this.workspace.desktops.length <= 1 ||
-      this.workspace.desktops.length <= this.config.desktopRemoveMin
-    ) {
-      this.state.removeDesktopInfo = {};
-      return;
-    }
-
-    //Case: Applications that open a window and, when an action is performed,
-    //close the window and open another window (Chrome profile selector).
-    //This timer avoid crash wayland
-    const desktopsRemove = [];
-
-    desktopLoop: for (const desktopItem of this.workspace.desktops.filter((d) =>
-      this.state.removeDesktopInfo.desktopsId.includes(d.id),
-    )) {
-      for (const screenItem of this.workspace.screens) {
-        const windowsOtherSpecialCases = this.classes.windows.getAll(
-          this.state.removeDesktopInfo.window,
-          desktopItem,
-          screenItem,
-        );
-
-        if (windowsOtherSpecialCases.length !== 0) {
-          continue desktopLoop;
-        }
-      }
-
-      desktopsRemove.push(desktopItem);
-    }
-
-    for (const desktop of desktopsRemove) {
-      this.workspace.removeDesktop(desktop);
-    }
-
-    this.state.removeDesktopInfo = {};
+  //Delete virtual desktop timer
+  onTimerRemoveDesktopFinished(info) {
+    this.classes.desktops.onTimerRemoveFinished(info);
   }
 
   //Extend windows when timer finish
@@ -318,11 +270,9 @@ export class Engine {
     //Moved by shortcut
     if (moved === true && this.rootUI.visible === false) {
       if (this.workspace.activeWindow._tileShadow !== undefined) {
-        this.state.removeDesktopInfo = {
+        this.classes.desktops.remove({
           desktopsId: [this.workspace.activeWindow._tileShadow._desktop.id],
-        };
-
-        this.timers.removeDesktop.start();
+        });
         this.state.desktopsExtend.add(
           this.workspace.activeWindow._tileShadow._desktop,
         );
@@ -353,6 +303,9 @@ export class Engine {
   onCurrentDesktopChanged() {
     this.classes.ui.resetLayout();
     this.setTilesSignals();
+    if (this.rootUI.visible === false) {
+      this.classes.desktops.checkDesktopExtra();
+    }
     this.timers.desktopChanged.start();
   }
 
@@ -383,7 +336,6 @@ export class Engine {
 
       if (desktop === this.workspace.currentDesktop) {
         this.classes.windows.extendCurrentDesktop(true);
-        this.setTilesSignals();
         continue;
       }
 

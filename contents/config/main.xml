@@ -26,6 +26,9 @@
         <entry name="DesktopRemoveDelay" type="Int">
             <default>300</default>
         </entry>
+        <entry name="DesktopExtra" type="Bool">
+            <default>true</default>
+        </entry>
         <entry name="ModalsIgnore" type="Bool">
             <default>true</default>
         </entry>
