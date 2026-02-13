@@ -7,7 +7,6 @@ Window {
     id: root
     property var config: ({})
     property var engine: ({})
-    property var activeScreen: ({})
     property var shortcuts: []
     property var layoutOrdered: []
     property var layoutOrderedScreen: []
