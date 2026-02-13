@@ -1,3 +1,5 @@
+import { Queue } from "./queue.mjs";
+
 export class Desktops {
   constructor(workspace, config, { windows, tiles }, timerRemoveDesktop) {
     this.workspace = workspace;
@@ -5,6 +7,8 @@ export class Desktops {
     this.windows = windows;
     this.tiles = tiles;
     this.timerRemoveDesktop = timerRemoveDesktop;
+    this.avoidDesktopChanged = false;
+    this.desktopsExtend = new Queue();
   }
 
   create(focus = false) {
@@ -89,6 +93,7 @@ export class Desktops {
     }
 
     for (const desktop of desktopsRemove) {
+      this.desktopsExtend.remove(desktop);
       this.workspace.removeDesktop(desktop);
     }
 
@@ -98,5 +103,65 @@ export class Desktops {
     };
 
     this.checkDesktopExtra();
+  }
+
+  onDesktopsChanged() {
+    if (this.avoidDesktopChanged === true) {
+      this.avoidDesktopChanged = false;
+      return;
+    }
+
+    for (const desktop of this.workspace.desktops) {
+      let extendDesktop = false;
+
+      for (const screen of this.workspace.screens) {
+        const windows = this.windows.getAll(undefined, desktop, screen);
+        const tiles = this.tiles.getOrderedTiles(desktop, screen);
+
+        if (windows.length === tiles.length || windows.length === 0) {
+          continue;
+        }
+
+        extendDesktop = true;
+      }
+
+      if (extendDesktop === false) {
+        continue;
+      }
+
+      if (desktop === this.workspace.currentDesktop) {
+        this.windows.extendCurrentDesktop(true);
+        continue;
+      }
+
+      this.desktopsExtend.add(desktop);
+    }
+  }
+
+  onTimerCurrentDesktopChangedFinished(uiVisible) {
+    const moved = this.windows.checkDesktopChanged();
+
+    //Moved by shortcut
+    if (moved === true && uiVisible === false) {
+      if (this.workspace.activeWindow._tileShadow !== undefined) {
+        this.remove({
+          desktopsId: [this.workspace.activeWindow._tileShadow._desktop.id],
+        });
+
+        this.desktopsExtend.add(
+          this.workspace.activeWindow._tileShadow._desktop,
+        );
+      }
+
+      this.desktopsExtend.remove(this.workspace.currentDesktop);
+      this.windows.setEmptyTile();
+    } else {
+      this.windows.focus();
+    }
+
+    if (this.desktopsExtend.exists(this.workspace.currentDesktop) === true) {
+      this.windows.extendCurrentDesktop(true);
+      this.desktopsExtend.remove(this.workspace.currentDesktop);
+    }
   }
 }

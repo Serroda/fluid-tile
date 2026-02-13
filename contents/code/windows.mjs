@@ -2,13 +2,11 @@ export class Windows {
   constructor(
     workspace,
     config,
-    state,
     { blocklist, tiles, userspace },
     timerExtendDesktop,
   ) {
     this.workspace = workspace;
     this.config = config;
-    this.state = state;
     this.blocklist = blocklist;
     this.tiles = tiles;
     this.userspace = userspace;
@@ -235,11 +233,11 @@ export class Windows {
           (acc, woNew) => {
             const distance = Math.hypot(
               windowGeometry.left +
-              windowGeometry.width / 2 -
-              (woNew.left + woNew.width / 2),
+                windowGeometry.width / 2 -
+                (woNew.left + woNew.width / 2),
               windowGeometry.top +
-              windowGeometry.height / 2 -
-              (woNew.top + woNew.height / 2),
+                windowGeometry.height / 2 -
+                (woNew.top + woNew.height / 2),
             );
 
             return acc.distance === -1 || distance < acc.distance
@@ -439,8 +437,6 @@ export class Windows {
       tiles[0].manage(window);
       return false;
     }
-
-    this.state.desktopsExtend.remove(tileEmpty._desktop);
 
     window.desktops = [tileEmpty._desktop];
 

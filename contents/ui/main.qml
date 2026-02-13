@@ -39,12 +39,12 @@ Window {
     }
 
     Timer {
-        id: timerDesktopChanged
+        id: timerCurrentDesktopChanged
         interval: 0
         repeat: false
         running: false
         onTriggered: {
-            root.engine.onTimerDesktopChangedFinished();
+            root.engine.onTimerCurrentDesktopChangedFinished();
         }
     }
 
@@ -101,7 +101,7 @@ Window {
             root,
             timerExtendDesktop,
             timerRemoveDesktop,
-            timerDesktopChanged,
+            timerCurrentDesktopChanged,
             timerResetAll,
             timerHideUI,
             windowFullscreen,
