@@ -3,7 +3,7 @@ export class Shortcuts {
     workspace,
     config,
     root,
-    { blocklist, windows, tiles },
+    { blocklist, windows, tiles, ui },
     timerResetAll,
   ) {
     this.layoutIndex = config.layoutDefault - 1;
@@ -13,8 +13,7 @@ export class Shortcuts {
         text: "Fluid tile | Toggle window to blocklist",
         sequence: "Meta+F",
         callback: () => {
-          root.visible = false;
-          root.tileActived = -1;
+          ui.hide(3, true);
           const added = blocklist.toggleWindow(workspace.activeWindow);
           if (added === false) {
             windows.setEmptyTile();
@@ -41,6 +40,7 @@ export class Shortcuts {
           this.layoutIndex =
             this.layoutIndex >= layouts.length - 1 ? 0 : this.layoutIndex + 1;
 
+          ui.show(2);
           timerResetAll.screenAll = false;
           timerResetAll.start();
         },

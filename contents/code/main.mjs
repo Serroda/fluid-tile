@@ -17,6 +17,9 @@ export class Engine {
       timerRemoveDesktop,
       timerDesktopChanged,
       timerResetAll,
+      timerHideUI,
+      windowFullscreen,
+      windowPopup,
     },
   ) {
     this.state = {
@@ -26,12 +29,17 @@ export class Engine {
     };
     this.workspace = workspace;
     this.config = config;
-    this.rootUI = root;
+    this.root = root;
+    this.windowsUI = {
+      windowFullscreen,
+      windowPopup,
+    };
     this.timers = {
       extendDesktop: timerExtendDesktop,
       removeDesktop: timerRemoveDesktop,
       desktopChanged: timerDesktopChanged,
       resetAll: timerResetAll,
+      hideUI: timerHideUI,
     };
     this.classes = {
       blocklist: new Blocklist(config),
@@ -41,7 +49,6 @@ export class Engine {
     this.classes.windows = new Windows(
       workspace,
       config,
-      root,
       this.state,
       this.classes,
       timerExtendDesktop,
@@ -52,7 +59,15 @@ export class Engine {
       this.classes,
       timerRemoveDesktop,
     );
-    this.classes.ui = new UI(workspace, config, root, this.classes);
+    this.classes.ui = new UI(
+      workspace,
+      config,
+      root,
+      this.classes,
+      this.windowsUI.windowFullscreen,
+      this.windowsUI.windowPopup,
+      timerHideUI,
+    );
     this.classes.shortcuts = new Shortcuts(
       workspace,
       config,
@@ -157,7 +172,7 @@ export class Engine {
     //when a window exchange
     if (
       this.classes.blocklist.check(window) === true ||
-      this.rootUI.visible === true ||
+      this.classes.ui.checkIfUIVisible() === true ||
       window._avoidTileChangedTrigger === true ||
       window._tileShadow === undefined
     ) {
@@ -210,7 +225,7 @@ export class Engine {
     //When a window is maximized window.tile is always null
     if (
       this.classes.blocklist.check(window) === true ||
-      this.rootUI.visible === true ||
+      this.classes.ui.checkIfUIVisible() === true ||
       window._maximized === true ||
       window._avoidMaximizeTrigger === true ||
       window._tileShadow === undefined ||
@@ -268,7 +283,7 @@ export class Engine {
     const moved = this.classes.windows.checkDesktopChanged();
 
     //Moved by shortcut
-    if (moved === true && this.rootUI.visible === false) {
+    if (moved === true && this.classes.ui.checkIfUIVisible() === false) {
       if (this.workspace.activeWindow._tileShadow !== undefined) {
         this.classes.desktops.remove({
           desktopsId: [this.workspace.activeWindow._tileShadow._desktop.id],
@@ -299,11 +314,16 @@ export class Engine {
     this.state.avoidChildChanged = false;
   }
 
+  //Hide ui when timer finished
+  onTimerHideUIFinished(ui, rootHide) {
+    this.classes.ui.hide(ui, rootHide);
+  }
+
   // Focus window when a current desktop is changed
   onCurrentDesktopChanged() {
     this.classes.ui.resetLayout();
     this.setTilesSignals();
-    if (this.rootUI.visible === false) {
+    if (this.classes.ui.checkIfUIVisible() === false) {
       this.classes.desktops.checkDesktopExtra();
     }
     this.timers.desktopChanged.start();

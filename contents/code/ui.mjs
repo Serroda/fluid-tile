@@ -2,23 +2,82 @@ export class UI {
   constructor(
     workspace,
     config,
-    rootUI,
+    root,
     { tiles, windows, blocklist, desktops },
+    windowFullscreen,
+    windowPopup,
+    hideUI,
   ) {
     this.workspace = workspace;
     this.config = config;
-    this.rootUI = rootUI;
+    this.root = root;
     this.tiles = tiles;
     this.blocklist = blocklist;
     this.windows = windows;
     this.desktops = desktops;
+    this.timerHideUI = hideUI;
+    this.windowFullscreen = windowFullscreen;
+    this.windowPopup = windowPopup;
     this.windowGeometryBefore = null;
+  }
+
+  show(ui) {
+    this.toggleVisibility(ui, true, false);
+  }
+
+  hide(ui, rootHide) {
+    this.toggleVisibility(ui, false, rootHide);
+  }
+
+  toggleVisibility(ui, value, rootHide) {
+    this.root.tileActived = -1;
+    this.root.visible = !rootHide;
+
+    switch (ui) {
+      //Fullscreen
+      case 0:
+        this.windowFullscreen.visible = value;
+        break;
+
+      //Compact
+      case 1:
+        break;
+
+      //Popup
+      case 2:
+        this.resetLayout();
+        this.windowPopup.visible = value;
+        if (value === true) {
+          if (this.timerHideUI.ui !== -1) {
+            this.timerHideUI.restart();
+          } else {
+            this.timerHideUI.ui = ui;
+            this.timerHideUI.rootHide = !rootHide;
+            this.timerHideUI.start();
+          }
+        } else {
+          this.timerHideUI.ui = -1;
+          this.timerHideUI.rootHide = true;
+        }
+        break;
+
+      //All windows
+      case 3:
+        this.windowPopup.visible = value;
+        this.windowFullscreen.visible = value;
+        break;
+    }
+  }
+
+  //Return if fullscreen or compact ui is open
+  checkIfUIVisible() {
+    return this.windowFullscreen.visible;
   }
 
   //Paint tiles
   resetLayout() {
-    this.rootUI.layoutOrdered = [];
-    this.rootUI.layoutOrdered = this.tiles.getTilesCurrentDesktop();
+    this.root.layoutOrdered = [];
+    this.root.layoutOrdered = this.tiles.getTilesCurrentDesktop();
   }
 
   // When a window start move with the cursor, reset ui
@@ -49,9 +108,9 @@ export class UI {
       return;
     }
 
-    this.rootUI.visible = true;
+    this.show(0);
     const cursor = this.getPosition(windowGeometry);
-    this.rootUI.tileActived = this.rootUI.layoutOrdered.findIndex((tile) => {
+    this.root.tileActived = this.root.layoutOrdered.findIndex((tile) => {
       const limitX = tile.absoluteGeometry.x + tile.absoluteGeometry.width;
       const limitY = tile.absoluteGeometry.y + tile.absoluteGeometry.height;
       return (
@@ -72,9 +131,7 @@ export class UI {
       return;
     }
 
-    if (this.rootUI.visible === true) {
-      this.rootUI.visible = false;
-
+    if (this.checkIfUIVisible() === true) {
       const changed = this.windows.checkDesktopChanged(window);
 
       if (changed === true) {
@@ -83,14 +140,14 @@ export class UI {
         });
       }
 
-      const tile = this.rootUI.layoutOrdered[this.rootUI.tileActived];
+      const tile = this.root.layoutOrdered[this.root.tileActived];
+      this.hide(3, true);
 
       if (tile !== undefined) {
         window._avoidTileChangedTrigger = false;
         tile.manage(window);
       }
 
-      this.rootUI.tileActived = -1;
       return;
     }
 

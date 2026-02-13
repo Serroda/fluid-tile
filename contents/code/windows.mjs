@@ -2,14 +2,12 @@ export class Windows {
   constructor(
     workspace,
     config,
-    rootUI,
     state,
     { blocklist, tiles, userspace },
     timerExtendDesktop,
   ) {
     this.workspace = workspace;
     this.config = config;
-    this.rootUI = rootUI;
     this.state = state;
     this.blocklist = blocklist;
     this.tiles = tiles;

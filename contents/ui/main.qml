@@ -3,24 +3,23 @@ import org.kde.kwin
 import "./components"
 import "../code/main.mjs" as Logic
 
-
 Window {
     id: root
-    width: Workspace.virtualScreenSize.width
-    height: Workspace.virtualScreenSize.height
-    color: theme.windowBackground
-    flags: Qt.FramelessWindowHint | Qt.WindowTransparentForInput | Qt.WindowStaysOnTopHint | Qt.BypassWindowManagerHint
-    visible: false
-    
     property var config: ({})
     property var engine: ({})
-    property var layoutOrdered: []
     property var shortcuts: []
+    property var layoutOrdered: []
     property int tileActived: -1
+
+    flags: Qt.FramelessWindowHint | Qt.WindowTransparentForInput | Qt.WindowStaysOnTopHint | Qt.BypassWindowManagerHint
+    width: Workspace.virtualScreenSize.width
+    height: Workspace.virtualScreenSize.height
+    visible: false
+    color: "transparent"
 
     Timer {
         id: timerRemoveDesktop
-        interval: root.config.desktopRemoveDelay 
+        interval: root.config.desktopRemoveDelay
         repeat: false
         running: false
         property var removeInfo: ({})
@@ -28,17 +27,17 @@ Window {
             root.engine.onTimerRemoveDesktopFinished(removeInfo);
         }
     }
-    
+
     Timer {
         id: timerExtendDesktop
-        interval: root.config.windowsExtendTileChangedDelay 
+        interval: root.config.windowsExtendTileChangedDelay
         repeat: false
         running: false
         onTriggered: {
             root.engine.onTimerExtendDesktopFinished();
         }
     }
-    
+
     Timer {
         id: timerDesktopChanged
         interval: 0
@@ -48,7 +47,7 @@ Window {
             root.engine.onTimerDesktopChangedFinished();
         }
     }
-    
+
     Timer {
         id: timerResetAll
         interval: 0
@@ -59,7 +58,19 @@ Window {
             root.engine.onTimerResetAllFinished(screenAll);
         }
     }
-    
+
+    Timer {
+        id: timerHideUI
+        interval: 1000
+        repeat: false
+        running: false
+        property int ui: -1
+        property bool rootHide: true
+        onTriggered: {
+            root.engine.onTimerHideUIFinished(ui, rootHide);
+        }
+    }
+
     // Load user config
     function startEngine() {
         config = {
@@ -76,7 +87,7 @@ Window {
             desktopExtra: KWin.readConfig("DesktopExtra", true),
             modalsIgnore: KWin.readConfig("ModalsIgnore", true),
             layoutDefault: KWin.readConfig("LayoutDefault", 2),
-            UIWindowCursor:  KWin.readConfig("UIWindowCursor", false),
+            UIWindowCursor: KWin.readConfig("UIWindowCursor", false)
         };
 
         try {
@@ -86,9 +97,17 @@ Window {
             console.log("LayoutCustom variable error: " + error);
         }
 
-        engine = new Logic.Engine(Workspace, config, {root, timerExtendDesktop, timerRemoveDesktop, timerDesktopChanged, timerResetAll});
+        engine = new Logic.Engine(Workspace, config, {
+            root,
+            timerExtendDesktop,
+            timerRemoveDesktop,
+            timerDesktopChanged,
+            timerResetAll,
+            timerHideUI,
+            windowFullscreen,
+            windowPopup
+        });
     }
-
 
     Connections {
         target: Workspace
@@ -105,7 +124,7 @@ Window {
         function onCurrentDesktopChanged() {
             root.engine.onCurrentDesktopChanged();
         }
-        
+
         function onDesktopsChanged() {
             root.engine.onDesktopsChanged();
         }
@@ -121,26 +140,6 @@ Window {
         id: theme
     }
 
-    //Tile layout
-    Repeater {
-        model: root.layoutOrdered
-        delegate: Tile {
-            z: 1
-            x: modelData.absoluteGeometry.x
-            y: modelData.absoluteGeometry.y
-            width: modelData.absoluteGeometry.width
-            height: modelData.absoluteGeometry.height
-            indexLayout: index
-            active: index === root.tileActived
-            colorBorder: theme.tileBorder
-            colorFocus: theme.tileFocus
-            colorDefault: theme.tileBackground
-            radius: theme.tileRadius
-            padding: modelData.padding
-        }
-    }
-
-    //Shortcuts
     Repeater {
         model: root.shortcuts
         delegate: Shortcut {
@@ -150,5 +149,24 @@ Window {
             callback: modelData.callback
         }
     }
-    
+
+    UIFullscreen {
+        id: windowFullscreen
+        width: root.width
+        height: root.height
+        color: theme.windowFullscreenBackground
+        visible: false
+        tileActived: root.tileActived
+        theme: theme
+        layoutOrdered: root.layoutOrdered
+    }
+
+    UIPopup {
+        id: windowPopup
+        visible: false
+        color: theme.windowBackground
+        theme: theme
+        radius: theme.radius
+        layoutOrdered: root.layoutOrdered
+    }
 }
