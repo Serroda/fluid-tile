@@ -7,8 +7,10 @@ Window {
     id: root
     property var config: ({})
     property var engine: ({})
+    property var activeScreen: ({})
     property var shortcuts: []
     property var layoutOrdered: []
+    property var layoutOrderedScreen: []
     property int tileActived: -1
 
     flags: Qt.FramelessWindowHint | Qt.WindowTransparentForInput | Qt.WindowStaysOnTopHint | Qt.BypassWindowManagerHint
@@ -167,6 +169,6 @@ Window {
         color: theme.windowBackground
         theme: theme
         radius: theme.radius
-        layoutOrdered: root.layoutOrdered
+        layoutOrdered: root.layoutOrderedScreen
     }
 }

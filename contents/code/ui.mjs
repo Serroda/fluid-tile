@@ -36,6 +36,7 @@ export class UI {
     switch (ui) {
       //Fullscreen
       case 0:
+        this.resetRoot();
         this.windowFullscreen.visible = value;
         break;
 
@@ -50,12 +51,23 @@ export class UI {
         if (value === true) {
           if (this.timerHideUI.ui !== -1) {
             this.timerHideUI.restart();
-          } else {
-            this.timerHideUI.ui = ui;
-            this.timerHideUI.rootHide = !rootHide;
-            this.timerHideUI.start();
+            return;
           }
+
+          const activeScreenGeometry = this.workspace.activeScreen.geometry;
+          this.root.width = this.windowPopup.width;
+          this.root.height = this.windowPopup.height;
+          this.root.x =
+            activeScreenGeometry.x +
+            (activeScreenGeometry.width - this.root.width) / 2;
+          this.root.y =
+            activeScreenGeometry.y +
+            (activeScreenGeometry.height - this.root.height) / 2;
+          this.timerHideUI.ui = ui;
+          this.timerHideUI.rootHide = !rootHide;
+          this.timerHideUI.start();
         } else {
+          this.resetRoot();
           this.timerHideUI.ui = -1;
           this.timerHideUI.rootHide = true;
         }
@@ -69,6 +81,13 @@ export class UI {
     }
   }
 
+  resetRoot() {
+    this.root.width = this.workspace.virtualScreenSize.width;
+    this.root.height = this.workspace.virtualScreenSize.height;
+    this.root.x = 0;
+    this.root.y = 0;
+  }
+
   //Return if fullscreen or compact ui is open
   checkIfUIVisible() {
     return this.windowFullscreen.visible;
@@ -77,7 +96,11 @@ export class UI {
   //Paint tiles
   resetLayout() {
     this.root.layoutOrdered = [];
+    this.root.layoutOrderedScreen = [];
     this.root.layoutOrdered = this.tiles.getTilesCurrentDesktop();
+    this.root.layoutOrderedScreen = this.root.layoutOrdered.filter(
+      (t) => t._screen === this.workspace.activeScreen,
+    );
   }
 
   // When a window start move with the cursor, reset ui
