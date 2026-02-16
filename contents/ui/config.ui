@@ -659,6 +659,77 @@ Remove this value to return to the default layouts</string>
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="ui">
+      <attribute name="title">
+       <string>🖌️ User interface</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout">
+       <property name="fieldGrowthPolicy">
+        <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
+       </property>
+       <property name="labelAlignment">
+        <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+       </property>
+       <property name="verticalSpacing">
+        <number>6</number>
+       </property>
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="kcfg_UIMode">
+         <item>
+          <property name="text">
+           <string>Fullscreen</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Compact</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Mode</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="kcfg_UIWindowCompactPosition">
+         <item>
+          <property name="text">
+           <string>Center of the screen</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Top of the screen</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Bottom of the screen</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Cursor position</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Compact mode position</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>

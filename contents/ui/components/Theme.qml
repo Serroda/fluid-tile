@@ -2,7 +2,7 @@ import QtQuick
 import org.kde.kirigami as Kirigami
 
 Item {
-    property color windowFullscreenBackground: Kirigami.ColorUtils.tintWithAlpha("transparent", Kirigami.Theme.backgroundColor, 0.40)
+    property color windowFullscreenBackground: Kirigami.ColorUtils.tintWithAlpha("transparent", Kirigami.Theme.backgroundColor, 0.60)
 
     property color windowBackground: Kirigami.Theme.backgroundColor
 

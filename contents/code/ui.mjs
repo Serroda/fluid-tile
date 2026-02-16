@@ -3,8 +3,9 @@ export class UI {
     workspace,
     config,
     root,
-    { tiles, windows, blocklist, desktops },
+    { tiles, windows, blocklist, desktops, userspace },
     windowFullscreen,
+    windowCompact,
     windowPopup,
     hideUI,
   ) {
@@ -15,8 +16,10 @@ export class UI {
     this.blocklist = blocklist;
     this.windows = windows;
     this.desktops = desktops;
+    this.userspace = userspace;
     this.timerHideUI = hideUI;
     this.windowFullscreen = windowFullscreen;
+    this.windowCompact = windowCompact;
     this.windowPopup = windowPopup;
     this.windowGeometryBefore = null;
   }
@@ -42,6 +45,12 @@ export class UI {
 
       //Compact
       case 1:
+        this.windowCompact.visible = true;
+        this.adaptRootGeometry(
+          this.windowCompact,
+          this.config.UIWindowCompactPosition,
+        );
+
         break;
 
       //Popup
@@ -53,18 +62,9 @@ export class UI {
             this.timerHideUI.restart();
             return;
           }
-
-          const activeScreenGeometry = this.workspace.activeScreen.geometry;
-          this.root.width = this.windowPopup.width;
-          this.root.height = this.windowPopup.height;
-          this.root.x =
-            activeScreenGeometry.x +
-            (activeScreenGeometry.width - this.root.width) / 2;
-          this.root.y =
-            activeScreenGeometry.y +
-            (activeScreenGeometry.height - this.root.height) / 2;
-          this.timerHideUI.ui = ui;
-          this.timerHideUI.rootHide = !rootHide;
+          this.adaptRootGeometry(this.windowPopup, 0);
+          this.timerHideUI.ui = 2;
+          this.timerHideUI.rootHide = true;
           this.timerHideUI.start();
         } else {
           this.resetRoot();
@@ -77,6 +77,7 @@ export class UI {
       case 3:
         this.windowPopup.visible = value;
         this.windowFullscreen.visible = value;
+        this.windowCompact.visible = value;
         break;
     }
   }
@@ -88,9 +89,63 @@ export class UI {
     this.root.y = 0;
   }
 
+  adaptRootGeometry(windowUI, position) {
+    const activeScreenGeometry = this.workspace.activeScreen.geometry;
+
+    const padding = 8;
+    this.root.width = windowUI.width;
+    this.root.height = windowUI.height;
+    this.root.x =
+      activeScreenGeometry.x +
+      (activeScreenGeometry.width - this.root.width) / 2;
+
+    const panelsSize = this.userspace.getPanelsSize();
+
+    switch (position) {
+      //Center
+      case 0:
+        this.root.y =
+          activeScreenGeometry.y +
+          (activeScreenGeometry.height - this.root.height) / 2;
+        break;
+      //Top
+      case 1:
+        this.root.y = padding + activeScreenGeometry.y + panelsSize.top;
+        break;
+      //Bottom
+      case 2:
+        this.root.y =
+          activeScreenGeometry.y +
+          (activeScreenGeometry.height - this.root.height) -
+          padding -
+          panelsSize.bottom;
+        break;
+      //Cursor
+      case 3:
+        const cursor = this.getPosition(this.workspace.activeWindow);
+        let y = cursor.y - this.windowCompact.height / 2;
+        let x = cursor.x - this.windowCompact.width / 2;
+
+        if (y <= panelsSize.top) {
+          y = activeScreenGeometry.y + padding + panelsSize.top;
+        }
+
+        if (x <= panelsSize.left) {
+          x = activeScreenGeometry.x + padding + panelsSize.left;
+        }
+
+        this.root.y = y;
+        this.root.x = x;
+        break;
+    }
+  }
+
   //Return if fullscreen or compact ui is open
   checkIfUIVisible() {
-    return this.windowFullscreen.visible;
+    return (
+      this.windowFullscreen.visible === true ||
+      this.windowCompact.visible === true
+    );
   }
 
   //Paint tiles
@@ -131,16 +186,40 @@ export class UI {
       return;
     }
 
-    this.show(0);
+    if (this.checkIfUIVisible() === false) {
+      this.show(this.config.UIMode);
+    }
+
     const cursor = this.getPosition(windowGeometry);
     this.root.tileActived = this.root.layoutOrdered.findIndex((tile) => {
-      const limitX = tile.absoluteGeometry.x + tile.absoluteGeometry.width;
-      const limitY = tile.absoluteGeometry.y + tile.absoluteGeometry.height;
+      let tileGeometry = {
+        x: tile.absoluteGeometry.x,
+        y: tile.absoluteGeometry.y,
+        right: tile.absoluteGeometry.x + tile.absoluteGeometry.width,
+        bottom: tile.absoluteGeometry.y + tile.absoluteGeometry.height,
+      };
+
+      //TODO: Support for multiple monitors
+      if (this.config.UIMode === 1) {
+        tileGeometry = {
+          x: this.root.x + tile.relativeGeometry.x * this.windowCompact.width,
+          y: this.root.y + tile.relativeGeometry.y * this.windowCompact.height,
+          right:
+            this.root.x +
+            tile.relativeGeometry.width * this.windowCompact.width +
+            tile.relativeGeometry.x * this.windowCompact.width,
+          bottom:
+            this.root.y +
+            tile.relativeGeometry.height * this.windowCompact.height +
+            tile.relativeGeometry.y * this.windowCompact.height,
+        };
+      }
+
       return (
-        tile.absoluteGeometry.x <= cursor.x &&
-        limitX >= cursor.x &&
-        tile.absoluteGeometry.y <= cursor.y &&
-        limitY >= cursor.y
+        tileGeometry.x <= cursor.x &&
+        tileGeometry.right >= cursor.x &&
+        tileGeometry.y <= cursor.y &&
+        tileGeometry.bottom >= cursor.y
       );
     });
   }
@@ -169,6 +248,8 @@ export class UI {
       if (tile !== undefined) {
         window._avoidTileChangedTrigger = false;
         tile.manage(window);
+      } else if (window._tileShadow !== undefined) {
+        window._tileShadow.manage(window);
       }
 
       return;

@@ -25,7 +25,7 @@ Item {
 
         Behavior on color {
             ColorAnimation {
-                duration: 200
+                duration: 120
             }
         }
 

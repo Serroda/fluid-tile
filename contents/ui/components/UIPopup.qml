@@ -3,7 +3,7 @@ import QtQuick
 Rectangle {
     id: popup
     width: 180
-    height: 100
+    height: 120
     anchors.centerIn: parent
 
     property var theme: ({})

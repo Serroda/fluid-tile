@@ -18,6 +18,7 @@ export class Engine {
       timerResetAll,
       timerHideUI,
       windowFullscreen,
+      windowCompact,
       windowPopup,
     },
   ) {
@@ -29,6 +30,7 @@ export class Engine {
     this.root = root;
     this.windowsUI = {
       windowFullscreen,
+      windowCompact,
       windowPopup,
     };
     this.timers = {
@@ -61,6 +63,7 @@ export class Engine {
       root,
       this.classes,
       this.windowsUI.windowFullscreen,
+      this.windowsUI.windowCompact,
       this.windowsUI.windowPopup,
       timerHideUI,
     );

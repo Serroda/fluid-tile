@@ -88,7 +88,9 @@ Window {
             desktopExtra: KWin.readConfig("DesktopExtra", true),
             modalsIgnore: KWin.readConfig("ModalsIgnore", true),
             layoutDefault: KWin.readConfig("LayoutDefault", 2),
-            UIWindowCursor: KWin.readConfig("UIWindowCursor", false)
+            UIWindowCursor: KWin.readConfig("UIWindowCursor", false),
+            UIMode: KWin.readConfig("UIMode", 0),
+            UIWindowCompactPosition: KWin.readConfig("UIWindowCompactPosition", 1)
         };
 
         try {
@@ -106,6 +108,7 @@ Window {
             timerResetAll,
             timerHideUI,
             windowFullscreen,
+            windowCompact,
             windowPopup
         });
     }
@@ -160,6 +163,17 @@ Window {
         tileActived: root.tileActived
         theme: theme
         layoutOrdered: root.layoutOrdered
+    }
+
+    UICompact {
+        id: windowCompact
+        visible: false
+        color: theme.windowBackground
+        tileActived: root.tileActived
+        theme: theme
+        radius: theme.radius
+        layoutOrdered: root.layoutOrdered
+        screens: Workspace.screens
     }
 
     UIPopup {
