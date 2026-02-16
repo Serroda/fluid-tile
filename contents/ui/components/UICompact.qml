@@ -3,7 +3,7 @@ import QtQuick
 Rectangle {
     id: windowCompact
     width: 180 * screens.length
-    height: 140
+    height: 120
 
     anchors.centerIn: parent
     property var screens: []
@@ -15,14 +15,19 @@ Rectangle {
         anchors.fill: parent
 
         Repeater {
-            model: windowCompact.screens
+            model: windowCompact.screens.sort((a, b) => a.geometry.x - b.geometry.x)
             delegate: Rectangle {
+                id: section
                 height: windowCompact.height
                 width: windowCompact.width / windowCompact.screens.length
                 color: "transparent"
+
+                property var tilesScreen: windowCompact.layoutOrdered.filter(t => t._screen === modelData)
+
                 Repeater {
-                    model: windowCompact.layoutOrdered.filter(t => t._screen === modelData)
+                    model: tilesScreen
                     delegate: Tile {
+                        id: tile
                         x: modelData.relativeGeometry.x * parent.width
                         y: modelData.relativeGeometry.y * parent.height
                         width: modelData.relativeGeometry.width * parent.width
@@ -32,7 +37,7 @@ Rectangle {
                         colorDefault: theme.tileBackground
                         radius: theme.radius
                         padding: modelData.padding
-                        active: index === windowCompact.tileActived
+                        active: modelData === windowCompact.layoutOrdered[windowCompact.tileActived]
                     }
                 }
             }

@@ -191,6 +191,7 @@ export class UI {
     }
 
     const cursor = this.getPosition(windowGeometry);
+
     this.root.tileActived = this.root.layoutOrdered.findIndex((tile) => {
       let tileGeometry = {
         x: tile.absoluteGeometry.x,
