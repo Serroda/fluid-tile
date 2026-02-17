@@ -84,7 +84,7 @@ Window {
             maximizeExtend: KWin.readConfig("MaximizeExtend", true),
             windowsOrderOpen: KWin.readConfig("WindowsOrderOpen", false),
             windowsOrderClose: KWin.readConfig("WindowsOrderClose", false),
-            windowsExtendTileChangedDelay: KWin.readConfig("WindowsExtendTileChangedDelay", 300),
+            windowsExtendTileChangedDelay: KWin.readConfig("WindowsExtendTileChangedDelay", 350),
             desktopAdd: KWin.readConfig("DesktopAdd", true),
             desktopRemove: KWin.readConfig("DesktopRemove", false),
             desktopRemoveMin: KWin.readConfig("DesktopRemoveMin", 1),

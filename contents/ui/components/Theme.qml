@@ -8,6 +8,8 @@ Item {
 
     property int radius: Kirigami.Units.cornerRadius
 
+    property color text: Kirigami.Theme.textColor
+
     property color tileFocus: Kirigami.ColorUtils.tintWithAlpha("transparent", Kirigami.Theme.focusColor, 0.88)
 
     property color tileBackground: Kirigami.ColorUtils.tintWithAlpha("transparent", Kirigami.Theme.backgroundColor, 0.60)

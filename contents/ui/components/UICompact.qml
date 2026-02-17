@@ -10,25 +10,40 @@ Rectangle {
     property var tileActive: undefined
     property var dataLayout: []
     property var screens: []
-    property int sizePerSection: (windowCompact.width / windowCompact.screens.length)
+    property var spacingRow: 8
+    property int sizePerSection: (windowCompact.width / windowCompact.screens.length) - (windowCompact.screens.length - 1) * (spacingRow / 2)
 
-    //TODO: Seperation between screens
-    Repeater {
-        model: windowCompact.dataLayout
-        delegate: Tile {
-            id: tile
-            x: {
-                return windowCompact.screens.indexOf(modelData._screen) * windowCompact.sizePerSection + modelData.relativeGeometry.x * windowCompact.sizePerSection;
+    Row {
+        anchors.centerIn: parent
+        height: parent.height
+        width: parent.width
+        spacing: windowCompact.spacingRow
+
+        Repeater {
+            model: windowCompact.screens
+            delegate: Rectangle {
+                id: section
+                color: "transparent"
+                height: parent.height
+                width: windowCompact.sizePerSection
+                property var tilesPerScreen: windowCompact.dataLayout.filter(t => t._screen === modelData)
+
+                Repeater {
+                    model: section.tilesPerScreen
+                    delegate: Tile {
+                        x: modelData.relativeGeometry.x * parent.width
+                        y: modelData.relativeGeometry.y * parent.height
+                        width: modelData.relativeGeometry.width * parent.width
+                        height: modelData.relativeGeometry.height * parent.height
+                        colorBorder: theme.tileBorder
+                        colorFocus: theme.tileFocus
+                        colorDefault: theme.tileBackground
+                        radius: theme.radius
+                        padding: modelData.padding
+                        active: modelData === windowCompact.tileActive
+                    }
+                }
             }
-            y: modelData.relativeGeometry.y * parent.height
-            width: modelData.relativeGeometry.width * windowCompact.sizePerSection
-            height: modelData.relativeGeometry.height * parent.height
-            colorBorder: theme.tileBorder
-            colorFocus: theme.tileFocus
-            colorDefault: theme.tileBackground
-            radius: theme.radius
-            padding: modelData.padding
-            active: modelData === windowCompact.tileActive
         }
     }
 }

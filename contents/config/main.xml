@@ -12,7 +12,7 @@
             <default>false</default>
         </entry>
         <entry name="WindowsExtendTileChangedDelay" type="Int">
-            <default>300</default>
+            <default>350</default>
         </entry>
         <entry name="DesktopAdd" type="Bool">
             <default>true</default>

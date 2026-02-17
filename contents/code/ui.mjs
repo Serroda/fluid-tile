@@ -215,10 +215,9 @@ export class UI {
         .map((s) => s)
         .sort((a, b) => a.geometry.x - b.geometry.x);
 
-      this.root.tileActive = this.root.layouts.compact.find((tile) => {
-        const sizeSection =
-          this.windowCompact.width / this.workspace.screens.length;
+      const sizeSection = this.windowCompact.sizePerSection;
 
+      this.root.tileActive = this.root.layouts.compact.find((tile) => {
         const x =
           this.root.x +
           screensSort.indexOf(tile._screen) * sizeSection +
@@ -264,7 +263,7 @@ export class UI {
 
       const layouts =
         this.config.UIMode === 0
-          ? this.root.tileActive
+          ? this.root.layouts.fullscreen
           : this.root.layouts.compact;
 
       const tile = layouts.find((t) => t === this.root.tileActive);
