@@ -7,10 +7,10 @@ Rectangle {
     anchors.centerIn: parent
 
     property var theme: ({})
-    property var layoutOrdered: []
+    property var dataLayout: []
 
     Repeater {
-        model: popup.layoutOrdered
+        model: popup.dataLayout
         delegate: Tile {
             x: modelData.relativeGeometry.x * parent.width
             y: modelData.relativeGeometry.y * parent.height

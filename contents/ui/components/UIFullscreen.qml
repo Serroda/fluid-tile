@@ -2,20 +2,20 @@ import QtQuick
 
 Rectangle {
     id: windowFullscreen
-    property int tileActived: -1
     property var theme: ({})
-    property var layoutOrdered: []
+    property var tileActive: undefined
+    property var dataLayout: []
 
     //Tile layout
     Repeater {
-        model: windowFullscreen.layoutOrdered
+        model: windowFullscreen.dataLayout
         delegate: Tile {
             x: modelData.absoluteGeometry.x
             y: modelData.absoluteGeometry.y
             width: modelData.absoluteGeometry.width
             height: modelData.absoluteGeometry.height
             indexLayout: index
-            active: index === windowFullscreen.tileActived
+            active: modelData === windowFullscreen.tileActive
             colorBorder: theme.tileBorder
             colorFocus: theme.tileFocus
             colorDefault: theme.tileBackground

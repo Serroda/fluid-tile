@@ -8,9 +8,13 @@ Window {
     property var config: ({})
     property var engine: ({})
     property var shortcuts: []
-    property var layoutOrdered: []
-    property var layoutOrderedScreen: []
-    property int tileActived: -1
+    property var tileActive: undefined
+    property var screens: Workspace.screens
+    property var layouts: ({
+            popup: [],
+            fullscreen: [],
+            compact: []
+        })
 
     flags: Qt.FramelessWindowHint | Qt.WindowTransparentForInput | Qt.WindowStaysOnTopHint | Qt.BypassWindowManagerHint
     width: Workspace.virtualScreenSize.width
@@ -158,22 +162,22 @@ Window {
         id: windowFullscreen
         width: root.width
         height: root.height
-        color: theme.windowFullscreenBackground
         visible: false
-        tileActived: root.tileActived
         theme: theme
-        layoutOrdered: root.layoutOrdered
+        color: theme.windowFullscreenBackground
+        dataLayout: root.layouts.fullscreen
+        tileActive: root.tileActive
     }
 
     UICompact {
         id: windowCompact
         visible: false
-        color: theme.windowBackground
-        tileActived: root.tileActived
         theme: theme
+        color: theme.windowBackground
         radius: theme.radius
-        layoutOrdered: root.layoutOrdered
-        screens: Workspace.screens
+        dataLayout: root.layouts.compact
+        screens: root.screens.sort((a, b) => a.geometry.x - b.geometry.x)
+        tileActive: root.tileActive
     }
 
     UIPopup {
@@ -182,6 +186,6 @@ Window {
         color: theme.windowBackground
         theme: theme
         radius: theme.radius
-        layoutOrdered: root.layoutOrderedScreen
+        dataLayout: root.layouts.popup
     }
 }

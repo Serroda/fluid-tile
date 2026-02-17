@@ -33,8 +33,8 @@ export class UI {
   }
 
   toggleVisibility(ui, value, rootHide) {
-    this.root.tileActived = -1;
     this.root.visible = !rootHide;
+    this.root.tileActive = undefined;
 
     switch (ui) {
       //Fullscreen
@@ -150,12 +150,14 @@ export class UI {
 
   //Paint tiles
   resetLayout() {
-    this.root.layoutOrdered = [];
-    this.root.layoutOrderedScreen = [];
-    this.root.layoutOrdered = this.tiles.getTilesCurrentDesktop();
-    this.root.layoutOrderedScreen = this.root.layoutOrdered.filter(
-      (t) => t._screen === this.workspace.activeScreen,
-    );
+    const tiles = this.tiles.getTilesCurrentDesktop();
+    this.root.layouts = {
+      fullscreen: tiles,
+      popup: tiles.filter((t) => t._screen === this.workspace.activeScreen),
+      compact: tiles.sort(
+        (a, b) => a._screen.geometry.x - b._screen.geometry.x,
+      ),
+    };
   }
 
   // When a window start move with the cursor, reset ui
@@ -192,37 +194,54 @@ export class UI {
 
     const cursor = this.getPosition(windowGeometry);
 
-    this.root.tileActived = this.root.layoutOrdered.findIndex((tile) => {
-      let tileGeometry = {
-        x: tile.absoluteGeometry.x,
-        y: tile.absoluteGeometry.y,
-        right: tile.absoluteGeometry.x + tile.absoluteGeometry.width,
-        bottom: tile.absoluteGeometry.y + tile.absoluteGeometry.height,
-      };
+    if (this.config.UIMode === 0) {
+      this.root.tileActive = this.root.layouts.fullscreen.find((tile) => {
+        let tileGeometry = {
+          x: tile.absoluteGeometry.x,
+          y: tile.absoluteGeometry.y,
+          right: tile.absoluteGeometry.x + tile.absoluteGeometry.width,
+          bottom: tile.absoluteGeometry.y + tile.absoluteGeometry.height,
+        };
 
-      //TODO: Support for multiple monitors
-      if (this.config.UIMode === 1) {
-        tileGeometry = {
-          x: this.root.x + tile.relativeGeometry.x * this.windowCompact.width,
+        return (
+          tileGeometry.x <= cursor.x &&
+          tileGeometry.right >= cursor.x &&
+          tileGeometry.y <= cursor.y &&
+          tileGeometry.bottom >= cursor.y
+        );
+      });
+    } else if (this.config.UIMode === 1) {
+      const screensSort = this.workspace.screens
+        .map((s) => s)
+        .sort((a, b) => a.geometry.x - b.geometry.x);
+
+      this.root.tileActive = this.root.layouts.compact.find((tile) => {
+        const sizeSection =
+          this.windowCompact.width / this.workspace.screens.length;
+
+        const x =
+          this.root.x +
+          screensSort.indexOf(tile._screen) * sizeSection +
+          tile.relativeGeometry.x * sizeSection;
+
+        let tileGeometry = {
+          x: x,
           y: this.root.y + tile.relativeGeometry.y * this.windowCompact.height,
-          right:
-            this.root.x +
-            tile.relativeGeometry.width * this.windowCompact.width +
-            tile.relativeGeometry.x * this.windowCompact.width,
+          right: x + tile.relativeGeometry.width * sizeSection,
           bottom:
             this.root.y +
             tile.relativeGeometry.height * this.windowCompact.height +
             tile.relativeGeometry.y * this.windowCompact.height,
         };
-      }
 
-      return (
-        tileGeometry.x <= cursor.x &&
-        tileGeometry.right >= cursor.x &&
-        tileGeometry.y <= cursor.y &&
-        tileGeometry.bottom >= cursor.y
-      );
-    });
+        return (
+          tileGeometry.x <= cursor.x &&
+          tileGeometry.right >= cursor.x &&
+          tileGeometry.y <= cursor.y &&
+          tileGeometry.bottom >= cursor.y
+        );
+      });
+    }
   }
 
   //When the user release the window
@@ -243,11 +262,22 @@ export class UI {
         });
       }
 
-      const tile = this.root.layoutOrdered[this.root.tileActived];
+      const layouts =
+        this.config.UIMode === 0
+          ? this.root.tileActive
+          : this.root.layouts.compact;
+
+      const tile = layouts.find((t) => t === this.root.tileActive);
+
       this.hide(3, true);
 
       if (tile !== undefined) {
         window._avoidTileChangedTrigger = false;
+
+        if (tile._screen !== this.workspace.activeScreen) {
+          this.workspace.sendClientToScreen(window, tile._screen);
+        }
+
         tile.manage(window);
       } else if (window._tileShadow !== undefined) {
         window._tileShadow.manage(window);
