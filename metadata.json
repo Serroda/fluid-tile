@@ -1,7 +1,7 @@
 {
   "KPlugin": {
     "Name": "Fluid tile",
-    "Description": "Simple auto tiling for KDE Plasma",
+    "Description": "Auto tiling for KDE",
     "Icon": "preferences-system-windows",
     "Authors": [
       {
@@ -10,7 +10,7 @@
       }
     ],
     "Id": "fluid-tile",
-    "Version": "5.2",
+    "Version": "6.0",
     "License": "GPLv3",
     "Website": "https://codeberg.org/Serroda/fluid-tile"
   },
