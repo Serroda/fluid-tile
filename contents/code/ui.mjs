@@ -218,9 +218,11 @@ export class UI {
       const sizeSection = this.windowCompact.sizePerSection;
 
       this.root.tileActive = this.root.layouts.compact.find((tile) => {
+        const indexScreen = screensSort.indexOf(tile._screen);
         const x =
           this.root.x +
-          screensSort.indexOf(tile._screen) * sizeSection +
+          indexScreen * sizeSection +
+          indexScreen * this.windowCompact.spacingRow +
           tile.relativeGeometry.x * sizeSection;
 
         let tileGeometry = {
