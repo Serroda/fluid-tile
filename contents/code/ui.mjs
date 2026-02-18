@@ -177,13 +177,16 @@ export class UI {
     }
 
     if (this.windowGeometryBefore === null) {
-      this.windowGeometryBefore = windowGeometry;
+      this.windowGeometryBefore = {
+        width: parseInt(windowGeometry.width),
+        height: parseInt(windowGeometry.height),
+      };
       return;
     }
 
     if (
-      windowGeometry.height !== this.windowGeometryBefore.height ||
-      windowGeometry.width !== this.windowGeometryBefore.width
+      parseInt(windowGeometry.height) !== this.windowGeometryBefore.height ||
+      parseInt(windowGeometry.width) !== this.windowGeometryBefore.width
     ) {
       return;
     }
