@@ -73,6 +73,7 @@ If you like the project, you can support me by buying me a coffee or with other 
 - [Home](https://codeberg.org/Serroda/fluid-tile/wiki/Home)
 - [Installation](https://codeberg.org/Serroda/fluid-tile/wiki/Installation)
 - [User settings](https://codeberg.org/Serroda/fluid-tile/wiki/User-settings)
+- [User interface](https://codeberg.org/Serroda/fluid-tile/wiki/User-interface)
 - [Animations](https://codeberg.org/Serroda/fluid-tile/wiki/Animations)
 - [Blocklist](https://codeberg.org/Serroda/fluid-tile/wiki/Blocklist)
 - [Shortcuts](https://codeberg.org/Serroda/fluid-tile/wiki/Shortcuts)
