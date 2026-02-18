@@ -44,9 +44,13 @@ If you like the project, you can support me by buying me a coffee or with other 
 
   <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/windowsRemoved.webp" width="450"/>
 
-- UI
+- UI Fullscreen
 
   <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/UI.webp" width="450"/>
+
+- UI Compact
+
+  <img src ="https://codeberg.org/Serroda/fluid-tile/raw/branch/main/.meta/compact_mode_cursor.webp" width="450"/>
 
 - KWin tile manager
 
