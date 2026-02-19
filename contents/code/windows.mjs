@@ -296,6 +296,10 @@ export class Windows {
       tileResult = window.tile.absoluteGeometry;
     }
 
+    if (tileResult === undefined) {
+      tileResult = window.absoluteGeometry;
+    }
+
     return {
       top: tileResult.y,
       left: tileResult.x,

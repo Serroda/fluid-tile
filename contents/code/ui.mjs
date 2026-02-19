@@ -154,9 +154,9 @@ export class UI {
     this.root.layouts = {
       fullscreen: tiles,
       popup: tiles.filter((t) => t._screen === this.workspace.activeScreen),
-      compact: tiles.sort(
-        (a, b) => a._screen.geometry.x - b._screen.geometry.x,
-      ),
+      compact: tiles
+        .map((t) => t)
+        .sort((a, b) => a._screen.geometry.x - b._screen.geometry.x),
     };
   }
 
@@ -185,8 +185,9 @@ export class UI {
     }
 
     if (
-      parseInt(windowGeometry.height) !== this.windowGeometryBefore.height ||
-      parseInt(windowGeometry.width) !== this.windowGeometryBefore.width
+      this.checkIfUIVisible() === false &&
+      (parseInt(windowGeometry.height) !== this.windowGeometryBefore.height ||
+        parseInt(windowGeometry.width) !== this.windowGeometryBefore.width)
     ) {
       return;
     }
@@ -260,7 +261,7 @@ export class UI {
     if (this.checkIfUIVisible() === true) {
       const changed = this.windows.checkDesktopChanged(window);
 
-      if (changed === true) {
+      if (changed === true && window._tileShadow !== undefined) {
         this.desktops.remove({
           desktopsId: [window._tileShadow._desktop.id],
         });
