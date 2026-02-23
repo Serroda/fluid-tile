@@ -11,16 +11,41 @@ export class Desktops {
     this.desktopsExtend = new Queue();
   }
 
-  create(focus = false) {
-    this.workspace.createDesktop(this.workspace.desktops.length, "");
+  create(focus = false, forceLast = false) {
+    let position = this.workspace.desktops.length;
+
+    if (forceLast === false) {
+      switch (this.config.desktopAddMode) {
+        // After the current desktop
+        case 0:
+          position =
+            this.workspace.desktops.indexOf(this.workspace.currentDesktop) + 1;
+          break;
+        // Before the current desktop
+        case 1:
+          position = this.workspace.desktops.indexOf(
+            this.workspace.currentDesktop,
+          );
+          break;
+        // Last
+        case 2:
+          position = this.workspace.desktops.length;
+          break;
+        // First
+        case 3:
+          position = 0;
+          break;
+      }
+    }
+
+    this.workspace.createDesktop(position, "");
     let layout = this.tiles.getDefaultLayouts(this.config.layoutDefault - 1);
 
     if (this.config.layoutCustom !== undefined) {
       layout = this.config.layoutCustom;
     }
 
-    const desktopCreated =
-      this.workspace.desktops[this.workspace.desktops.length - 1];
+    const desktopCreated = this.workspace.desktops[position];
 
     this.tiles.setLayout(desktopCreated, layout);
 
@@ -49,7 +74,7 @@ export class Desktops {
       );
 
       if (windows.length > 0) {
-        this.create();
+        this.create(false, true);
         return;
       }
     }

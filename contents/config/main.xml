@@ -17,6 +17,15 @@
         <entry name="DesktopAdd" type="Bool">
             <default>true</default>
         </entry>
+        <entry name="DesktopAddMode" type="Enum">
+            <choices>
+                <choice name="0"><label>After the current desktop</label></choice>
+                <choice name="1"><label>Before the current desktop</label></choice>
+                <choice name="2"><label>Last</label></choice>
+                <choice name="3"><label>First</label></choice>
+            </choices>
+            <default>0</default>
+        </entry>
         <entry name="DesktopRemove" type="Bool">
             <default>false</default>
         </entry>
@@ -27,7 +36,7 @@
             <default>300</default>
         </entry>
         <entry name="DesktopExtra" type="Bool">
-            <default>true</default>
+            <default>false</default>
         </entry>
         <entry name="ModalsIgnore" type="Bool">
             <default>true</default>

@@ -59,7 +59,7 @@
      <property name="minimumSize">
       <size>
        <width>500</width>
-       <height>170</height>
+       <height>174</height>
       </size>
      </property>
      <property name="toolTip">
@@ -88,6 +88,12 @@
        <string>Opened</string>
       </attribute>
       <layout class="QFormLayout" name="formLayout_3">
+       <property name="fieldGrowthPolicy">
+        <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
+       </property>
+       <property name="rowWrapPolicy">
+        <enum>QFormLayout::RowWrapPolicy::DontWrapRows</enum>
+       </property>
        <property name="labelAlignment">
         <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
@@ -108,6 +114,53 @@
         </widget>
        </item>
        <item row="1" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="spacing">
+          <number>12</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>New virtual desktop position</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="kcfg_DesktopAddMode">
+           <item>
+            <property name="text">
+             <string>After the current desktop</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Before the current desktop</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Last</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>First</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0">
         <widget class="QCheckBox" name="kcfg_ModalsIgnore">
          <property name="toolTip">
           <string>Only works if the window is transient</string>
@@ -129,7 +182,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="3" column="0">
         <widget class="QCheckBox" name="kcfg_WindowsOrderOpen">
          <property name="text">
           <string>Rearrange windows</string>
@@ -329,7 +382,7 @@ The position it takes is the center of the top edge of the window</string>
           <string/>
          </property>
          <property name="text">
-          <string>Add an empty desktop if the last desktop has windows</string>
+          <string>Add an empty desktop in the last position if the last desktop has windows</string>
          </property>
         </widget>
        </item>
