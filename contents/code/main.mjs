@@ -204,7 +204,7 @@ export class Engine {
       this.timers.extendDesktop.start();
     } else if (
       this.classes.tiles.getTilesCurrentDesktop().length >
-        windowsOther.length + 1 ||
+      windowsOther.length + 1 ||
       window._maximized === false
     ) {
       //Start timer without delay, if you dont execute `extendWindows` inside
@@ -336,7 +336,7 @@ export class Engine {
       }
     }
 
-    const tiles = this.classes.tiles.getTilesCurrentDesktop();
+    const tiles = this.classes.tiles.getTilesCurrentDesktop(true);
 
     for (const tile of tiles) {
       if (tile._signals !== undefined) {
@@ -351,6 +351,9 @@ export class Engine {
       };
 
       for (const key in tile._signals) {
+        if (key === "windowAdded" && tile._parent === true) {
+          continue;
+        }
         tile[key].connect(tile._signals[key]);
       }
     }

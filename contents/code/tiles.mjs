@@ -164,6 +164,7 @@ export class Tiles {
   getOrderedTiles(
     desktop = this.workspace.currentDesktop,
     screen = this.workspace.activeScreen,
+    parentTiles = false,
   ) {
     const tileRoot = this.workspace.rootTile(screen, desktop);
 
@@ -173,6 +174,7 @@ export class Tiles {
 
     const tiles = this.orderTiles(
       tileRoot.tiles.length !== 0 ? tileRoot.tiles : [tileRoot],
+      parentTiles,
     );
 
     for (const tile of tiles) {
@@ -184,12 +186,19 @@ export class Tiles {
   }
 
   //Get tiles, ordered by tilesPriority
-  orderTiles(tiles) {
+  orderTiles(tiles, parentTiles) {
     let tilesOrdered = [];
 
     for (let tile of tiles) {
       if (tile.tiles.length !== 0) {
-        tilesOrdered = tilesOrdered.concat(this.orderTiles(tile.tiles));
+        if (parentTiles === true) {
+          tile._parent = true;
+          tilesOrdered.push(tile);
+        }
+
+        tilesOrdered = tilesOrdered.concat(
+          this.orderTiles(tile.tiles, parentTiles),
+        );
       } else {
         tilesOrdered.push(tile);
       }
@@ -238,10 +247,12 @@ export class Tiles {
   }
 
   //Get all tiles from the actual desktop with all screens
-  getTilesCurrentDesktop() {
+  getTilesCurrentDesktop(parentTiles = false) {
     let tiles = [];
     for (const screen of this.workspace.screens) {
-      tiles = tiles.concat(this.getOrderedTiles(undefined, screen));
+      tiles = tiles.concat(
+        this.getOrderedTiles(undefined, screen, parentTiles),
+      );
     }
     return tiles;
   }
