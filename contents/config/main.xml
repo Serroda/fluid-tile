@@ -14,15 +14,29 @@
         <entry name="WindowsExtendTileChangedDelay" type="Int">
             <default>350</default>
         </entry>
+        <!-- remove entry, replaced with WindowOverflowAction ###################### REMOVE
         <entry name="DesktopAdd" type="Bool">
             <default>true</default>
-        </entry>
+        </entry> -->
+        <!-- remove entry, merged with WindowOverflowAction
+        <entry name="DesktopAddMode" typeext entry merges with WindowOverflowAction
         <entry name="DesktopAddMode" type="Enum">
             <choices>
                 <choice name="0"><label>After the current desktop</label></choice>
                 <choice name="1"><label>Before the current desktop</label></choice>
                 <choice name="2"><label>Last</label></choice>
                 <choice name="3"><label>First</label></choice>
+            </choices>
+            <default>0</default>
+        </entry>-->
+         <entry name="WindowOverflowAction" type="Enum">
+            <choices>
+                <choice name="0"><label>Create new virtual desktop: after the current desktop</label></choice>
+                <choice name="1"><label>Create new virtual desktop: before the current desktop</label></choice>
+                <choice name="2"><label>Create new virtual desktop: at End</label></choice>
+                <choice name="3"><label>Create new virtual desktop: at Beginning</label></choice>
+                <choice name="4"><label>Switch to next tile layout with more space</label></choice>
+                <choice name="5"><label>Just let it float</label></choice>
             </choices>
             <default>0</default>
         </entry>

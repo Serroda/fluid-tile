@@ -84,7 +84,7 @@ export class Engine {
 
     const continueProcess = this.classes.windows.setTilesOnAdd(window);
 
-    if (this.config.desktopAdd === true && continueProcess === true) {
+    if (this.config.windowOverflowAction >= 0 && this.config.windowOverflowAction <= 3 && continueProcess === true) {
       this.classes.desktops.avoidDesktopChanged = true;
       window.desktops = [this.classes.desktops.create(true)];
 

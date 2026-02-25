@@ -15,7 +15,7 @@ export class Desktops {
     let position = this.workspace.desktops.length;
 
     if (forceLast === false) {
-      switch (this.config.desktopAddMode) {
+      switch (this.config.windowOverflowAction) {
         // After the current desktop
         case 0:
           position =
