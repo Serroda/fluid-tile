@@ -84,7 +84,9 @@ export class Engine {
 
     const continueProcess = this.classes.windows.setTilesOnAdd(window);
 
-    if (this.config.windowOverflowAction >= 0 && this.config.windowOverflowAction <= 3 && continueProcess === true) {
+    // windowOverflowAction - Create a new virtual desktop: *all versions
+    if ([0, 1, 2, 3].includes(this.config.windowOverflowAction) && continueProcess) {
+    //if (this.config.windowOverflowAction >= 0 && this.config.windowOverflowAction <= 3 && continueProcess === true) {
       this.classes.desktops.avoidDesktopChanged = true;
       window.desktops = [this.classes.desktops.create(true)];
 
@@ -98,6 +100,63 @@ export class Engine {
         window._avoidTileChangedTrigger = false;
         tilesOrdered[0].manage(window);
       }
+    }
+
+    // windowOverflowAction - Switch to next tile layout with more space
+    else if (this.config.windowOverflowAction === 4 && continueProcess === true) {
+      const currentTileCount = this.classes.tiles.getOrderedTiles().length;
+      const layouts = this.classes.tiles.getDefaultLayouts();
+
+      if (
+        this.config.layoutCustom !== undefined &&
+        this.config.layoutCustom !== ""
+      ) {
+        let customLayout = this.config.layoutCustom;
+        if (typeof customLayout === "string") {
+          try {
+            customLayout = JSON.parse(customLayout);
+          } catch (e) {
+            customLayout = undefined;
+          }
+        }
+        if (Array.isArray(customLayout)) {
+          layouts.push(customLayout);
+        }
+      }
+
+      const countTiles = (layoutItems) => {
+        let count = 0;
+        for (const item of layoutItems) {
+          if (item.tiles !== undefined) {
+            count += countTiles(item.tiles);
+          } else {
+            count++;
+          }
+        }
+        return count;
+      };
+
+      const nextLayout = layouts.find(
+        (layout) => countTiles(layout) > currentTileCount,
+      );
+
+      if (nextLayout) {
+        // A larger layout was found; apply it to the active screen.
+        this.classes.tiles.setLayout(
+          this.workspace.currentDesktop,
+          nextLayout,
+          false,
+        );
+      }
+      // If no larger layout is found, do nothing--default to "Just let it float" behavior.
+    }
+
+    // windowOverflowAction - Just let it float
+    else if (this.config.windowOverflowAction === 5 && continueProcess === true) {
+      // Intentionally empty. By not assigning the window to a tile, we let
+      // KWin's native "Window Placement" settings to take effect.
+
+      // TO DO: Do not fill screen with window (it's filling, not maximizing)
     }
 
     this.classes.desktops.checkDesktopExtra();
