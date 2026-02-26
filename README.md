@@ -3,8 +3,9 @@
 </p>
 
 # Fluid tile
+Auto tiling for KWin native
 
-A script for Kwin that auto adjusts windows to the custom KDE Plasma tiling layout by creating and removing virtual desktops.
+A script for Kwin that auto adjusts windows to the custom KDE Plasma tile layout, extends windows and more features
 
 ## Support
 
