@@ -103,16 +103,6 @@
        <property name="verticalSpacing">
         <number>12</number>
        </property>
-       <!-- <item row="0" column="0">##################################### REMOVE
-        <widget class="QCheckBox" name="kcfg_DesktopAdd">
-         <property name="locale">
-          <locale language="English" country="Eswatini"/>
-         </property>
-         <property name="text">
-          <string>Create new virtual desktop if you do not have more space</string>
-         </property>
-        </widget>
-       </item> -->
        <item row="1" column="0">
         <layout class="QHBoxLayout" name="horizontalLayout">
          <property name="spacing">
@@ -134,30 +124,6 @@
            </property>
           </widget>
          </item>
-         <!-- <item>################################################### REMOVE
-          <widget class="QComboBox" name="kcfg_DesktopAddMode">
-           <item>
-            <property name="text">
-             <string>After the current desktop</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Before the current desktop</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Last</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>First</string>
-            </property>
-           </item>
-          </widget>
-         </item> -->
          <item>
           <widget class="QComboBox" name="kcfg_WindowOverflowAction">
            <item>

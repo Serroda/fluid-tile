@@ -86,7 +86,6 @@ export class Engine {
 
     // windowOverflowAction - Create a new virtual desktop: *all versions
     if ([0, 1, 2, 3].includes(this.config.windowOverflowAction) && continueProcess) {
-    //if (this.config.windowOverflowAction >= 0 && this.config.windowOverflowAction <= 3 && continueProcess === true) {
       this.classes.desktops.avoidDesktopChanged = true;
       window.desktops = [this.classes.desktops.create(true)];
 
@@ -141,7 +140,7 @@ export class Engine {
       );
 
       if (nextLayout) {
-        // A larger layout was found; apply it to the active screen.
+        // If larger layout was found, apply it to the active screen.
         this.classes.tiles.setLayout(
           this.workspace.currentDesktop,
           nextLayout,
@@ -155,8 +154,6 @@ export class Engine {
     else if (this.config.windowOverflowAction === 5 && continueProcess === true) {
       // Intentionally empty. By not assigning the window to a tile, we let
       // KWin's native "Window Placement" settings to take effect.
-
-      // TO DO: Do not fill screen with window (it's filling, not maximizing)
     }
 
     this.classes.desktops.checkDesktopExtra();
