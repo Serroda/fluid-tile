@@ -104,16 +104,6 @@
         <number>12</number>
        </property>
        <item row="0" column="0">
-        <widget class="QCheckBox" name="kcfg_DesktopAdd">
-         <property name="locale">
-          <locale language="English" country="Eswatini"/>
-         </property>
-         <property name="text">
-          <string>Create new virtual desktop if you do not have more space</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
         <layout class="QHBoxLayout" name="horizontalLayout">
          <property name="spacing">
           <number>12</number>
@@ -130,37 +120,47 @@
          <item>
           <widget class="QLabel" name="label_4">
            <property name="text">
-            <string>New virtual desktop position</string>
+            <string>Window Overflow Action:</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="kcfg_DesktopAddMode">
+          <widget class="QComboBox" name="kcfg_WindowOverflowAction">
            <item>
             <property name="text">
-             <string>After the current desktop</string>
+             <string>Create new virtual desktop: after the current desktop</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>Before the current desktop</string>
+             <string>Create new virtual desktop: before the current desktop</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>Last</string>
+             <string>Create new virtual desktop: at End</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>First</string>
+             <string>Create new virtual desktop: at Beginning</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Switch to next tile layout with more space</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Just let it float</string>
             </property>
            </item>
           </widget>
          </item>
         </layout>
        </item>
-       <item row="2" column="0">
+       <item row="1" column="0">
         <widget class="QCheckBox" name="kcfg_ModalsIgnore">
          <property name="toolTip">
           <string>Only works if the window is transient</string>
@@ -182,7 +182,7 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
+       <item row="2" column="0">
         <widget class="QCheckBox" name="kcfg_WindowsOrderOpen">
          <property name="text">
           <string>Rearrange windows</string>

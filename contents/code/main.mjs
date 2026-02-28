@@ -84,19 +84,56 @@ export class Engine {
 
     const continueProcess = this.classes.windows.setTilesOnAdd(window);
 
-    if (this.config.desktopAdd === true && continueProcess === true) {
-      this.classes.desktops.avoidDesktopChanged = true;
-      window.desktops = [this.classes.desktops.create(true)];
+    if (continueProcess === true) {
+      // windowOverflowAction - Create a new virtual desktop: *all versions
+      if ([0, 1, 2, 3].includes(this.config.windowOverflowAction)) {
+        this.classes.desktops.avoidDesktopChanged = true;
+        window.desktops = [this.classes.desktops.create(true)];
 
-      const tilesOrdered = this.classes.tiles.getTilesCurrentDesktop();
+        const tilesOrdered = this.classes.tiles.getTilesCurrentDesktop();
 
-      if (this.config.maximizeExtend === true) {
-        window.setMaximize(true, true);
-        window._tileShadow = tilesOrdered[0];
-      } else {
-        window.setMaximize(false, false);
-        window._avoidTileChangedTrigger = false;
-        tilesOrdered[0].manage(window);
+        if (this.config.maximizeExtend === true) {
+          window.setMaximize(true, true);
+          window._tileShadow = tilesOrdered[0];
+        } else {
+          window.setMaximize(false, false);
+          window._avoidTileChangedTrigger = false;
+          tilesOrdered[0].manage(window);
+        }
+      }
+
+      // windowOverflowAction - Switch to next tile layout with more space
+      else if (this.config.windowOverflowAction === 4) {
+        const currentTileCount = this.classes.tiles.getOrderedTiles().length;
+        const layouts = this.classes.tiles.getDefaultLayouts();
+
+        if (Array.isArray(this.config.layoutCustom)) {
+          layouts.push(this.config.layoutCustom);
+        }
+
+        const countTiles = (layoutItems) => {
+          let count = 0;
+          for (const item of layoutItems) {
+            if (item.tiles !== undefined) {
+              count += countTiles(item.tiles);
+            } else {
+              count++;
+            }
+          }
+          return count;
+        };
+
+        const nextLayout = layouts.find(
+          (layout) => countTiles(layout) > currentTileCount,
+        );
+
+        if (nextLayout) {
+          this.classes.tiles.setLayout(
+            this.workspace.currentDesktop,
+            nextLayout,
+            false,
+          );
+        }
       }
     }
 
@@ -204,7 +241,7 @@ export class Engine {
       this.timers.extendDesktop.start();
     } else if (
       this.classes.tiles.getTilesCurrentDesktop().length >
-      windowsOther.length + 1 ||
+        windowsOther.length + 1 ||
       window._maximized === false
     ) {
       //Start timer without delay, if you dont execute `extendWindows` inside
