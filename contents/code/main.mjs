@@ -85,7 +85,7 @@ export class Engine {
     const continueProcess = this.classes.windows.setTilesOnAdd(window);
 
     if (continueProcess === true) {
-      // windowOverflowAction - Create a new virtual desktop: *all versions    
+      // windowOverflowAction - Create a new virtual desktop: *all versions
       if ([0, 1, 2, 3].includes(this.config.windowOverflowAction)) {
         this.classes.desktops.avoidDesktopChanged = true;
         window.desktops = [this.classes.desktops.create(true)];
@@ -133,7 +133,6 @@ export class Engine {
             nextLayout,
             false,
           );
-          this.setTilesSignals();
         }
       }
     }
@@ -242,7 +241,7 @@ export class Engine {
       this.timers.extendDesktop.start();
     } else if (
       this.classes.tiles.getTilesCurrentDesktop().length >
-      windowsOther.length + 1 ||
+        windowsOther.length + 1 ||
       window._maximized === false
     ) {
       //Start timer without delay, if you dont execute `extendWindows` inside
