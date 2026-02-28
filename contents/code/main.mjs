@@ -84,76 +84,58 @@ export class Engine {
 
     const continueProcess = this.classes.windows.setTilesOnAdd(window);
 
-    // windowOverflowAction - Create a new virtual desktop: *all versions
-    if ([0, 1, 2, 3].includes(this.config.windowOverflowAction) && continueProcess) {
-      this.classes.desktops.avoidDesktopChanged = true;
-      window.desktops = [this.classes.desktops.create(true)];
+    if (continueProcess === true) {
+      // windowOverflowAction - Create a new virtual desktop: *all versions    
+      if ([0, 1, 2, 3].includes(this.config.windowOverflowAction)) {
+        this.classes.desktops.avoidDesktopChanged = true;
+        window.desktops = [this.classes.desktops.create(true)];
 
-      const tilesOrdered = this.classes.tiles.getTilesCurrentDesktop();
+        const tilesOrdered = this.classes.tiles.getTilesCurrentDesktop();
 
-      if (this.config.maximizeExtend === true) {
-        window.setMaximize(true, true);
-        window._tileShadow = tilesOrdered[0];
-      } else {
-        window.setMaximize(false, false);
-        window._avoidTileChangedTrigger = false;
-        tilesOrdered[0].manage(window);
-      }
-    }
-
-    // windowOverflowAction - Switch to next tile layout with more space
-    else if (this.config.windowOverflowAction === 4 && continueProcess === true) {
-      const currentTileCount = this.classes.tiles.getOrderedTiles().length;
-      const layouts = this.classes.tiles.getDefaultLayouts();
-
-      if (
-        this.config.layoutCustom !== undefined &&
-        this.config.layoutCustom !== ""
-      ) {
-        let customLayout = this.config.layoutCustom;
-        if (typeof customLayout === "string") {
-          try {
-            customLayout = JSON.parse(customLayout);
-          } catch (e) {
-            customLayout = undefined;
-          }
-        }
-        if (Array.isArray(customLayout)) {
-          layouts.push(customLayout);
+        if (this.config.maximizeExtend === true) {
+          window.setMaximize(true, true);
+          window._tileShadow = tilesOrdered[0];
+        } else {
+          window.setMaximize(false, false);
+          window._avoidTileChangedTrigger = false;
+          tilesOrdered[0].manage(window);
         }
       }
 
-      const countTiles = (layoutItems) => {
-        let count = 0;
-        for (const item of layoutItems) {
-          if (item.tiles !== undefined) {
-            count += countTiles(item.tiles);
-          } else {
-            count++;
-          }
+      // windowOverflowAction - Switch to next tile layout with more space
+      else if (this.config.windowOverflowAction === 4) {
+        const currentTileCount = this.classes.tiles.getOrderedTiles().length;
+        const layouts = this.classes.tiles.getDefaultLayouts();
+
+        if (Array.isArray(this.config.layoutCustom)) {
+          layouts.push(this.config.layoutCustom);
         }
-        return count;
-      };
 
-      const nextLayout = layouts.find(
-        (layout) => countTiles(layout) > currentTileCount,
-      );
+        const countTiles = (layoutItems) => {
+          let count = 0;
+          for (const item of layoutItems) {
+            if (item.tiles !== undefined) {
+              count += countTiles(item.tiles);
+            } else {
+              count++;
+            }
+          }
+          return count;
+        };
 
-      if (nextLayout) {
-        // If larger layout was found, apply it to the active screen.
-        this.classes.tiles.setLayout(
-          this.workspace.currentDesktop,
-          nextLayout,
-          false,
+        const nextLayout = layouts.find(
+          (layout) => countTiles(layout) > currentTileCount,
         );
-      }
-      // If no larger layout is found, do nothing--default to "Just let it float" behavior.
-    }
 
-    // windowOverflowAction - Just let it float
-    else if (this.config.windowOverflowAction === 5 && continueProcess === true) {
-      // Intentionally empty. By not assigning the window to a tile, we let
-      // KWin's native "Window Placement" settings to take effect.
+        if (nextLayout) {
+          this.classes.tiles.setLayout(
+            this.workspace.currentDesktop,
+            nextLayout,
+            false,
+          );
+          this.setTilesSignals();
+        }
+      }
     }
 
     this.classes.desktops.checkDesktopExtra();
