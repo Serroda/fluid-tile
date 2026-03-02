@@ -5,22 +5,13 @@ import { UI } from "./ui.mjs";
 import { Userspace } from "./userspace.mjs";
 import { Windows } from "./windows.mjs";
 import { Desktops } from "./desktops.mjs";
+import { Timer } from "./timer.mjs";
 
 export class Engine {
   constructor(
     workspace,
     config,
-    {
-      root,
-      timerExtendDesktop,
-      timerRemoveDesktop,
-      timerCurrentDesktopChanged,
-      timerResetAll,
-      timerHideUI,
-      windowFullscreen,
-      windowCompact,
-      windowPopup,
-    },
+    { root, timerInstantiator, windowFullscreen, windowCompact, windowPopup },
   ) {
     this.state = {
       avoidChildChanged: false,
@@ -33,30 +24,14 @@ export class Engine {
       windowCompact,
       windowPopup,
     };
-    this.timers = {
-      extendDesktop: timerExtendDesktop,
-      removeDesktop: timerRemoveDesktop,
-      currentDesktopChanged: timerCurrentDesktopChanged,
-      resetAll: timerResetAll,
-      hideUI: timerHideUI,
-    };
     this.classes = {
+      timer: new Timer(root, timerInstantiator),
       blocklist: new Blocklist(config),
       userspace: new Userspace(workspace),
       tiles: new Tiles(workspace, config),
     };
-    this.classes.windows = new Windows(
-      workspace,
-      config,
-      this.classes,
-      timerExtendDesktop,
-    );
-    this.classes.desktops = new Desktops(
-      workspace,
-      config,
-      this.classes,
-      timerRemoveDesktop,
-    );
+    this.classes.windows = new Windows(workspace, config, this.classes);
+    this.classes.desktops = new Desktops(workspace, config, this.classes);
     this.classes.ui = new UI(
       workspace,
       config,
@@ -65,14 +40,12 @@ export class Engine {
       this.windowsUI.windowFullscreen,
       this.windowsUI.windowCompact,
       this.windowsUI.windowPopup,
-      timerHideUI,
     );
     this.classes.shortcuts = new Shortcuts(
       workspace,
       config,
       root,
       this.classes,
-      timerResetAll,
     );
   }
 
@@ -236,9 +209,15 @@ export class Engine {
 
     //Start delay only when you have to exchange in another screen
     if (window._tileShadow._screen !== this.workspace.activeScreen) {
-      this.timers.extendDesktop.interval =
-        this.config.windowsExtendTileChangedDelay;
-      this.timers.extendDesktop.start();
+      //Extend windows when timer finish
+      this.classes.timer.start(
+        "extendCurrentDesktop",
+        this.classes.windows.extendCurrentDesktop.bind(
+          this.classes.windows,
+          true,
+        ),
+        this.config.windowsExtendTileChangedDelay,
+      );
     } else if (
       this.classes.tiles.getTilesCurrentDesktop().length >
         windowsOther.length + 1 ||
@@ -246,8 +225,14 @@ export class Engine {
     ) {
       //Start timer without delay, if you dont execute `extendWindows` inside
       //QTimer, `extendWindows` doesnt get the correct position of the windows
-      this.timers.extendDesktop.interval = 0;
-      this.timers.extendDesktop.start();
+
+      this.classes.timer.start(
+        "extendCurrentDesktop",
+        this.classes.windows.extendCurrentDesktop.bind(
+          this.classes.windows,
+          true,
+        ),
+      );
     }
 
     window._tileShadow = tile;
@@ -303,36 +288,6 @@ export class Engine {
     this.classes.windows.extendCurrentDesktop(true);
   }
 
-  //Delete virtual desktop timer
-  onTimerRemoveDesktopFinished(info) {
-    this.classes.desktops.onTimerRemoveFinished(info);
-  }
-
-  //Extend windows when timer finish
-  onTimerExtendDesktopFinished() {
-    this.classes.windows.extendCurrentDesktop(true);
-  }
-
-  //Focus window or set window tile when timer finish
-  onTimerCurrentDesktopChangedFinished() {
-    this.classes.desktops.onTimerCurrentDesktopChangedFinished(
-      this.classes.ui.checkIfUIVisible(),
-    );
-  }
-
-  //Extend windows when timer finish
-  onTimerResetAllFinished(screenAll) {
-    this.classes.windows.resetAll(screenAll);
-    this.setTilesSignals();
-    this.classes.windows.reconnectSignals();
-    this.state.avoidChildChanged = false;
-  }
-
-  //Hide ui when timer finished
-  onTimerHideUIFinished(ui, rootHide) {
-    this.classes.ui.hide(ui, rootHide);
-  }
-
   // Focus window when a current desktop is changed
   onCurrentDesktopChanged() {
     this.classes.ui.resetLayout();
@@ -340,7 +295,13 @@ export class Engine {
     if (this.classes.ui.checkIfUIVisible() === false) {
       this.classes.desktops.checkDesktopExtra();
     }
-    this.timers.currentDesktopChanged.start();
+    this.classes.timer.start(
+      "currentDesktopChanged",
+      this.classes.desktops.onTimerCurrentDesktopChangedFinished.bind(
+        this.classes.desktops,
+        this.classes.ui.checkIfUIVisible(),
+      ),
+    );
   }
 
   //Reextend window when desktop is added or removed
@@ -396,6 +357,14 @@ export class Engine {
     }
   }
 
+  //Extend windows when timer finish
+  onTimerResetAllFinished(screenAll) {
+    this.classes.windows.resetAll(screenAll);
+    this.setTilesSignals();
+    this.classes.windows.reconnectSignals();
+    this.state.avoidChildChanged = false;
+  }
+
   //When a tile is added or removed in KWin tile manager by hand
   //reset windows
   onChildTilesChanged() {
@@ -405,7 +374,9 @@ export class Engine {
     this.state.avoidChildChanged = true;
     this.classes.windows.disconnectSignals();
     this.classes.tiles.disconnectSignals();
-    this.timers.resetAll.screenAll = true;
-    this.timers.resetAll.start();
+    this.classes.timer.start(
+      "resetAll",
+      this.onTimerResetAllFinished.bind(this, true),
+    );
   }
 }

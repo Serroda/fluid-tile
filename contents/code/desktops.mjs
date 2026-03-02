@@ -1,12 +1,12 @@
 import { Queue } from "./queue.mjs";
 
 export class Desktops {
-  constructor(workspace, config, { windows, tiles }, timerRemoveDesktop) {
+  constructor(workspace, config, { windows, tiles, timer }) {
     this.workspace = workspace;
     this.config = config;
     this.windows = windows;
     this.tiles = tiles;
-    this.timerRemoveDesktop = timerRemoveDesktop;
+    this.timer = timer;
     this.avoidDesktopChanged = false;
     this.desktopsExtend = new Queue();
   }
@@ -57,8 +57,11 @@ export class Desktops {
   }
 
   remove(info) {
-    this.timerRemoveDesktop.removeInfo = info;
-    this.timerRemoveDesktop.start();
+    this.timer.start(
+      "removeDesktop",
+      this.onTimerRemoveFinished.bind(this, info),
+      this.config.desktopRemoveDelay,
+    );
   }
 
   checkDesktopExtra() {

@@ -8,6 +8,7 @@ Window {
     property var config: ({})
     property var engine: ({})
     property var shortcuts: []
+    property var timers: []
     property var tileActive: undefined
     property var screens: Workspace.screens
     property var layouts: ({
@@ -22,57 +23,18 @@ Window {
     visible: false
     color: "transparent"
 
-    Timer {
-        id: timerRemoveDesktop
-        interval: root.config.desktopRemoveDelay
-        repeat: false
-        running: false
-        property var removeInfo: ({})
-        onTriggered: {
-            root.engine.onTimerRemoveDesktopFinished(removeInfo);
-        }
-    }
-
-    Timer {
-        id: timerExtendDesktop
-        interval: root.config.windowsExtendTileChangedDelay
-        repeat: false
-        running: false
-        onTriggered: {
-            root.engine.onTimerExtendDesktopFinished();
-        }
-    }
-
-    Timer {
-        id: timerCurrentDesktopChanged
-        interval: 0
-        repeat: false
-        running: false
-        onTriggered: {
-            root.engine.onTimerCurrentDesktopChangedFinished();
-        }
-    }
-
-    Timer {
-        id: timerResetAll
-        interval: 0
-        repeat: false
-        running: false
-        property bool screenAll: false
-        onTriggered: {
-            root.engine.onTimerResetAllFinished(screenAll);
-        }
-    }
-
-    Timer {
-        id: timerHideUI
-        interval: 1000
-        repeat: false
-        running: false
-        property int ui: -1
-        property bool rootHide: true
-        onTriggered: {
-            root.engine.onTimerHideUIFinished(ui, rootHide);
+    Instantiator {
+        id: timerInstantiator
+        model: root.timers
+        delegate: Timer {
+            required property int delay
+            required property var functionTrigger
+            interval: delay
+            repeat: false
+            running: true
+            onTriggered: {
+                functionTrigger();
+            }
         }
     }
 
@@ -106,11 +68,7 @@ Window {
 
         engine = new Logic.Engine(Workspace, config, {
             root,
-            timerExtendDesktop,
-            timerRemoveDesktop,
-            timerCurrentDesktopChanged,
-            timerResetAll,
-            timerHideUI,
+            timerInstantiator,
             windowFullscreen,
             windowCompact,
             windowPopup

@@ -1,16 +1,11 @@
 export class Windows {
-  constructor(
-    workspace,
-    config,
-    { blocklist, tiles, userspace },
-    timerExtendDesktop,
-  ) {
+  constructor(workspace, config, { blocklist, tiles, userspace, timer }) {
     this.workspace = workspace;
     this.config = config;
     this.blocklist = blocklist;
     this.tiles = tiles;
     this.userspace = userspace;
-    this.timerExtendDesktop = timerExtendDesktop;
+    this.timer = timer;
   }
 
   // Get all windows from the virtual desktop except the given window
@@ -465,8 +460,11 @@ export class Windows {
     window._tileShadow = tileEmpty;
     tileEmpty.manage(window);
 
-    this.timerExtendDesktop.interval = interval;
-    this.timerExtendDesktop.start();
+    this.timer.start(
+      "extendCurrentDesktop",
+      this.extendCurrentDesktop.bind(this, true),
+      interval,
+    );
 
     return true;
   }

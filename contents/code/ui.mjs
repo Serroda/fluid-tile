@@ -3,11 +3,10 @@ export class UI {
     workspace,
     config,
     root,
-    { tiles, windows, blocklist, desktops, userspace },
+    { tiles, windows, blocklist, desktops, userspace, timer },
     windowFullscreen,
     windowCompact,
     windowPopup,
-    hideUI,
   ) {
     this.workspace = workspace;
     this.config = config;
@@ -17,7 +16,7 @@ export class UI {
     this.windows = windows;
     this.desktops = desktops;
     this.userspace = userspace;
-    this.timerHideUI = hideUI;
+    this.timer = timer;
     this.windowFullscreen = windowFullscreen;
     this.windowCompact = windowCompact;
     this.windowPopup = windowPopup;
@@ -58,18 +57,10 @@ export class UI {
         this.resetLayout();
         this.windowPopup.visible = value;
         if (value === true) {
-          if (this.timerHideUI.ui !== -1) {
-            this.timerHideUI.restart();
-            return;
-          }
           this.adaptRootGeometry(this.windowPopup, 0);
-          this.timerHideUI.ui = 2;
-          this.timerHideUI.rootHide = true;
-          this.timerHideUI.start();
+          this.timer.start("hideUI", this.hide.bind(this, 2, true), 1000);
         } else {
           this.resetRoot();
-          this.timerHideUI.ui = -1;
-          this.timerHideUI.rootHide = true;
         }
         break;
 
