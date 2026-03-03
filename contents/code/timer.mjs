@@ -5,6 +5,13 @@ export class Timer {
   }
 
   start(id, customFunction, delay = 0) {
+    const index = this.root.timers.findIndex((t) => t.id === id);
+
+    if (index !== -1) {
+      this.timerInstantiator.objectAt(index)?.restart();
+      return;
+    }
+
     const functionTrigger = (id) => {
       customFunction();
       this.root.timers = this.root.timers.filter((t) => t.id !== id);
@@ -15,13 +22,6 @@ export class Timer {
       delay,
       functionTrigger: functionTrigger.bind(this, id),
     };
-
-    const index = this.root.timers.findIndex((t) => t.id === id);
-
-    if (index !== -1) {
-      this.timerInstantiator.objectAt(index)?.restart();
-      return;
-    }
 
     this.root.timers = [...this.root.timers, job];
   }
