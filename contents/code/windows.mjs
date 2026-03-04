@@ -66,7 +66,6 @@ export class Windows {
 
         this.workspace.currentDesktop = itemDesktop;
         windowMain.desktops = [itemDesktop];
-        windowMain._avoidMaximizeTrigger = windowsOther.length === 0;
 
         if (this.config.windowsOrderOpen === true) {
           this.setTile(windowMain, tilesOrdered[0], {
@@ -522,10 +521,7 @@ export class Windows {
       tilesOrderedCached,
     },
   ) {
-    if (
-      checkDiferentScreen === true &&
-      tile._screen !== this.workspace.activeScreen
-    ) {
+    if (checkDiferentScreen === true && tile._screen !== window.output) {
       this.workspace.sendClientToScreen(window, tile._screen);
     }
 

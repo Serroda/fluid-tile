@@ -155,6 +155,7 @@ export class Engine {
 
     window._signals = {
       maximizedAboutToChange: this.onMaximizeAboutToChanged.bind(this, window),
+      maximizedChanged: this.onMaximizeChanged.bind(this, window),
       minimizedChanged: this.onMinimizedChanged.bind(this, window),
       interactiveMoveResizeStarted: this.classes.ui.onUserMoveStart.bind(
         this.classes.ui,
@@ -240,9 +241,7 @@ export class Engine {
   }
 
   //When window is not maximized, set a previous tile
-  onMaximizeAboutToChanged(window, mode) {
-    window._maximized = mode === 3;
-
+  onMaximizeChanged(window) {
     //When a window is maximized window.tile is always null
     if (
       this.classes.blocklist.check(window) === true ||
@@ -260,17 +259,16 @@ export class Engine {
     }
 
     //If not fullscreen
-    if (
-      window.tile !== window._tileShadow &&
-      window._avoidManageTileMaximize !== true
-    ) {
+    if (window.tile !== window._tileShadow) {
       window._avoidTileChangedTrigger = false;
       window._avoidMaximizeExtend = true;
-      window._avoidManageTileMaximize = true;
       window._tileShadow.manage(window);
-    } else {
-      window._avoidManageTileMaximize = false;
     }
+  }
+
+  //Set maximized variable to window
+  onMaximizeAboutToChanged(window, mode) {
+    window._maximized = mode === 3;
   }
 
   //When a window is minimized, extend windows
