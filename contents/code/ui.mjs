@@ -268,15 +268,12 @@ export class UI {
       this.hide(3, true);
 
       if (tile !== undefined) {
-        window._avoidTileChangedTrigger = false;
-
-        if (tile._screen !== this.workspace.activeScreen) {
-          this.workspace.sendClientToScreen(window, tile._screen);
-        }
-
-        tile.manage(window);
+        this.windows.setTile(window, tile, {});
       } else if (window._tileShadow !== undefined) {
-        window._tileShadow.manage(window);
+        this.windows.setTile(window, window._tileShadow, {
+          checkDiferentScreen: false,
+          unmaximizeOthers: false,
+        });
       }
 
       return;
@@ -284,7 +281,10 @@ export class UI {
 
     //If window is resized or layout resized
     if (window._tileShadow !== undefined && window.tile === null) {
-      window._tileShadow.manage(window);
+      this.windows.setTile(window, window._tileShadow, {
+        checkDiferentScreen: false,
+        unmaximizeOthers: false,
+      });
     } else if (window.tile !== null) {
       this.windows.extendCurrentDesktop();
     }

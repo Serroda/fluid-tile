@@ -57,6 +57,7 @@ export class Engine {
 
     const continueProcess = this.classes.windows.setTilesOnAdd(window);
 
+    //TODO: before setTilesOnAdd
     if (continueProcess === true) {
       // windowOverflowAction - Create a new virtual desktop: *all versions
       if ([0, 1, 2, 3].includes(this.config.windowOverflowAction)) {
@@ -310,8 +311,14 @@ export class Engine {
   }
 
   //Set signal to tiles
-  setTilesSignals() {
-    for (const screen of this.workspace.screens) {
+  setTilesSignals(screenAll = true) {
+    let screens = this.workspace.screens;
+
+    if (screenAll === false) {
+      screens = [this.workspace.activeScreen];
+    }
+
+    for (const screen of screens) {
       const rootTile = this.classes.tiles.getRootTile(undefined, screen);
 
       if (rootTile === null) {
@@ -334,7 +341,7 @@ export class Engine {
       }
     }
 
-    const tiles = this.classes.tiles.getTilesCurrentDesktop(true);
+    const tiles = this.classes.tiles.getTilesCurrentDesktop(true, screenAll);
 
     for (const tile of tiles) {
       if (tile._signals !== undefined) {
@@ -360,8 +367,8 @@ export class Engine {
   //Extend windows when timer finish
   onTimerResetAllFinished(screenAll) {
     this.classes.windows.resetAll(screenAll);
-    this.setTilesSignals();
-    this.classes.windows.reconnectSignals();
+    this.setTilesSignals(screenAll);
+    this.classes.windows.reconnectSignals(screenAll);
     this.state.avoidChildChanged = false;
   }
 
@@ -372,11 +379,11 @@ export class Engine {
       return;
     }
     this.state.avoidChildChanged = true;
-    this.classes.windows.disconnectSignals();
-    this.classes.tiles.disconnectSignals();
+    this.classes.windows.disconnectSignals(false);
+    this.classes.tiles.disconnectSignals(false);
     this.classes.timer.start(
       "resetAll",
-      this.onTimerResetAllFinished.bind(this, true),
+      this.onTimerResetAllFinished.bind(this, false),
     );
   }
 }

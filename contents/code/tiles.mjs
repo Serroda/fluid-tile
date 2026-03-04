@@ -247,9 +247,15 @@ export class Tiles {
   }
 
   //Get all tiles from the actual desktop with all screens
-  getTilesCurrentDesktop(parentTiles = false) {
+  getTilesCurrentDesktop(parentTiles = false, screenAll = true) {
+    let screens = this.workspace.screens;
+
+    if (screenAll === false) {
+      screens = [this.workspace.activeScreen];
+    }
+
     let tiles = [];
-    for (const screen of this.workspace.screens) {
+    for (const screen of screens) {
       tiles = tiles.concat(
         this.getOrderedTiles(undefined, screen, parentTiles),
       );
@@ -292,8 +298,14 @@ export class Tiles {
   }
 
   //Disconect all signals
-  disconnectSignals() {
-    for (const screen of this.workspace.screens) {
+  disconnectSignals(screenAll = true) {
+    let screens = this.workspace.screens;
+
+    if (screenAll === false) {
+      screens = [this.workspace.activeScreen];
+    }
+
+    for (const screen of screens) {
       const rootTile = this.getRootTile(undefined, screen);
 
       for (const key in rootTile._signals) {
@@ -302,7 +314,8 @@ export class Tiles {
       rootTile._signals = undefined;
     }
 
-    const tiles = this.getTilesCurrentDesktop();
+    const tiles = this.getTilesCurrentDesktop(true, screenAll);
+
     for (const tile of tiles) {
       for (const key in tile._signals) {
         tile[key].disconnect(tile._signals[key]);

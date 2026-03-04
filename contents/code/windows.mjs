@@ -66,41 +66,30 @@ export class Windows {
 
         this.workspace.currentDesktop = itemDesktop;
         windowMain.desktops = [itemDesktop];
-
-        for (let x = 0; x < windowsOther.length; x++) {
-          windowsOther[x].desktops = [itemDesktop];
-          windowsOther[x]._avoidMaximizeTrigger = true;
-          windowsOther[x]._avoidTileChangedTrigger = true;
-          windowsOther[x].setMaximize(false, false);
-
-          if (this.config.windowsOrderOpen === true) {
-            tilesOrdered[x + 1].manage(windowsOther[x]);
-          } else if (windowsOther[x].tile === null) {
-            tilesOrdered[x].manage(windowsOther[x]);
-          }
-
-          windowsOther[x]._tileShadow = windowsOther[x].tile;
-        }
-
-        windowMain._avoidTileChangedTrigger = true;
         windowMain._avoidMaximizeTrigger = windowsOther.length === 0;
 
         if (this.config.windowsOrderOpen === true) {
-          tilesOrdered[0].manage(windowMain);
+          this.setTile(windowMain, tilesOrdered[0], {
+            checkDiferentScreen: false,
+            rearrangeOthers: true,
+            setShadow: true,
+            windowsOtherCached: windowsOther,
+            tilesOrderedCached: tilesOrdered,
+          });
         } else {
           const tileEmpty = tilesOrdered.find(
             (tile) => tile.windows.length === 0,
           );
 
-          tileEmpty?.manage(windowMain);
+          if (tileEmpty !== undefined) {
+            this.setTile(windowMain, tileEmpty, {
+              checkDiferentScreen: false,
+              setShadow: true,
+              windowsOtherCached: windowsOther,
+              tilesOrderedCached: tilesOrdered,
+            });
+          }
         }
-
-        windowMain._tileShadow = windowMain.tile;
-
-        this.extend(
-          [windowMain, ...windowsOther],
-          this.userspace.getPanelsSize(itemDesktop, itemScreen),
-        );
 
         return false;
       } while (indexScreen !== indexStartScreen);
@@ -112,8 +101,10 @@ export class Windows {
 
   // Set window tiles on remove window
   setTilesOnRemove(windowMain) {
-    const windowsOther = this.getAll(windowMain);
-    const tilesOrdered = this.tiles.getTilesCurrentDesktop();
+    const windowsOther = this.getAll(windowMain, undefined, windowMain.output);
+    const tilesOrdered = this.tiles
+      .getTilesCurrentDesktop()
+      .filter((t) => t._screen === windowMain.output);
 
     if (tilesOrdered.length === 0 || windowsOther.length === 0) {
       return true;
@@ -432,39 +423,27 @@ export class Windows {
     if (tileEmpty === undefined) {
       window._avoidMaximizeTrigger = window._maximized;
       window._avoidTileChangedTrigger = true;
-      window._tileShadow = tiles[0];
-      tiles[0].manage(window);
+      this.setTile(window, tiles[0], {
+        checkDiferentScreen: false,
+        unmaximizeOthers: false,
+        windowsOtherCached: windowsOther,
+        tilesOrderedCached: tiles,
+      });
       return false;
     }
 
     window.desktops = [tileEmpty._desktop];
-
-    let interval = 0;
-
-    if (tileEmpty._screen !== window._tileShadow._screen) {
-      this.workspace.sendClientToScreen(window, tileEmpty._screen);
-      interval = this.config.windowsExtendTileChangedDelay;
-    }
 
     if (window._maximized === true) {
       window._avoidMaximizeTrigger = true;
       window.setMaximize(false, false);
     }
 
-    window._avoidTileChangedTrigger = true;
-
-    for (const windowOther of windowsOther) {
-      windowOther._avoidTileChangedTrigger = true;
-    }
-
-    window._tileShadow = tileEmpty;
-    tileEmpty.manage(window);
-
-    this.timer.start(
-      "extendCurrentDesktop",
-      this.extendCurrentDesktop.bind(this, true),
-      interval,
-    );
+    this.setTile(window, tileEmpty, {
+      windowsOtherCached: windowsOther,
+      setShadow: true,
+      tilesOrderedCached: tiles,
+    });
 
     return true;
   }
@@ -499,8 +478,14 @@ export class Windows {
   }
 
   //Disconnect all signals
-  disconnectSignals() {
-    for (const screen of this.workspace.screens) {
+  disconnectSignals(screenAll = true) {
+    let screens = this.workspace.screens;
+
+    if (screenAll === false) {
+      screens = [this.workspace.activeScreen];
+    }
+
+    for (const screen of screens) {
       const windows = this.getAll(undefined, undefined, screen);
       for (const key in windows._signals) {
         windows[key].disconnect(windows._signals[key]);
@@ -509,12 +494,74 @@ export class Windows {
   }
 
   //Connect all signals
-  reconnectSignals() {
-    for (const screen of this.workspace.screens) {
+  reconnectSignals(screenAll = true) {
+    let screens = this.workspace.screens;
+
+    if (screenAll === false) {
+      screens = [this.workspace.activeScreen];
+    }
+
+    for (const screen of screens) {
       const windows = this.getAll(undefined, undefined, screen);
       for (const key in windows._signals) {
         windows[key].connect(windows._signals[key]);
       }
     }
+  }
+
+  //Set tile to window
+  setTile(
+    window,
+    tile,
+    {
+      checkDiferentScreen = true,
+      unmaximizeOthers = true,
+      rearrangeOthers = false,
+      setShadow = false,
+      windowsOtherCached,
+      tilesOrderedCached,
+    },
+  ) {
+    if (
+      checkDiferentScreen === true &&
+      tile._screen !== this.workspace.activeScreen
+    ) {
+      this.workspace.sendClientToScreen(window, tile._screen);
+    }
+
+    const windowsOther =
+      windowsOtherCached ?? this.getAll(window, tile._desktop, tile._screen);
+
+    if (unmaximizeOthers === true) {
+      for (const windowOther of windowsOther) {
+        if (windowOther._maximized === true) {
+          windowOther._avoidMaximizeTrigger = true;
+          windowOther._avoidTileChangedTrigger = true;
+          windowOther.setMaximize(false, false);
+          windowOther._tileShadow.manage(windowOther);
+        }
+      }
+    }
+
+    if (rearrangeOthers === true) {
+      const tilesOrdered = (
+        tilesOrderedCached ??
+        this.tiles.getOrderedTiles(tile._desktop, tile._screen)
+      ).filter((t) => t !== tile);
+
+      for (let x = 0; x < windowsOther.length; x++) {
+        windowsOther[x]._avoidMaximizeTrigger = true;
+        windowsOther[x]._avoidTileChangedTrigger = true;
+        windowsOther[x].setMaximize(false, false);
+        tilesOrdered[x].manage(windowsOther[x]);
+        windowsOther[x]._tileShadow = windowsOther[x].tile;
+      }
+    }
+
+    if (setShadow === true) {
+      window._tileShadow = tile;
+    }
+
+    tile.manage(window);
   }
 }
