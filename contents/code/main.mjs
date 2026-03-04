@@ -221,7 +221,7 @@ export class Engine {
         this.config.windowsExtendTileChangedDelay,
       );
     } else if (
-      this.classes.tiles.getTilesCurrentDesktop().length >
+      this.classes.tiles.getTilesCurrentDesktop().length >=
         windowsOther.length + 1 ||
       window._maximized === false
     ) {
