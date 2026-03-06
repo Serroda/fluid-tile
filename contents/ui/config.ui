@@ -148,7 +148,12 @@
            </item>
            <item>
             <property name="text">
-             <string>Switch to next tile layout with more space</string>
+             <string>Switch to next tile layout (Check all desktops)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Switch to next tile layout (Check the current screen)</string>
             </property>
            </item>
            <item>

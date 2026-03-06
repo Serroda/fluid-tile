@@ -286,7 +286,7 @@ export class UI {
         this.windows.setTile(window, tile, {});
       } else if (window._tileShadow !== undefined) {
         this.windows.setTile(window, window._tileShadow, {
-          checkDiferentScreen: false,
+          checkDifferentScreen: false,
           unmaximizeOthers: false,
         });
       }
@@ -297,7 +297,7 @@ export class UI {
     //If window is resized or layout resized
     if (window._tileShadow !== undefined && window.tile === null) {
       this.windows.setTile(window, window._tileShadow, {
-        checkDiferentScreen: false,
+        checkDifferentScreen: false,
         unmaximizeOthers: false,
       });
     } else if (window.tile !== null) {

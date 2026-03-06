@@ -31,71 +31,29 @@ export class Windows {
   }
 
   // Set window tiles on add window
-  setTilesOnAdd(windowMain) {
-    const indexStartDesktop = this.workspace.desktops.indexOf(
-      this.workspace.currentDesktop,
-    );
-    const indexStartScreen = this.workspace.screens.indexOf(
-      this.workspace.activeScreen,
-    );
+  setTilesOnAdd(windowMain, desktop, screen) {
+    this.workspace.currentDesktop = desktop;
+    windowMain.desktops = [desktop];
+    const tilesOrdered = this.tiles.getOrderedTiles(desktop, screen);
 
-    if (indexStartDesktop === -1 || indexStartScreen === -1) {
-      return false;
+    if (this.config.windowsOrderOpen === true) {
+      this.setTile(windowMain, tilesOrdered[0], {
+        checkDifferentScreen: false,
+        rearrangeOthers: true,
+        setShadow: true,
+        tilesOrderedCached: tilesOrdered,
+      });
+    } else {
+      const tileEmpty = tilesOrdered.find((tile) => tile.windows.length === 0);
+
+      if (tileEmpty !== undefined) {
+        this.setTile(windowMain, tileEmpty, {
+          checkDifferentScreen: false,
+          setShadow: true,
+          tilesOrderedCached: tilesOrdered,
+        });
+      }
     }
-
-    let indexDesktop = indexStartDesktop;
-    let indexScreen = indexStartScreen;
-
-    do {
-      const itemDesktop = this.workspace.desktops[indexDesktop];
-      do {
-        const itemScreen = this.workspace.screens[indexScreen];
-        const windowsOther = this.getAll(windowMain, itemDesktop, itemScreen);
-        const tilesOrdered = this.tiles.getOrderedTiles(
-          itemDesktop,
-          itemScreen,
-        );
-
-        if (
-          tilesOrdered.length === 0 ||
-          windowsOther.length + 1 > tilesOrdered.length
-        ) {
-          indexScreen = (indexScreen + 1) % this.workspace.screens.length;
-          continue;
-        }
-
-        this.workspace.currentDesktop = itemDesktop;
-        windowMain.desktops = [itemDesktop];
-
-        if (this.config.windowsOrderOpen === true) {
-          this.setTile(windowMain, tilesOrdered[0], {
-            checkDiferentScreen: false,
-            rearrangeOthers: true,
-            setShadow: true,
-            windowsOtherCached: windowsOther,
-            tilesOrderedCached: tilesOrdered,
-          });
-        } else {
-          const tileEmpty = tilesOrdered.find(
-            (tile) => tile.windows.length === 0,
-          );
-
-          if (tileEmpty !== undefined) {
-            this.setTile(windowMain, tileEmpty, {
-              checkDiferentScreen: false,
-              setShadow: true,
-              windowsOtherCached: windowsOther,
-              tilesOrderedCached: tilesOrdered,
-            });
-          }
-        }
-
-        return false;
-      } while (indexScreen !== indexStartScreen);
-      indexDesktop = (indexDesktop + 1) % this.workspace.desktops.length;
-    } while (indexDesktop !== indexStartDesktop);
-
-    return true;
   }
 
   // Set window tiles on remove window
@@ -113,11 +71,13 @@ export class Windows {
       windowsOther[x]._avoidMaximizeExtend = false;
 
       if (this.config.windowsOrderClose === true) {
-        windowsOther[x]._avoidTileChangedTrigger = true;
         windowsOther[x]._avoidMaximizeTrigger = true;
         windowsOther[x].setMaximize(false, false);
-        tilesOrdered[x].manage(windowsOther[x]);
-        windowsOther[x]._tileShadow = tilesOrdered[x];
+        if (tilesOrdered[x] !== undefined) {
+          windowsOther[x]._avoidTileChangedTrigger = true;
+          tilesOrdered[x].manage(windowsOther[x]);
+          windowsOther[x]._tileShadow = tilesOrdered[x];
+        }
       }
     }
 
@@ -218,11 +178,11 @@ export class Windows {
           (acc, woNew) => {
             const distance = Math.hypot(
               windowGeometry.left +
-                windowGeometry.width / 2 -
-                (woNew.left + woNew.width / 2),
+              windowGeometry.width / 2 -
+              (woNew.left + woNew.width / 2),
               windowGeometry.top +
-                windowGeometry.height / 2 -
-                (woNew.top + woNew.height / 2),
+              windowGeometry.height / 2 -
+              (woNew.top + woNew.height / 2),
             );
 
             return acc.distance === -1 || distance < acc.distance
@@ -423,7 +383,7 @@ export class Windows {
       window._avoidMaximizeTrigger = window._maximized;
       window._avoidTileChangedTrigger = true;
       this.setTile(window, tiles[0], {
-        checkDiferentScreen: false,
+        checkDifferentScreen: false,
         unmaximizeOthers: false,
         windowsOtherCached: windowsOther,
         tilesOrderedCached: tiles,
@@ -513,7 +473,7 @@ export class Windows {
     window,
     tile,
     {
-      checkDiferentScreen = true,
+      checkDifferentScreen = true,
       unmaximizeOthers = true,
       rearrangeOthers = false,
       setShadow = false,
@@ -521,7 +481,7 @@ export class Windows {
       tilesOrderedCached,
     },
   ) {
-    if (checkDiferentScreen === true && tile._screen !== window.output) {
+    if (checkDifferentScreen === true && tile._screen !== window.output) {
       this.workspace.sendClientToScreen(window, tile._screen);
     }
 

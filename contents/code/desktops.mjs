@@ -192,4 +192,83 @@ export class Desktops {
       this.desktopsExtend.remove(this.workspace.currentDesktop);
     }
   }
+
+  checkNextLayout(
+    desktop = this.workspace.currentDesktop,
+    screen = this.workspace.activeScreen,
+  ) {
+    const currentTileCount = this.tiles.getOrderedTiles(desktop, screen).length;
+    const layouts = this.tiles.getDefaultLayouts();
+
+    if (Array.isArray(this.config.layoutCustom)) {
+      layouts.push(this.config.layoutCustom);
+    }
+
+    const countTiles = (layoutItems) => {
+      let count = 0;
+      for (const item of layoutItems) {
+        if (item.tiles !== undefined) {
+          count += countTiles(item.tiles);
+        } else {
+          count++;
+        }
+      }
+      return count;
+    };
+
+    return layouts.find((layout) => countTiles(layout) > currentTileCount);
+  }
+
+  checkEmptySpace(windowIgnore, currentScreen = false) {
+    const screens = this.workspace.screens;
+    const desktops = this.workspace.desktops;
+
+    const indexStartDesktop = desktops.indexOf(this.workspace.currentDesktop);
+    const indexStartScreen = screens.indexOf(this.workspace.activeScreen);
+
+    if (indexStartDesktop === -1 || indexStartScreen === -1) {
+      return null;
+    }
+
+    let indexDesktop = indexStartDesktop;
+    let indexScreen = indexStartScreen;
+
+    do {
+      const itemDesktop = desktops[indexDesktop];
+      do {
+        const itemScreen = screens[indexScreen];
+
+        const windows = this.windows.getAll(
+          windowIgnore,
+          itemDesktop,
+          itemScreen,
+        );
+
+        const tiles = this.tiles.getOrderedTiles(itemDesktop, itemScreen);
+
+        if (currentScreen === false && tiles.length <= windows.length) {
+          indexScreen = (indexScreen + 1) % screens.length;
+          continue;
+        } else if (currentScreen === true && tiles.length <= windows.length) {
+          const nextLayout = this.checkNextLayout(itemDesktop, itemScreen);
+          if (nextLayout === undefined) {
+            continue;
+          }
+          return {
+            desktop: itemDesktop,
+            screen: itemScreen,
+            nextLayout,
+          };
+        }
+
+        return {
+          desktop: itemDesktop,
+          screen: itemScreen,
+        };
+      } while (indexScreen !== indexStartScreen);
+      indexDesktop = (indexDesktop + 1) % desktops.length;
+    } while (indexDesktop !== indexStartDesktop);
+
+    return null;
+  }
 }

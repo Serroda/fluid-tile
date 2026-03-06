@@ -55,63 +55,61 @@ export class Engine {
       return;
     }
 
-    const continueProcess = this.classes.windows.setTilesOnAdd(window);
+    const justCurrentScreen = this.config.windowOverflowAction === 5;
+    const space = this.classes.desktops.checkEmptySpace(
+      window,
+      justCurrentScreen,
+    );
 
-    //TODO: before setTilesOnAdd
-    if (continueProcess === true) {
+    if (space === null) {
       // windowOverflowAction - Create a new virtual desktop: *all versions
-      if ([0, 1, 2, 3].includes(this.config.windowOverflowAction)) {
+      if ([0, 1, 2, 3].includes(this.config.windowOverflowAction) === true) {
         this.classes.desktops.avoidDesktopChanged = true;
-        window.desktops = [this.classes.desktops.create(true)];
-
-        const tilesOrdered = this.classes.tiles.getTilesCurrentDesktop();
-
-        if (this.config.maximizeExtend === true) {
-          window.setMaximize(true, true);
-          window._tileShadow = tilesOrdered[0];
-        } else {
-          window.setMaximize(false, false);
-          window._avoidTileChangedTrigger = false;
-          tilesOrdered[0].manage(window);
-        }
-      }
-
-      // windowOverflowAction - Switch to next tile layout with more space
-      else if (this.config.windowOverflowAction === 4) {
-        const currentTileCount = this.classes.tiles.getOrderedTiles().length;
-        const layouts = this.classes.tiles.getDefaultLayouts();
-
-        if (Array.isArray(this.config.layoutCustom)) {
-          layouts.push(this.config.layoutCustom);
-        }
-
-        const countTiles = (layoutItems) => {
-          let count = 0;
-          for (const item of layoutItems) {
-            if (item.tiles !== undefined) {
-              count += countTiles(item.tiles);
-            } else {
-              count++;
-            }
-          }
-          return count;
-        };
-
-        const nextLayout = layouts.find(
-          (layout) => countTiles(layout) > currentTileCount,
+        const desktop = this.classes.desktops.create(true);
+        this.classes.windows.setTilesOnAdd(
+          window,
+          desktop,
+          this.workspace.activeScreen,
         );
-
-        if (nextLayout) {
-          this.classes.tiles.setLayout(
+        // windowOverflowAction - Switch to next tile layout when all desktops are full
+      } else if (this.config.windowOverflowAction === 4) {
+        const nextLayout = this.classes.desktops.checkNextLayout();
+        if (nextLayout !== undefined) {
+          this.changeLayoutOverflow(
+            window,
             this.workspace.currentDesktop,
             nextLayout,
-            false,
           );
         }
+      }
+    } else {
+      // windowOverflowAction - Switch to next tile layout per screen
+      if (
+        this.config.windowOverflowAction === 5 &&
+        space.nextLayout !== undefined
+      ) {
+        this.changeLayoutOverflow(
+          window,
+          space.desktop,
+          space.nextLayout,
+          space.screen,
+        );
+      } else {
+        this.classes.windows.setTilesOnAdd(window, space.desktop, space.screen);
       }
     }
 
     this.classes.desktops.checkDesktopExtra();
+  }
+
+  changeLayoutOverflow(window, desktop, nextLayout, screen) {
+    this.state.avoidChildChanged = true;
+    this.classes.tiles.setLayout(desktop, nextLayout, false, screen);
+    this.setTilesSignals();
+    this.classes.windows.setTilesOnAdd(window, desktop, screen);
+    this.classes.timer.start("changeLayoutOverflow", () => {
+      this.state.avoidChildChanged = false;
+    });
   }
 
   //Trigger when a window is remove to the desktop
@@ -222,7 +220,7 @@ export class Engine {
       );
     } else if (
       this.classes.tiles.getTilesCurrentDesktop().length >=
-        windowsOther.length + 1 ||
+      windowsOther.length + 1 ||
       window._maximized === false
     ) {
       //Start timer without delay, if you dont execute `extendWindows` inside
