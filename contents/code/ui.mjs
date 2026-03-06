@@ -156,7 +156,6 @@ export class UI {
     if (this.blocklist.check(window) === true) {
       return;
     }
-
     this.resetLayout();
     window._avoidMaximizeTrigger = true;
   }
@@ -169,18 +168,34 @@ export class UI {
 
     if (this.windowGeometryBefore === null) {
       this.windowGeometryBefore = {
-        width: parseInt(windowGeometry.width),
-        height: parseInt(windowGeometry.height),
+        right: parseInt(windowGeometry.width + windowGeometry.x),
+        bottom: parseInt(windowGeometry.height + windowGeometry.y),
+        x: parseInt(windowGeometry.x),
+        y: parseInt(windowGeometry.y),
       };
       return;
     }
 
-    if (
-      this.checkIfUIVisible() === false &&
-      (parseInt(windowGeometry.height) !== this.windowGeometryBefore.height ||
-        parseInt(windowGeometry.width) !== this.windowGeometryBefore.width)
-    ) {
-      return;
+    if (this.checkIfUIVisible() === false) {
+      const right = parseInt(windowGeometry.width + windowGeometry.x);
+      const bottom = parseInt(windowGeometry.height + windowGeometry.y);
+      const x = parseInt(windowGeometry.x);
+      const y = parseInt(windowGeometry.y);
+
+      const conditions = [
+        right - this.windowGeometryBefore.right <= 1 &&
+          right - this.windowGeometryBefore.right >= 0,
+        bottom - this.windowGeometryBefore.bottom <= 1 &&
+          bottom - this.windowGeometryBefore.bottom >= 0,
+        x - this.windowGeometryBefore.x <= 1 &&
+          x - this.windowGeometryBefore.x >= 0,
+        y - this.windowGeometryBefore.y <= 1 &&
+          y - this.windowGeometryBefore.y >= 0,
+      ];
+
+      if (conditions.filter((c) => c === true).length >= 2) {
+        return;
+      }
     }
 
     if (this.checkIfUIVisible() === false) {
