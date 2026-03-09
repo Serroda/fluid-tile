@@ -327,4 +327,32 @@ export class Tiles {
       tile._signals = undefined;
     }
   }
+
+  checkNextLayout(
+    desktop = this.workspace.currentDesktop,
+    screen = this.workspace.activeScreen,
+  ) {
+    const currentTileCount = this.getOrderedTiles(desktop, screen).length;
+    const layouts = this.getDefaultLayouts();
+
+    if (Array.isArray(this.config.layoutCustom)) {
+      layouts.push(this.config.layoutCustom);
+    }
+
+    const countTiles = (layoutItems) => {
+      let count = 0;
+      for (const item of layoutItems) {
+        if (item.tiles !== undefined) {
+          count += countTiles(item.tiles);
+        } else {
+          count++;
+        }
+      }
+      return count;
+    };
+
+    return layouts.find((layout) => {
+      return countTiles(layout) > currentTileCount;
+    });
+  }
 }

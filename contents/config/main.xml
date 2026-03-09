@@ -20,11 +20,13 @@
                 <choice name="1"><label>Create new virtual desktop: before the current desktop</label></choice>
                 <choice name="2"><label>Create new virtual desktop: at End</label></choice>
                 <choice name="3"><label>Create new virtual desktop: at Beginning</label></choice>
-                <choice name="4"><label>Switch to next tile layout (Check all desktops)</label></choice>
-                <choice name="5"><label>Switch to next tile layout (Check the current screen)</label></choice>
-                <choice name="6"><label>Just let it float</label></choice>
+                <choice name="4"><label>Switch to next tile layout</label></choice>
+                <choice name="5"><label>Just let it float</label></choice>
             </choices>
             <default>0</default>
+        </entry>
+        <entry name="WindowOverflowPerScreen" type="Bool">
+            <default>false</default>
         </entry>
         <entry name="DesktopRemove" type="Bool">
             <default>false</default>

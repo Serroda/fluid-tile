@@ -193,33 +193,7 @@ export class Desktops {
     }
   }
 
-  checkNextLayout(
-    desktop = this.workspace.currentDesktop,
-    screen = this.workspace.activeScreen,
-  ) {
-    const currentTileCount = this.tiles.getOrderedTiles(desktop, screen).length;
-    const layouts = this.tiles.getDefaultLayouts();
-
-    if (Array.isArray(this.config.layoutCustom)) {
-      layouts.push(this.config.layoutCustom);
-    }
-
-    const countTiles = (layoutItems) => {
-      let count = 0;
-      for (const item of layoutItems) {
-        if (item.tiles !== undefined) {
-          count += countTiles(item.tiles);
-        } else {
-          count++;
-        }
-      }
-      return count;
-    };
-
-    return layouts.find((layout) => countTiles(layout) > currentTileCount);
-  }
-
-  checkEmptySpace(windowIgnore, currentScreen = false) {
+  checkEmptySpace(windowIgnore) {
     const screens = this.workspace.screens;
     const desktops = this.workspace.desktops;
 
@@ -245,15 +219,48 @@ export class Desktops {
         );
 
         const tiles = this.tiles.getOrderedTiles(itemDesktop, itemScreen);
+        const nextLayout = this.tiles.checkNextLayout(itemDesktop, itemScreen);
 
-        if (currentScreen === false && tiles.length <= windows.length) {
+        if (tiles.length <= windows.length) {
+          if (
+            this.config.windowOverflowPerScreen === true &&
+            this.config.windowOverflowAction === 4 &&
+            nextLayout !== undefined
+          ) {
+            return {
+              desktop: itemDesktop,
+              screen: itemScreen,
+              nextLayout,
+            };
+          }
+
           indexScreen = (indexScreen + 1) % screens.length;
           continue;
-        } else if (currentScreen === true && tiles.length <= windows.length) {
-          const nextLayout = this.checkNextLayout(itemDesktop, itemScreen);
-          if (nextLayout === undefined) {
-            continue;
-          }
+        }
+
+        return {
+          desktop: itemDesktop,
+          screen: itemScreen,
+        };
+      } while (indexScreen !== indexStartScreen);
+      indexDesktop = (indexDesktop + 1) % desktops.length;
+    } while (indexDesktop !== indexStartDesktop);
+
+    if (this.config.windowOverflowAction !== 4) {
+      return null;
+    }
+
+    indexDesktop = indexStartDesktop;
+    indexScreen = indexStartScreen;
+
+    do {
+      const itemDesktop = desktops[indexDesktop];
+      do {
+        const itemScreen = screens[indexScreen];
+
+        const nextLayout = this.tiles.checkNextLayout(itemDesktop, itemScreen);
+
+        if (nextLayout !== undefined) {
           return {
             desktop: itemDesktop,
             screen: itemScreen,
@@ -261,10 +268,8 @@ export class Desktops {
           };
         }
 
-        return {
-          desktop: itemDesktop,
-          screen: itemScreen,
-        };
+        indexScreen = (indexScreen + 1) % screens.length;
+        continue;
       } while (indexScreen !== indexStartScreen);
       indexDesktop = (indexDesktop + 1) % desktops.length;
     } while (indexDesktop !== indexStartDesktop);

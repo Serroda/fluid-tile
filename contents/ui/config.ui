@@ -103,6 +103,42 @@
        <property name="verticalSpacing">
         <number>12</number>
        </property>
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="kcfg_WindowOverflowPerScreen">
+         <property name="text">
+          <string>Trigger overflow per screen (Only works when &quot;Switch to next tile layout&quot; is selected)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QCheckBox" name="kcfg_ModalsIgnore">
+         <property name="toolTip">
+          <string>Only works if the window is transient</string>
+         </property>
+         <property name="statusTip">
+          <string/>
+         </property>
+         <property name="locale">
+          <locale language="English" country="Eswatini"/>
+         </property>
+         <property name="text">
+          <string>Ignore modals opened by an application</string>
+         </property>
+         <property name="autoRepeat">
+          <bool>false</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QCheckBox" name="kcfg_WindowsOrderOpen">
+         <property name="text">
+          <string>Rearrange windows</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0">
         <layout class="QHBoxLayout" name="horizontalLayout">
          <property name="spacing">
@@ -148,12 +184,7 @@
            </item>
            <item>
             <property name="text">
-             <string>Switch to next tile layout (Check all desktops)</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Switch to next tile layout (Check the current screen)</string>
+             <string>Switch to next tile layout</string>
             </property>
            </item>
            <item>
@@ -164,35 +195,6 @@
           </widget>
          </item>
         </layout>
-       </item>
-       <item row="1" column="0">
-        <widget class="QCheckBox" name="kcfg_ModalsIgnore">
-         <property name="toolTip">
-          <string>Only works if the window is transient</string>
-         </property>
-         <property name="statusTip">
-          <string/>
-         </property>
-         <property name="locale">
-          <locale language="English" country="Eswatini"/>
-         </property>
-         <property name="text">
-          <string>Ignore modals opened by an application</string>
-         </property>
-         <property name="autoRepeat">
-          <bool>false</bool>
-         </property>
-         <property name="autoExclusive">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QCheckBox" name="kcfg_WindowsOrderOpen">
-         <property name="text">
-          <string>Rearrange windows</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </widget>

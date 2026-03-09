@@ -55,11 +55,7 @@ export class Engine {
       return;
     }
 
-    const justCurrentScreen = this.config.windowOverflowAction === 5;
-    const space = this.classes.desktops.checkEmptySpace(
-      window,
-      justCurrentScreen,
-    );
+    const space = this.classes.desktops.checkEmptySpace(window);
 
     if (space === null) {
       // windowOverflowAction - Create a new virtual desktop: *all versions
@@ -71,21 +67,11 @@ export class Engine {
           desktop,
           this.workspace.activeScreen,
         );
-        // windowOverflowAction - Switch to next tile layout when all desktops are full
-      } else if (this.config.windowOverflowAction === 4) {
-        const nextLayout = this.classes.desktops.checkNextLayout();
-        if (nextLayout !== undefined) {
-          this.changeLayoutOverflow(
-            window,
-            this.workspace.currentDesktop,
-            nextLayout,
-          );
-        }
       }
     } else {
-      // windowOverflowAction - Switch to next tile layout per screen
+      // windowOverflowAction - Switch to next tile layout
       if (
-        this.config.windowOverflowAction === 5 &&
+        this.config.windowOverflowAction === 4 &&
         space.nextLayout !== undefined
       ) {
         this.changeLayoutOverflow(

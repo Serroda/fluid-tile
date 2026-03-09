@@ -48,6 +48,7 @@ Window {
             windowsOrderClose: KWin.readConfig("WindowsOrderClose", false),
             windowsExtendTileChangedDelay: KWin.readConfig("WindowsExtendTileChangedDelay", 350),
             windowOverflowAction: KWin.readConfig("WindowOverflowAction", 0),
+            windowOverflowPerScreen: KWin.readConfig("WindowOverflowPerScreen", false),
             desktopRemove: KWin.readConfig("DesktopRemove", false),
             desktopRemoveMin: KWin.readConfig("DesktopRemoveMin", 1),
             desktopRemoveDelay: KWin.readConfig("DesktopRemoveDelay", 300),
