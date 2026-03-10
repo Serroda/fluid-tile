@@ -44,13 +44,17 @@ export class Windows {
         tilesOrderedCached: tilesOrdered,
       });
     } else {
-      const tileEmpty = tilesOrdered.find((tile) => tile.windows.length === 0);
+      const windowsOther = this.getAll(windowMain);
+      const tileEmpty = tilesOrdered.find(
+        (t) => !windowsOther.some((w) => w.tile === t || w._tileShadow === t),
+      );
 
       if (tileEmpty !== undefined) {
         this.setTile(windowMain, tileEmpty, {
           checkDifferentScreen: false,
           setShadow: true,
           tilesOrderedCached: tilesOrdered,
+          windowsOtherCached: windowsOther,
         });
       }
     }
