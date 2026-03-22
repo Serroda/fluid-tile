@@ -99,8 +99,7 @@ Window {
 
     Component.onCompleted: {
         startEngine();
-        engine.setWindowsSignals();
-        engine.setTilesSignals();
+        engine.onStart()
     }
 
     Theme {

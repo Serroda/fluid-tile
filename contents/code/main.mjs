@@ -206,7 +206,7 @@ export class Engine {
       );
     } else if (
       this.classes.tiles.getTilesCurrentDesktop().length >=
-      windowsOther.length + 1 ||
+        windowsOther.length + 1 ||
       window._maximized === false
     ) {
       //Start timer without delay, if you dont execute `extendWindows` inside
@@ -367,5 +367,11 @@ export class Engine {
       "resetAll",
       this.onTimerResetAllFinished.bind(this, false),
     );
+  }
+
+  onStart() {
+    this.classes.windows.resetAll(false);
+    this.setWindowsSignals();
+    this.setTilesSignals();
   }
 }
