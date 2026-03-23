@@ -370,7 +370,7 @@ export class Engine {
   }
 
   onStart() {
-    this.classes.windows.resetAll(false);
+    this.classes.windows.resetAll(true);
     this.setWindowsSignals();
     this.setTilesSignals();
   }
